@@ -1,0 +1,41 @@
+package ch.cbossi.gradle.playground.build
+
+sealed class ModulithConfigurationBuilder {
+    internal val components = mutableListOf<ComponentReference>()
+    internal val dependencies = mutableListOf<ComponentDependency>()
+    internal val componentPlugins = mutableMapOf<ComponentReference, Plugin>()
+
+    fun addComponent(name: String) = addComponent(ComponentReference(name))
+
+    fun addComponent(component: ComponentReference): ComponentReference {
+        components.add(component)
+        return component
+    }
+
+    fun ComponentReference.withPlugin(id: String): ComponentReference {
+        componentPlugins[this] = Plugin(id)
+        return this
+    }
+
+    fun ComponentReference.dependsOn(vararg components: ComponentReference): ComponentReference {
+        dependencies.addAll(components.map { ComponentDependency(this, it) })
+        return this
+    }
+}
+
+class AllModulesConfigurationBuilder : ModulithConfigurationBuilder()
+
+class ModuleConfigurationBuilder(internal val name: String) : ModulithConfigurationBuilder() {
+    internal var removeAllModulesComponents: Boolean = false
+    internal val removedAllModulesComponents = mutableListOf<ComponentReference>()
+
+    fun removeAllModulesComponents() {
+        removeAllModulesComponents = true
+    }
+
+    fun removeComponent(vararg component: ComponentReference) {
+        removedAllModulesComponents.addAll(component)
+    }
+}
+
+internal data class ComponentDependency(val source: ComponentReference, val dependsOn: ComponentReference)

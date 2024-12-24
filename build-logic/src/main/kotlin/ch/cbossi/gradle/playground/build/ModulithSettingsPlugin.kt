@@ -1,0 +1,64 @@
+package ch.cbossi.gradle.playground.build
+
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.initialization.Settings
+import org.gradle.api.tasks.testing.Test
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.withType
+
+class ModulithSettingsPlugin : Plugin<Settings> {
+
+    override fun apply(settings: Settings) {
+        with(settings) {
+            val extension = extensions.getByType(ModulithExtension::class.java)
+            val modules = extension.getConfiguration().modules
+            configure(modules)
+            gradle.projectsLoaded {
+                gradle.rootProject.configure(modules)
+            }
+        }
+
+    }
+
+    private fun Settings.configure(modules: Collection<Module>) = modules.forEach { configure(it) }
+
+    private fun Settings.configure(module: Module) {
+        module.components.forEach { include("${module.name}:${it.name}") }
+    }
+
+    private fun Project.configure(modules: Collection<Module>) {
+        configureAllProjects()
+        modules.forEach { it.configure(gradleChildProject(it.name)) }
+    }
+
+    private fun Project.configureAllProjects() {
+        project.allprojects {
+            // since the 'implementation' configuration is needed to add the component dependencies, a JVM-based plugin is necessary
+            // at the moment, the kotlin plugin is hardcoded, but we could also make Kotlin vs Java configurable.
+            apply(plugin = "kotlin")
+
+            tasks.withType<Test> {
+                useJUnitPlatform()
+            }
+
+        }
+    }
+
+    private fun Module.configure(moduleProject: Project) {
+        components.forEach { it.configureComponent(moduleProject) }
+    }
+
+    private fun Component.configureComponent(moduleProject: Project) {
+        val componentProject = moduleProject.gradleChildProject(name)
+        dependsOn.forEach {
+            val dependencyProject = moduleProject.gradleChildProject(it.name)
+            componentProject.logger.info("Add component dependency: ${componentProject.path} -> ${dependencyProject.path}")
+            componentProject.dependencies.add("implementation", dependencyProject)
+        }
+        plugin?.let { componentProject.apply(plugin = it.id) }
+
+    }
+}
+
+private fun Project.gradleChildProject(name: String) = childProjects.getValue(name)
