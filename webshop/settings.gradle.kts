@@ -37,7 +37,7 @@ modulith {
   }
   module("customer")
   module("order") {
-    addComponent("apiClient").dependsOn(domain)
+    addComponent("api-client").dependsOn(domain)
   }
 }
 
