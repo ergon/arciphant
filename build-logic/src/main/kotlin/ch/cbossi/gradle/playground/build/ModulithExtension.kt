@@ -49,7 +49,7 @@ open class ModulithExtension {
     private fun ModuleConfigurationBuilder.getDependencies(allModulesConfiguration: AllModulesConfigurationBuilder) =
         (allModulesConfiguration.dependencies + dependencies)
             .filter { !it.includesAny(removedAllModulesComponents) }
-            .groupBy(ComponentDependency::source) { it.dependsOn }
+            .groupBy(ComponentDependency::source) { Dependency(it.dependsOn, it.type) }
             .withDefault { emptyList() }
 
     private fun ComponentDependency.includesAny(components: Collection<ComponentReference>) =

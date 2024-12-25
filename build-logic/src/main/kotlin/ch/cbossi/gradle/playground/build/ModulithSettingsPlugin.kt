@@ -52,9 +52,9 @@ class ModulithSettingsPlugin : Plugin<Settings> {
     private fun Component.configureComponent(moduleProject: Project) {
         val componentProject = moduleProject.gradleChildProject(name)
         dependsOn.forEach {
-            val dependencyProject = moduleProject.gradleChildProject(it.name)
-            componentProject.logger.info("Add component dependency: ${componentProject.path} -> ${dependencyProject.path}")
-            componentProject.dependencies.add("implementation", dependencyProject)
+            val dependencyProject = moduleProject.gradleChildProject(it.component.name)
+            componentProject.logger.info("Add component dependency: ${it.type.configurationName} ${componentProject.path} -> ${dependencyProject.path}")
+            componentProject.dependencies.add(it.type.configurationName, dependencyProject)
         }
         plugin?.let { componentProject.apply(plugin = it.id) }
 

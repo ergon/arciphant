@@ -17,8 +17,19 @@ sealed class ModulithConfigurationBuilder {
         return this
     }
 
+    fun ComponentReference.dependsOnApi(vararg components: ComponentReference): ComponentReference {
+        return dependsOn(components, DependencyType.API)
+    }
+
     fun ComponentReference.dependsOn(vararg components: ComponentReference): ComponentReference {
-        dependencies.addAll(components.map { ComponentDependency(this, it) })
+        return dependsOn(components, DependencyType.IMPLEMENTATION)
+    }
+
+    private fun ComponentReference.dependsOn(
+        components: Array<out ComponentReference>,
+        type: DependencyType
+    ): ComponentReference {
+        dependencies.addAll(components.map { ComponentDependency(this, type, it) })
         return this
     }
 }
@@ -38,4 +49,10 @@ class ModuleConfigurationBuilder(internal val name: String) : ModulithConfigurat
     }
 }
 
-internal data class ComponentDependency(val source: ComponentReference, val dependsOn: ComponentReference)
+internal data class ComponentDependency(
+    val source: ComponentReference,
+    val type: DependencyType,
+    val dependsOn: ComponentReference,
+)
+
+
