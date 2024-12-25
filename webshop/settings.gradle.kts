@@ -24,7 +24,7 @@ modulith {
 
   allModules {
     addComponent(api)
-    addComponent(domain).withPlugin("domain").dependsOn(api)
+    addComponent(domain).withPlugin("domain").dependsOnApi(api)
     addComponent(webApi)
     addComponent(web).dependsOn(webApi, domain)
     addComponent(dbSchema)
