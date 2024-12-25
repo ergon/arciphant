@@ -28,21 +28,7 @@ class ModulithSettingsPlugin : Plugin<Settings> {
     }
 
     private fun Project.configure(modules: Collection<Module>) {
-        configureAllProjects()
         modules.forEach { it.configure(gradleChildProject(it.name)) }
-    }
-
-    private fun Project.configureAllProjects() {
-        project.allprojects {
-            // since the 'implementation' configuration is needed to add the component dependencies, a JVM-based plugin is necessary
-            // at the moment, the kotlin plugin is hardcoded, but we could also make Kotlin vs Java configurable.
-            apply(plugin = "kotlin")
-
-            tasks.withType<Test> {
-                useJUnitPlatform()
-            }
-
-        }
     }
 
     private fun Module.configure(moduleProject: Project) {
@@ -51,12 +37,12 @@ class ModulithSettingsPlugin : Plugin<Settings> {
 
     private fun Component.configureComponent(moduleProject: Project) {
         val componentProject = moduleProject.gradleChildProject(name)
+        componentProject.apply(plugin = plugin.id)
         dependsOn.forEach {
             val dependencyProject = moduleProject.gradleChildProject(it.component.name)
             componentProject.logger.info("Add component dependency: ${it.type.configurationName} ${componentProject.path} -> ${dependencyProject.path}")
             componentProject.dependencies.add(it.type.configurationName, dependencyProject)
         }
-        componentProject.apply(plugin = plugin.id)
     }
 }
 
