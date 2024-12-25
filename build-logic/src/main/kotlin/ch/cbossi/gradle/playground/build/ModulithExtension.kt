@@ -2,7 +2,7 @@ package ch.cbossi.gradle.playground.build
 
 open class ModulithExtension {
 
-    private val defaultComponents = AllModulesConfigurationBuilder()
+    private val allModulesComponents = AllModulesConfigurationBuilder()
     private val modules = mutableSetOf<ModuleConfigurationBuilder>()
 
     /**
@@ -13,7 +13,7 @@ open class ModulithExtension {
     fun createComponent(name: String): ComponentReference = ComponentReference(name)
 
     fun allModules(configure: AllModulesConfigurationBuilder.() -> Unit = {}) {
-        defaultComponents.configure()
+        allModulesComponents.configure()
     }
 
     /**
@@ -34,7 +34,7 @@ open class ModulithExtension {
     }
 
     internal fun getConfiguration() = ModulithConfiguration(
-        modules = modules.map { it.getConfiguration(defaultComponents) },
+        modules = modules.map { it.getConfiguration(allModulesComponents) },
     )
 
     private fun ModuleConfigurationBuilder.getConfiguration(allModulesConfiguration: AllModulesConfigurationBuilder): Module {
