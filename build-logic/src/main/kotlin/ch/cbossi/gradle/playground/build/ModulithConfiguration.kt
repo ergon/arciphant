@@ -18,7 +18,7 @@ internal data class Module(
 
 internal data class Component(
     val reference: ComponentReference,
-    val plugin: Plugin?,
+    val plugin: Plugin,
     val dependsOn: Collection<Dependency>,
 ) {
     val name = reference.name

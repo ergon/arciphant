@@ -56,8 +56,7 @@ class ModulithSettingsPlugin : Plugin<Settings> {
             componentProject.logger.info("Add component dependency: ${it.type.configurationName} ${componentProject.path} -> ${dependencyProject.path}")
             componentProject.dependencies.add(it.type.configurationName, dependencyProject)
         }
-        plugin?.let { componentProject.apply(plugin = it.id) }
-
+        componentProject.apply(plugin = plugin.id)
     }
 }
 
