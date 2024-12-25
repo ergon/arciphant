@@ -1,6 +1,6 @@
 package ch.cbossi.webshop.customer.db
 
-import ch.cbossi.webshop.customer.api.Customer
+import ch.cbossi.webshop.customer.api.CustomerFixtures
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -10,11 +10,11 @@ class CustomerRepositoryImplTest {
 
     @Test
     fun test() {
-        repository.insertCustomer(Customer("John", "Doe"))
+        repository.insertCustomer(CustomerFixtures.customer)
 
         val customer = repository.loadCustomer()
 
-        assertThat(customer).isEqualTo(Customer("John", "Doe"))
+        assertThat(customer).isEqualTo(CustomerFixtures.customer)
     }
 
 }

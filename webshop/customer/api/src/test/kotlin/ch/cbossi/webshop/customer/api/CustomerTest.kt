@@ -7,7 +7,7 @@ class CustomerTest {
 
     @Test
     fun testName() {
-        val customer = Customer("Max", "Muster")
+        val customer = CustomerFixtures.customer
 
         assertThat(customer.name).isEqualTo("Max Muster")
     }

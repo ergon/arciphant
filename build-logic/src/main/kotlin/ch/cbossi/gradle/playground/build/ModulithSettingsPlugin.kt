@@ -1,9 +1,13 @@
 package ch.cbossi.gradle.playground.build
 
+import ch.cbossi.gradle.playground.build.DependencyType.API
+import ch.cbossi.gradle.playground.build.DependencyType.IMPLEMENTATION
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.project
 
 class ModulithSettingsPlugin : Plugin<Settings> {
 
@@ -40,6 +44,9 @@ class ModulithSettingsPlugin : Plugin<Settings> {
             val dependencyProject = moduleProject.gradleChildProject(it.component.name)
             componentProject.logger.info("Add component dependency: ${it.type.configurationName} ${componentProject.path} -> ${dependencyProject.path}")
             componentProject.dependencies.add(it.type.configurationName, dependencyProject)
+            componentProject.pluginManager.withPlugin("java-test-fixtures") {
+                componentProject.dependencies { add("testFixturesApi", testFixtures(project(dependencyProject.path))) }
+            }
         }
     }
 }

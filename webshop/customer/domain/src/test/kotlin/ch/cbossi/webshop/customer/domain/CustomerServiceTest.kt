@@ -1,6 +1,7 @@
 package ch.cbossi.webshop.customer.domain
 
 import ch.cbossi.webshop.customer.api.Customer
+import ch.cbossi.webshop.customer.api.CustomerFixtures
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -14,7 +15,7 @@ class CustomerServiceTest {
 
     @Test
     fun testCreateCustomer() {
-        val customer = Customer("Max", "Muster")
+        val customer = CustomerFixtures.customer
 
         service.createCustomer(customer)
 
@@ -23,10 +24,10 @@ class CustomerServiceTest {
 
     @Test
     fun testLoadCustomer() {
-        whenever(repositoryMock.loadCustomer()).thenReturn(Customer("Max", "Muster"))
+        whenever(repositoryMock.loadCustomer()).thenReturn(CustomerFixtures.customer)
 
         val customer = service.loadCustomer()
 
-        assertThat(customer).isEqualTo(Customer("Max", "Muster"))
+        assertThat(customer).isEqualTo(CustomerFixtures.customer)
     }
 }

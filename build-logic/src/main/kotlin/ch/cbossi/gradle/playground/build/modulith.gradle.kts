@@ -4,6 +4,7 @@ import org.gradle.kotlin.dsl.withType
 
 plugins {
     kotlin("jvm")
+    `java-test-fixtures`
 }
 
 dependencies {
