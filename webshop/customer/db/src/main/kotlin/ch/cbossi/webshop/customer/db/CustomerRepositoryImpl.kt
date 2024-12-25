@@ -5,7 +5,13 @@ import ch.cbossi.webshop.customer.domain.CustomerRepository
 
 class CustomerRepositoryImpl : CustomerRepository {
 
+    private var customer: Customer? = null
+
+    override fun insertCustomer(customer: Customer) {
+        this.customer = customer
+    }
+
     override fun loadCustomer(): Customer {
-        return Customer("John", "Doe")
+        return customer ?: error("No customer found")
     }
 }

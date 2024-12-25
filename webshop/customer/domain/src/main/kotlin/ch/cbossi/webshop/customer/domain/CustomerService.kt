@@ -6,8 +6,12 @@ import org.springframework.stereotype.Service
 @Service
 class CustomerService(private val repository: CustomerRepository) {
 
-    fun createCustomer() {
-        val c = Customer("John", "Doe")
+    fun createCustomer(customer: Customer) {
+        repository.insertCustomer(customer)
+    }
+
+    fun loadCustomer(): Customer {
+        return repository.loadCustomer()
     }
 
 }

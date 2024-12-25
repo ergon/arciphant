@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 class CustomerTest {
 
     @Test
-    fun testCustomer() {
+    fun testName() {
         val customer = Customer("Max", "Muster")
 
         assertThat(customer.name).isEqualTo("Max Muster")
