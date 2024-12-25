@@ -3,9 +3,7 @@ package ch.cbossi.gradle.playground.build
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
-import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.withType
 
 class ModulithSettingsPlugin : Plugin<Settings> {
 
