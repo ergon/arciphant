@@ -40,7 +40,10 @@ sealed class ModulithConfigurationBuilder {
 
 class AllModulesConfigurationBuilder : ModulithConfigurationBuilder()
 
-class ModuleConfigurationBuilder(internal val name: String) : ModulithConfigurationBuilder() {
+class ModuleConfigurationBuilder(
+    internal val name: String,
+    internal val isLibrary: Boolean,
+) : ModulithConfigurationBuilder() {
     internal var removeAllModulesComponents: Boolean = false
     internal val removedAllModulesComponents = mutableListOf<ComponentReference>()
 

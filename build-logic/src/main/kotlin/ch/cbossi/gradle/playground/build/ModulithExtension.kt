@@ -27,8 +27,16 @@ open class ModulithExtension {
         allModulesPlugin = Plugin(id)
     }
 
+    fun library(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}) {
+        module(name, configure, isLibrary = true)
+    }
+
     fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}) {
-        val module = ModuleConfigurationBuilder(name)
+        module(name, configure, isLibrary = false)
+    }
+
+    private fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}, isLibrary: Boolean) {
+        val module = ModuleConfigurationBuilder(name, isLibrary)
         module.configure()
         modules.add(module)
     }
@@ -43,6 +51,7 @@ open class ModulithExtension {
         val dependencies = getDependencies(allModulesConfiguration)
         return Module(
             name = name,
+            isLibrary = isLibrary,
             components = mergedComponents.map {
                 Component(
                     reference = it,

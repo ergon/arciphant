@@ -6,6 +6,7 @@ internal data class ModulithConfiguration(
 
 internal data class Module(
     val name: String,
+    val isLibrary: Boolean,
     val components: List<Component>,
 ) {
     init {

@@ -33,7 +33,7 @@ modulith {
     addComponent(db).dependsOn(dbModel, domain)
   }
 
-  module("shared") {
+  library("shared") {
     removeComponent(webApi, web)
   }
   module("customer")
