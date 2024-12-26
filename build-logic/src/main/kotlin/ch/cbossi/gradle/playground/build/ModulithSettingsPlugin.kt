@@ -12,34 +12,37 @@ class ModulithSettingsPlugin : Plugin<Settings> {
     override fun apply(settings: Settings) {
         with(settings) {
             val extension = extensions.getByType(ModulithExtension::class.java)
-            val modules = extension.getConfiguration().modules
-            configure(modules)
+            val configuration = extension.getConfiguration()
+            configuration.createProjectStructure().forEach { include(it) }
             gradle.projectsLoaded {
-                gradle.rootProject.configure(modules)
+                configuration.configureModules(gradle.rootProject)
             }
         }
 
     }
+}
 
-    private fun Settings.configure(modules: Collection<Module>) = modules.forEach { configure(it) }
+private fun ModulithConfiguration.createProjectStructure() =
+    modules.flatMap { module -> module.components.map { "${module.name}:${it.name}" } }
 
-    private fun Settings.configure(module: Module) {
-        module.components.forEach { include("${module.name}:${it.name}") }
+private fun ModulithConfiguration.configureModules(rootProject: Project) {
+    modules.forEach { ModuleConfigurer(it, rootProject.childProject(it.name)).configure() }
+}
+
+internal class ModuleConfigurer(
+    private val module: Module,
+    private val moduleProject: Project,
+) {
+
+    fun configure() {
+        module.components.forEach { it.configureComponent() }
     }
 
-    private fun Project.configure(modules: Collection<Module>) {
-        modules.forEach { it.configure(gradleChildProject(it.name)) }
-    }
-
-    private fun Module.configure(moduleProject: Project) {
-        components.forEach { it.configureComponent(moduleProject) }
-    }
-
-    private fun Component.configureComponent(moduleProject: Project) {
-        val componentProject = moduleProject.gradleChildProject(name)
+    private fun Component.configureComponent() {
+        val componentProject = moduleProject.childProject(name)
         componentProject.apply(plugin = plugin.id)
         dependsOn.forEach {
-            val dependencyProject = moduleProject.gradleChildProject(it.component.name)
+            val dependencyProject = moduleProject.childProject(it.component.name)
             componentProject.logger.info("Add component dependency: ${it.type.configurationName} ${componentProject.path} -> ${dependencyProject.path}")
             componentProject.dependencies.add(it.type.configurationName, dependencyProject)
             componentProject.pluginManager.withPlugin("java-test-fixtures") {
@@ -47,6 +50,7 @@ class ModulithSettingsPlugin : Plugin<Settings> {
             }
         }
     }
+
 }
 
-private fun Project.gradleChildProject(name: String) = childProjects.getValue(name)
+private fun Project.childProject(name: String) = childProjects.getValue(name)
