@@ -1,6 +1,5 @@
 package ch.cbossi.webshop.customer.domain
 
-import ch.cbossi.webshop.customer.api.Customer
 import ch.cbossi.webshop.customer.api.CustomerFixtures
 import ch.cbossi.webshop.shared.api.IdFixtures
 import org.assertj.core.api.Assertions.assertThat
