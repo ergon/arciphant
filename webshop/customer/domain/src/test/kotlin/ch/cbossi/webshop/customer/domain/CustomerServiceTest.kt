@@ -2,6 +2,7 @@ package ch.cbossi.webshop.customer.domain
 
 import ch.cbossi.webshop.customer.api.Customer
 import ch.cbossi.webshop.customer.api.CustomerFixtures
+import ch.cbossi.webshop.shared.api.IdFixtures
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -24,9 +25,9 @@ class CustomerServiceTest {
 
     @Test
     fun testLoadCustomer() {
-        whenever(repositoryMock.loadCustomer()).thenReturn(CustomerFixtures.customer)
+        whenever(repositoryMock.loadCustomer(IdFixtures.customerId)).thenReturn(CustomerFixtures.customer)
 
-        val customer = service.loadCustomer()
+        val customer = service.loadCustomer(IdFixtures.customerId)
 
         assertThat(customer).isEqualTo(CustomerFixtures.customer)
     }

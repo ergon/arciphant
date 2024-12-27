@@ -1,6 +1,7 @@
 package ch.cbossi.webshop.customer.domain
 
 import ch.cbossi.webshop.customer.api.Customer
+import ch.cbossi.webshop.shared.api.CustomerId
 import org.springframework.stereotype.Service
 
 @Service
@@ -10,8 +11,8 @@ class CustomerService(private val repository: CustomerRepository) {
         repository.insertCustomer(customer)
     }
 
-    fun loadCustomer(): Customer {
-        return repository.loadCustomer()
+    fun loadCustomer(id: CustomerId): Customer {
+        return repository.loadCustomer(id)
     }
 
 }
