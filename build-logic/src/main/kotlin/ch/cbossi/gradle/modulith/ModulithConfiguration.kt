@@ -1,4 +1,4 @@
-package ch.cbossi.gradle.playground.build
+package ch.cbossi.gradle.modulith
 
 internal data class ModulithConfiguration(
     val modules: List<Module>,

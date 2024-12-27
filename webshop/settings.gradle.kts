@@ -1,4 +1,4 @@
-import ch.cbossi.gradle.playground.build.ModulithSettingsPlugin
+import ch.cbossi.gradle.modulith.ModulithSettingsPlugin
 
 // plugins that extend the gradle build (gradle plugin portal, other binary repositories or local plugins from other builds)
 pluginManagement {
@@ -9,7 +9,7 @@ pluginManagement {
 }
 
 plugins {
-  id("ch.cbossi.gradle.playground.build.modulith-configuration-settings-plugin")
+  id("ch.cbossi.gradle.modulith.modulith-configuration-settings-plugin")
 }
 
 modulith {

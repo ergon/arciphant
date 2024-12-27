@@ -14,8 +14,8 @@ dependencies {
 gradlePlugin {
     plugins {
         create("modulith-configuration-settings-plugin") {
-            id = "ch.cbossi.gradle.playground.build.modulith-configuration-settings-plugin"
-            implementationClass = "ch.cbossi.gradle.playground.build.ModulithConfigurationSettingsPlugin"
+            id = "ch.cbossi.gradle.modulith.modulith-configuration-settings-plugin"
+            implementationClass = "ch.cbossi.gradle.modulith.ModulithConfigurationSettingsPlugin"
         }
     }
 }

@@ -1,13 +1,12 @@
-package ch.cbossi.gradle.playground.build
+package ch.cbossi.gradle.modulith
 
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.UnexpectedBuildFailure
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-
 
 class ModulithSettingsPluginTest {
 
@@ -37,8 +36,8 @@ class ModulithSettingsPluginTest {
             .withArguments("-q", "projects")
             .build()
 
-        assertThat(result.output).contains("Project ':test:api'")
-        assertThat(result.output).contains("Project ':test:domain'")
+        Assertions.assertThat(result.output).contains("Project ':test:api'")
+        Assertions.assertThat(result.output).contains("Project ':test:domain'")
     }
 
     @Test
@@ -57,15 +56,15 @@ class ModulithSettingsPluginTest {
                 .build()
         }
 
-        assertThat(error.message).contains("Module 'test' has no components.")
+        Assertions.assertThat(error.message).contains("Module 'test' has no components.")
     }
 
     private fun buildSettingsFileWithModulithPlugin(modulithConfiguration: String) = buildSettingsFile(
         """
-        import ch.cbossi.gradle.playground.build.ModulithSettingsPlugin
+        import ch.cbossi.gradle.modulith.ModulithSettingsPlugin
             
             plugins {
-                id("ch.cbossi.gradle.playground.build.modulith-configuration-settings-plugin")
+                id("ch.cbossi.gradle.modulith.modulith-configuration-settings-plugin")
             }
             
             modulith {

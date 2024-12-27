@@ -1,4 +1,4 @@
-package ch.cbossi.gradle.playground.build
+package ch.cbossi.gradle.modulith
 
 open class ModulithExtension {
 
