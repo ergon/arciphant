@@ -2,7 +2,9 @@ package ch.cbossi.gradle.playground.build
 
 internal data class ModulithConfiguration(
     val modules: List<Module>,
-)
+) {
+    val libraries by lazy { modules.filter { it.isLibrary } }
+}
 
 internal data class Module(
     val name: String,
@@ -15,6 +17,8 @@ internal data class Module(
                     "This is not allowed, since the module gradle project is implicitly created through its components"
         }
     }
+
+    fun hasComponent(component: Component) = components.map { it.reference }.contains(component.reference)
 }
 
 internal data class Component(

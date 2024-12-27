@@ -26,10 +26,11 @@ private fun ModulithConfiguration.createProjectStructure() =
     modules.flatMap { module -> module.components.map { "${module.name}:${it.name}" } }
 
 private fun ModulithConfiguration.configureModules(rootProject: Project) {
-    modules.forEach { ModuleConfigurer(it, rootProject.childProject(it.name)).configure() }
+    modules.forEach { ModuleConfigurer(this, it, rootProject.childProject(it.name)).configure() }
 }
 
 internal class ModuleConfigurer(
+    private val configuration: ModulithConfiguration,
     private val module: Module,
     private val moduleProject: Project,
 ) {
@@ -49,8 +50,17 @@ internal class ModuleConfigurer(
                 componentProject.dependencies { add("testFixturesApi", testFixtures(project(dependencyProject.path))) }
             }
         }
+        if (!module.isLibrary) {
+            configuration.libraries.filter { it.hasComponent(this) }.forEach {
+                val libraryComponentPath = ":${it.name}:$name"
+                componentProject.logger.info("Add library dependency: ${componentProject.path} -> $libraryComponentPath")
+                componentProject.dependencies { add("api", project(libraryComponentPath)) }
+                componentProject.pluginManager.withPlugin("java-test-fixtures") {
+                    componentProject.dependencies { add("testFixturesApi", testFixtures(project(libraryComponentPath))) }
+                }
+            }
+        }
     }
-
 }
 
 private fun Project.childProject(name: String) = childProjects.getValue(name)
