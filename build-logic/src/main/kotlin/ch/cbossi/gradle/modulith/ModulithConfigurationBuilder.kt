@@ -41,7 +41,7 @@ sealed class ModulithConfigurationBuilder {
 class AllModulesConfigurationBuilder : ModulithConfigurationBuilder()
 
 class ModuleConfigurationBuilder(
-    internal val name: String,
+    internal val reference: ModuleReference,
     internal val isLibrary: Boolean,
 ) : ModulithConfigurationBuilder() {
     internal var removeAllModulesComponents: Boolean = false

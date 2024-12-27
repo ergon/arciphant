@@ -27,18 +27,20 @@ open class ModulithExtension {
         allModulesPlugin = Plugin(id)
     }
 
-    fun library(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}) {
-        module(name, configure, isLibrary = true)
+    fun library(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): ModuleReference {
+        return module(name, configure, isLibrary = true)
     }
 
-    fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}) {
-        module(name, configure, isLibrary = false)
+    fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): ModuleReference {
+        return module(name, configure, isLibrary = false)
     }
 
-    private fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}, isLibrary: Boolean) {
-        val module = ModuleConfigurationBuilder(name, isLibrary)
+    private fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}, isLibrary: Boolean): ModuleReference {
+        val reference = ModuleReference(name)
+        val module = ModuleConfigurationBuilder(reference, isLibrary)
         module.configure()
         modules.add(module)
+        return reference
     }
 
     internal fun getConfiguration() = ModulithConfiguration(
@@ -50,7 +52,7 @@ open class ModulithExtension {
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + componentPlugins
         val dependencies = getDependencies(allModulesConfiguration)
         return Module(
-            name = name,
+            reference = reference,
             isLibrary = isLibrary,
             components = mergedComponents.map {
                 Component(

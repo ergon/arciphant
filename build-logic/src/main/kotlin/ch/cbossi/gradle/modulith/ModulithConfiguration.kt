@@ -7,10 +7,12 @@ internal data class ModulithConfiguration(
 }
 
 internal data class Module(
-    val name: String,
+    val reference: ModuleReference,
     val isLibrary: Boolean,
     val components: List<Component>,
 ) {
+    val name = reference.name
+
     init {
         require(components.isNotEmpty()) {
             "Module '$name' has no components. " +
@@ -20,6 +22,8 @@ internal data class Module(
 
     fun hasComponent(component: Component) = components.map { it.reference }.contains(component.reference)
 }
+
+data class ModuleReference internal constructor(internal val name: String)
 
 internal data class Component(
     val reference: ComponentReference,
