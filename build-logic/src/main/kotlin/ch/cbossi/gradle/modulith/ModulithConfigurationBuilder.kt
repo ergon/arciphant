@@ -62,4 +62,12 @@ internal data class ComponentDependency(
     val dependsOn: ComponentReference,
 )
 
+class BundleModuleConfigurationBuilder(internal val name: String?) {
 
+    internal val includedModules = mutableListOf<ModuleReference>()
+
+    fun with(vararg modules: ModuleReference) {
+        includedModules.addAll(modules)
+    }
+
+}

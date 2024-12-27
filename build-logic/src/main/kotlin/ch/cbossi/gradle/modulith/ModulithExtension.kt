@@ -4,6 +4,7 @@ open class ModulithExtension {
 
     private val allModulesComponents = AllModulesConfigurationBuilder()
     private val modules = mutableSetOf<ModuleConfigurationBuilder>()
+    private val bundles = mutableSetOf<BundleModuleConfigurationBuilder>()
 
     /**
      * See [basePlugin].
@@ -35,7 +36,17 @@ open class ModulithExtension {
         return module(name, configure, isLibrary = false)
     }
 
-    private fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}, isLibrary: Boolean): ModuleReference {
+    fun bundle(name: String? = null): BundleModuleConfigurationBuilder {
+        val bundle = BundleModuleConfigurationBuilder(name)
+        bundles.add(bundle)
+        return bundle
+    }
+
+    private fun module(
+        name: String,
+        configure: ModuleConfigurationBuilder.() -> Unit = {},
+        isLibrary: Boolean
+    ): ModuleReference {
         val reference = ModuleReference(name)
         val module = ModuleConfigurationBuilder(reference, isLibrary)
         module.configure()
@@ -45,7 +56,14 @@ open class ModulithExtension {
 
     internal fun getConfiguration() = ModulithConfiguration(
         modules = modules.map { it.getConfiguration(allModulesComponents) },
+        bundleModules = bundles.map { it.getConfiguration() },
     )
+
+    private fun BundleModuleConfigurationBuilder.getConfiguration(): BundleModule {
+        val modules = if(includedModules.isNotEmpty()) includedModules else modules.map { it.reference }
+        val plugin = allModulesPlugin
+        return if (name == null) { RootBundleModule(plugin, modules) } else { ChildBundleModule(name, plugin, modules) }
+    }
 
     private fun ModuleConfigurationBuilder.getConfiguration(allModulesConfiguration: AllModulesConfigurationBuilder): Module {
         val mergedComponents = componentsInheritedFromAllModules(allModulesConfiguration) + components

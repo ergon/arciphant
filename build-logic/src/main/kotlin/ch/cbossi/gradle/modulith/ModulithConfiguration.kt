@@ -2,6 +2,7 @@ package ch.cbossi.gradle.modulith
 
 internal data class ModulithConfiguration(
     val modules: List<Module>,
+    val bundleModules: List<BundleModule>,
 ) {
     val libraries by lazy { modules.filter { it.isLibrary } }
 }
@@ -24,6 +25,22 @@ internal data class Module(
 }
 
 data class ModuleReference internal constructor(internal val name: String)
+
+internal sealed interface BundleModule {
+    val plugin: Plugin
+    val modules: List<ModuleReference>
+}
+
+internal data class RootBundleModule(
+    override val plugin: Plugin,
+    override val modules: List<ModuleReference>,
+) : BundleModule
+
+internal data class ChildBundleModule(
+    val name: String,
+    override val plugin: Plugin,
+    override val modules: List<ModuleReference>,
+) : BundleModule
 
 internal data class Component(
     val reference: ComponentReference,

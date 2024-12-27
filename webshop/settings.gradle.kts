@@ -40,6 +40,8 @@ modulith {
   module("order") {
     addComponent("api-client").dependsOn(domain)
   }
+
+  bundle()
 }
 
 // plugin should be applied after usage of the components-extension
