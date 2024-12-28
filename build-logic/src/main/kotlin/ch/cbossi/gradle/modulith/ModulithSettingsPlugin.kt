@@ -9,19 +9,19 @@ class ModulithSettingsPlugin : Plugin<Settings> {
     override fun apply(settings: Settings) {
         with(settings) {
             val extension = extensions.getByType(ModulithExtension::class.java)
-            val configuration = extension.createModuleStructure()
-            configuration.createProjectStructure().forEach { include(it) }
+            val structure = extension.createModuleStructure()
+            structure.toGradleProjectStructure().forEach { include(it) }
             gradle.projectsLoaded {
-                configuration.createModuleConfigurer(gradle.rootProject).forEach { it.configure() }
+                structure.createModuleConfigurer(gradle.rootProject).forEach { it.configure() }
             }
         }
 
     }
 }
 
-private fun ModuleStructure.createProjectStructure() = modules.flatMap { it.createProjectStructure() }
+private fun ModuleStructure.toGradleProjectStructure() = modules.flatMap { it.toGradleProjectStructure() }
 
-private fun Module.createProjectStructure() = when (this) {
+private fun Module.toGradleProjectStructure() = when (this) {
     is ComponentBasedModule -> componentPaths()
     is BundleModule -> when (reference) {
         is ChildBundleModuleReference -> listOf(reference.name)
