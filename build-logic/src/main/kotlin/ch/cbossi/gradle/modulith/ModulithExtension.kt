@@ -37,7 +37,7 @@ open class ModulithExtension {
     }
 
     fun bundle(name: String? = null): BundleModuleConfigurationBuilder {
-        val bundle = BundleModuleConfigurationBuilder(name)
+        val bundle = BundleModuleConfigurationBuilder(name?.emptyToNull())
         bundles.add(bundle)
         return bundle
     }
@@ -60,9 +60,13 @@ open class ModulithExtension {
     )
 
     private fun BundleModuleConfigurationBuilder.getConfiguration(): BundleModule {
-        val modules = if(includedModules.isNotEmpty()) includedModules else modules.map { it.reference }
+        val modules = if (includedModules.isNotEmpty()) includedModules else modules.map { it.reference }
         val plugin = allModulesPlugin
-        return if (name == null) { RootBundleModule(plugin, modules) } else { ChildBundleModule(name, plugin, modules) }
+        return if (name == null) {
+            RootBundleModule(plugin, modules)
+        } else {
+            ChildBundleModule(name, plugin, modules)
+        }
     }
 
     private fun ModuleConfigurationBuilder.getConfiguration(allModulesConfiguration: AllModulesConfigurationBuilder): Module {
