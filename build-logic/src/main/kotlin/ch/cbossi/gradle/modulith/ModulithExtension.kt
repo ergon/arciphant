@@ -67,7 +67,7 @@ open class ModulithExtension {
         )
     }
 
-    private fun ModuleConfigurationBuilder.getConfiguration(allModulesConfiguration: AllModulesConfigurationBuilder): Module {
+    private fun ModuleConfigurationBuilder.getConfiguration(allModulesConfiguration: AllModulesConfigurationBuilder): ComponentBasedModule {
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + componentPlugins
         val dependencies = getDependencies(allModulesConfiguration)
         val mergedComponents = mergedComponents(allModulesConfiguration).map {

@@ -1,6 +1,8 @@
 package ch.cbossi.gradle.modulith
 
-internal sealed class Module {
+sealed interface Module
+
+internal sealed class ComponentBasedModule : Module {
 
      constructor(components: List<Component>) {
          require(components.isNotEmpty()) {
@@ -9,8 +11,8 @@ internal sealed class Module {
          }
      }
 
-    abstract val components: List<Component>
     abstract val reference: ModuleReference
+    abstract val components: List<Component>
 
     val name get() = reference.name
 
@@ -20,12 +22,12 @@ internal sealed class Module {
 internal data class DomainModule(
     override val reference: ModuleReference,
     override val components: List<Component>,
-) : Module(components)
+) : ComponentBasedModule(components)
 
 internal data class LibraryModule(
     override val reference: ModuleReference,
     override val components: List<Component>,
-) : Module(components)
+) : ComponentBasedModule(components)
 
 
 
@@ -39,7 +41,7 @@ internal data class BundleModule(
     val reference: BundleModuleReference,
     val plugin: Plugin,
     val modules: List<ModuleReference>,
-)
+) : Module
 
 internal data class Component(
     val reference: ComponentReference,

@@ -38,7 +38,7 @@ private fun BundleModule.project(rootProject: Project) = when (this.reference) {
 
 internal class ModuleConfigurer(
     private val configuration: ModulithConfiguration,
-    private val module: Module,
+    private val module: ComponentBasedModule,
     private val moduleProject: Project,
 ) {
 
@@ -91,4 +91,4 @@ internal class BundleModuleConfigurer(
 
 private fun Project.childProject(name: String) = childProjects.getValue(name)
 
-private fun Module.componentPaths() = components.map { ":$name:${it.name}" }
+private fun ComponentBasedModule.componentPaths() = components.map { ":$name:${it.name}" }
