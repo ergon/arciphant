@@ -29,6 +29,12 @@ internal data class LibraryModule(
     override val components: List<Component>,
 ) : ComponentBasedModule(components)
 
+internal data class BundleModule(
+    val reference: BundleModuleReference,
+    val plugin: Plugin,
+    val modules: List<ComponentBasedModuleReference>,
+) : Module
+
 interface ModuleReference
 
 sealed class ComponentBasedModuleReference : ModuleReference {
@@ -41,12 +47,6 @@ data class LibraryModuleReference internal constructor(override val name: String
 internal sealed interface BundleModuleReference : ModuleReference
 internal data class ChildBundleModuleReference(val name: String) : BundleModuleReference
 internal object RootBundleModuleReference : BundleModuleReference
-
-internal data class BundleModule(
-    val reference: BundleModuleReference,
-    val plugin: Plugin,
-    val modules: List<ComponentBasedModuleReference>,
-) : Module
 
 internal data class Component(
     val reference: ComponentReference,
