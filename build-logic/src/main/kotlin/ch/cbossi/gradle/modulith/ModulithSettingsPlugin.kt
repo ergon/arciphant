@@ -22,9 +22,15 @@ class ModulithSettingsPlugin : Plugin<Settings> {
     }
 }
 
-private fun ModulithConfiguration.createProjectStructure() =
-    componentBasedModules.flatMap { it.componentPaths() } +
-            bundles.map { it.reference }.filterIsInstance<ChildBundleModuleReference>().map { it.name }
+private fun ModulithConfiguration.createProjectStructure() = modules.flatMap { it.createProjectStructure() }
+
+private fun Module.createProjectStructure() = when (this) {
+    is ComponentBasedModule -> componentPaths()
+    is BundleModule -> when (reference) {
+        is ChildBundleModuleReference -> listOf(reference.name)
+        is RootBundleModuleReference -> emptyList()
+    }
+}
 
 private fun ModulithConfiguration.configureModules(rootProject: Project) {
     componentBasedModules.forEach { ModuleConfigurer(this, it, rootProject.childProject(it.name)).configure() }
@@ -82,7 +88,8 @@ internal class BundleModuleConfigurer(
 ) {
     fun configure() {
         bundleProject.apply(plugin = bundle.plugin.id)
-        configuration.componentBasedModules.filter { bundle.includes.contains(it.reference) }.flatMap { it.componentPaths() }.forEach {
+        configuration.componentBasedModules.filter { bundle.includes.contains(it.reference) }
+            .flatMap { it.componentPaths() }.forEach {
             bundleProject.logger.info("Add bundle dependency: ${bundleProject.path} -> $it")
             bundleProject.dependencies { add("implementation", project(it)) }
         }
