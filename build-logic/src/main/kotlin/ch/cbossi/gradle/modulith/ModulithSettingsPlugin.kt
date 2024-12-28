@@ -38,7 +38,7 @@ private fun ModuleStructure.createModuleConfigurer(rootProject: Project) = modul
 }
 
 private fun ModuleReference.project(rootProject: Project) = when (this) {
-    is ComponentBasedModuleReference -> rootProject.childProject(this.name)
-    is ChildBundleModuleReference -> rootProject.childProject(this.name)
+    is ComponentBasedModuleReference -> rootProject.childProject(this)
+    is ChildBundleModuleReference -> rootProject.childProject(this)
     is RootBundleModuleReference -> rootProject
 }

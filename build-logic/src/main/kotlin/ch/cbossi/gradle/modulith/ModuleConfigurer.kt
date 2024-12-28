@@ -24,10 +24,10 @@ internal class ComponentBasedModuleConfigurer(
     }
 
     private fun Component.configureComponent() {
-        val componentProject = moduleProject.childProject(name)
+        val componentProject = moduleProject.childProject(reference)
         componentProject.apply(plugin = plugin.id)
         dependsOn.forEach {
-            val dependencyProject = moduleProject.childProject(it.component.name)
+            val dependencyProject = moduleProject.childProject(it.component)
             componentProject.logger.info("Add component dependency: ${it.type.configurationName} ${componentProject.path} -> ${dependencyProject.path}")
             componentProject.dependencies.add(it.type.configurationName, dependencyProject)
             componentProject.pluginManager.withPlugin("java-test-fixtures") {
@@ -71,4 +71,4 @@ internal class BundleModuleConfigurer(
 
 internal fun ComponentBasedModule.componentPaths() = components.map { componentPath(it) }
 
-internal fun ComponentBasedModule.componentPath(component: Component) = ":$name:${component.name}"
+internal fun ComponentBasedModule.componentPath(component: Component) = ":${reference.name}:${component.reference.name}"
