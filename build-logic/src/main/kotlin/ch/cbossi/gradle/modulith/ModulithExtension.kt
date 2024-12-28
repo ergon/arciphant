@@ -38,7 +38,7 @@ open class ModulithExtension {
 
     fun bundle(name: String? = null): BundleModuleConfigurationBuilder {
         val bundle = BundleModuleConfigurationBuilder(name?.emptyToNull())
-        bundles.add(bundle)
+        this@ModulithExtension.bundles.add(bundle)
         return bundle
     }
 
@@ -56,7 +56,7 @@ open class ModulithExtension {
 
     internal fun getConfiguration() = ModulithConfiguration(
         modules = modules.map { it.getConfiguration(allModulesComponents) },
-        bundleModules = bundles.map { it.getConfiguration() },
+        bundles = this@ModulithExtension.bundles.map { it.getConfiguration() },
     )
 
     private fun BundleModuleConfigurationBuilder.getConfiguration(): BundleModule {

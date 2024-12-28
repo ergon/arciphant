@@ -24,11 +24,11 @@ class ModulithSettingsPlugin : Plugin<Settings> {
 
 private fun ModulithConfiguration.createProjectStructure() =
     modules.flatMap { it.componentPaths() } +
-            bundleModules.map { it.reference }.filterIsInstance<ChildBundleModuleReference>().map { it.name }
+            bundles.map { it.reference }.filterIsInstance<ChildBundleModuleReference>().map { it.name }
 
 private fun ModulithConfiguration.configureModules(rootProject: Project) {
     modules.forEach { ModuleConfigurer(this, it, rootProject.childProject(it.name)).configure() }
-    bundleModules.forEach { BundleModuleConfigurer(this, it, it.project(rootProject)).configure() }
+    bundles.forEach { BundleModuleConfigurer(this, it, it.project(rootProject)).configure() }
 }
 
 private fun BundleModule.project(rootProject: Project) = when (this.reference) {
