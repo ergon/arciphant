@@ -6,9 +6,9 @@ sealed interface Module {
 
 internal sealed class ComponentBasedModule : Module {
 
-     constructor(components: List<Component>) {
+     constructor(components: List<Component>, reference: ComponentBasedModuleReference) {
          require(components.isNotEmpty()) {
-             "Module '$name' has no components. " +
+             "Module '${reference.name}' has no components. " +
                      "This is not allowed, since the module gradle project is implicitly created through its components"
          }
      }
@@ -24,12 +24,12 @@ internal sealed class ComponentBasedModule : Module {
 internal data class DomainModule(
     override val reference: DomainModuleReference,
     override val components: List<Component>,
-) : ComponentBasedModule(components)
+) : ComponentBasedModule(components, reference)
 
 internal data class LibraryModule(
     override val reference: LibraryModuleReference,
     override val components: List<Component>,
-) : ComponentBasedModule(components)
+) : ComponentBasedModule(components, reference)
 
 internal data class BundleModule(
     override val reference: BundleModuleReference,

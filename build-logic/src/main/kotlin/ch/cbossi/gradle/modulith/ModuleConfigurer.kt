@@ -36,7 +36,7 @@ internal class ComponentBasedModuleConfigurer(
         }
         if (module is DomainModule) {
             configuration.libraries.filter { it.hasComponent(this) }.forEach {
-                val libraryComponentPath = ":${it.name}:$name"
+                val libraryComponentPath = it.componentPath(this)
                 componentProject.logger.info("Add library dependency: ${componentProject.path} -> $libraryComponentPath")
                 componentProject.dependencies { add("api", project(libraryComponentPath)) }
                 componentProject.pluginManager.withPlugin("java-test-fixtures") {
@@ -69,4 +69,6 @@ internal class BundleModuleConfigurer(
     }
 }
 
-internal fun ComponentBasedModule.componentPaths() = components.map { ":$name:${it.name}" }
+internal fun ComponentBasedModule.componentPaths() = components.map { componentPath(it) }
+
+internal fun ComponentBasedModule.componentPath(component: Component) = ":$name:${component.name}"
