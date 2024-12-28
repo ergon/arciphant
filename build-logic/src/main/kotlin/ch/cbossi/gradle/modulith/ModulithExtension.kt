@@ -77,7 +77,11 @@ open class ModulithExtension {
                 dependsOn = dependencies.getValue(it)
             )
         }
-        return Module(reference = reference, isLibrary = isLibrary, components = mergedComponents)
+        return if(isLibrary) {
+            LibraryModule(reference, mergedComponents)
+        } else {
+            DomainModule(reference, mergedComponents)
+        }
     }
 
     private fun ModuleConfigurationBuilder.mergedComponents(allModulesConfiguration: AllModulesConfigurationBuilder) =

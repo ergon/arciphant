@@ -4,25 +4,37 @@ internal data class ModulithConfiguration(
     val modules: List<Module>,
     val bundleModules: List<BundleModule>,
 ) {
-    val libraries by lazy { modules.filter { it.isLibrary } }
+    val libraries by lazy { modules.filterIsInstance<LibraryModule>() }
 }
 
-internal data class Module(
-    val reference: ModuleReference,
-    val isLibrary: Boolean,
-    val components: List<Component>,
-) {
-    val name = reference.name
+internal sealed class Module {
 
-    init {
-        require(components.isNotEmpty()) {
-            "Module '$name' has no components. " +
-                    "This is not allowed, since the module gradle project is implicitly created through its components"
-        }
-    }
+     constructor(components: List<Component>) {
+         require(components.isNotEmpty()) {
+             "Module '$name' has no components. " +
+                     "This is not allowed, since the module gradle project is implicitly created through its components"
+         }
+     }
+
+    abstract val components: List<Component>
+    abstract val reference: ModuleReference
+
+    val name get() = reference.name
 
     fun hasComponent(component: Component) = components.map { it.reference }.contains(component.reference)
 }
+
+internal data class DomainModule(
+    override val reference: ModuleReference,
+    override val components: List<Component>,
+) : Module(components)
+
+internal data class LibraryModule(
+    override val reference: ModuleReference,
+    override val components: List<Component>,
+) : Module(components)
+
+
 
 data class ModuleReference internal constructor(internal val name: String)
 

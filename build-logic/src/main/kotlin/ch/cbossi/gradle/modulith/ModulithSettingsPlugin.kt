@@ -57,7 +57,7 @@ internal class ModuleConfigurer(
                 componentProject.dependencies { add("testFixturesApi", testFixtures(project(dependencyProject.path))) }
             }
         }
-        if (!module.isLibrary) {
+        if (module is DomainModule) {
             configuration.libraries.filter { it.hasComponent(this) }.forEach {
                 val libraryComponentPath = ":${it.name}:$name"
                 componentProject.logger.info("Add library dependency: ${componentProject.path} -> $libraryComponentPath")
