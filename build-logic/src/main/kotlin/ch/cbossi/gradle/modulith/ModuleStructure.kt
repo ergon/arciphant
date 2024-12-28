@@ -1,9 +1,7 @@
 package ch.cbossi.gradle.modulith
 
 internal data class ModuleStructure(
-    val componentBasedModules: List<ComponentBasedModule>,
-    val bundles: List<BundleModule>,
+    val modules: List<Module>,
 ) {
-    val modules by lazy { componentBasedModules + bundles }
     val libraries by lazy { modules.filterIsInstance<LibraryModule>() }
 }

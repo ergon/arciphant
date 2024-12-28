@@ -50,8 +50,7 @@ open class ModulithExtension {
     }
 
     internal fun createModuleStructure() = ModuleStructure(
-        componentBasedModules = modules.map { it.createModule(allModulesComponents) },
-        bundles = bundles.map { it.createBundle() },
+        modules = modules.map { it.createModule(allModulesComponents) } + bundles.map { it.createBundle() },
     )
 
     private fun BundleModuleConfigurationBuilder.createBundle(): BundleModule {
