@@ -1,6 +1,6 @@
 package ch.cbossi.gradle.modulith
 
-sealed class ModulithConfigurationBuilder {
+sealed class ComponentBasedModuleBuilder {
     internal val components = mutableListOf<ComponentReference>()
     internal val dependencies = mutableListOf<ComponentDependency>()
     internal val componentPlugins = mutableMapOf<ComponentReference, Plugin>()
@@ -38,11 +38,11 @@ sealed class ModulithConfigurationBuilder {
     }
 }
 
-class AllModulesConfigurationBuilder : ModulithConfigurationBuilder()
+class AllComponentBasedModulesBuilder : ComponentBasedModuleBuilder()
 
-class ModuleConfigurationBuilder(
+class SingleComponentBasedModuleBuilder(
     internal val reference: ComponentBasedModuleReference,
-) : ModulithConfigurationBuilder() {
+) : ComponentBasedModuleBuilder() {
     internal var removeAllModulesComponents: Boolean = false
     internal val removedAllModulesComponents = mutableListOf<ComponentReference>()
 
@@ -61,7 +61,7 @@ internal data class ComponentDependency(
     val dependsOn: ComponentReference,
 )
 
-class BundleModuleConfigurationBuilder(internal val name: String?) {
+class BundleModuleBuilder(internal val name: String?) {
 
     internal val includedModules = mutableListOf<ComponentBasedModuleReference>()
 

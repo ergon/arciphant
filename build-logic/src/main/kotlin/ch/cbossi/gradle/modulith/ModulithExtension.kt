@@ -2,9 +2,9 @@ package ch.cbossi.gradle.modulith
 
 open class ModulithExtension {
 
-    private val allModulesComponents = AllModulesConfigurationBuilder()
-    private val modules = mutableSetOf<ModuleConfigurationBuilder>()
-    private val bundles = mutableSetOf<BundleModuleConfigurationBuilder>()
+    private val allModulesComponents = AllComponentBasedModulesBuilder()
+    private val modules = mutableSetOf<SingleComponentBasedModuleBuilder>()
+    private val bundles = mutableSetOf<BundleModuleBuilder>()
 
     /**
      * See [basePlugin].
@@ -13,7 +13,7 @@ open class ModulithExtension {
 
     fun createComponent(name: String): ComponentReference = ComponentReference(name)
 
-    fun allModules(configure: AllModulesConfigurationBuilder.() -> Unit = {}) {
+    fun allModules(configure: AllComponentBasedModulesBuilder.() -> Unit = {}) {
         allModulesComponents.configure()
     }
 
@@ -28,23 +28,23 @@ open class ModulithExtension {
         allModulesPlugin = Plugin(id)
     }
 
-    fun library(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): LibraryModuleReference {
+    fun library(name: String, configure: SingleComponentBasedModuleBuilder.() -> Unit = {}): LibraryModuleReference {
         return module(LibraryModuleReference(name), configure)
     }
 
-    fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): DomainModuleReference {
+    fun module(name: String, configure: SingleComponentBasedModuleBuilder.() -> Unit = {}): DomainModuleReference {
         return module(DomainModuleReference(name), configure)
     }
 
-    private fun <M : ComponentBasedModuleReference> module(reference: M, configure: ModuleConfigurationBuilder.() -> Unit = {}): M {
-        val module = ModuleConfigurationBuilder(reference)
+    private fun <M : ComponentBasedModuleReference> module(reference: M, configure: SingleComponentBasedModuleBuilder.() -> Unit = {}): M {
+        val module = SingleComponentBasedModuleBuilder(reference)
         module.configure()
         modules.add(module)
         return reference
     }
 
-    fun bundle(name: String? = null): BundleModuleConfigurationBuilder {
-        val bundle = BundleModuleConfigurationBuilder(name?.emptyToNull())
+    fun bundle(name: String? = null): BundleModuleBuilder {
+        val bundle = BundleModuleBuilder(name?.emptyToNull())
         this@ModulithExtension.bundles.add(bundle)
         return bundle
     }
@@ -53,7 +53,7 @@ open class ModulithExtension {
         modules = modules.map { it.createModule(allModulesComponents) } + bundles.map { it.createBundle() },
     )
 
-    private fun BundleModuleConfigurationBuilder.createBundle(): BundleModule {
+    private fun BundleModuleBuilder.createBundle(): BundleModule {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
             plugin = allModulesPlugin,
@@ -61,7 +61,7 @@ open class ModulithExtension {
         )
     }
 
-    private fun ModuleConfigurationBuilder.createModule(allModulesConfiguration: AllModulesConfigurationBuilder): ComponentBasedModule {
+    private fun SingleComponentBasedModuleBuilder.createModule(allModulesConfiguration: AllComponentBasedModulesBuilder): ComponentBasedModule {
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + componentPlugins
         val dependencies = getDependencies(allModulesConfiguration)
         val mergedComponents = mergeComponents(allModulesConfiguration).map {
@@ -77,11 +77,11 @@ open class ModulithExtension {
         }
     }
 
-    private fun ModuleConfigurationBuilder.mergeComponents(allModulesConfiguration: AllModulesConfigurationBuilder) =
+    private fun SingleComponentBasedModuleBuilder.mergeComponents(allModulesConfiguration: AllComponentBasedModulesBuilder) =
         componentsInheritedFromAllModules(allModulesConfiguration) + components
 
-    private fun ModuleConfigurationBuilder.componentsInheritedFromAllModules(
-        allModulesConfiguration: AllModulesConfigurationBuilder
+    private fun SingleComponentBasedModuleBuilder.componentsInheritedFromAllModules(
+        allModulesConfiguration: AllComponentBasedModulesBuilder
     ): List<ComponentReference> {
         return if (removeAllModulesComponents)
             emptyList()
@@ -89,7 +89,7 @@ open class ModulithExtension {
             allModulesConfiguration.components.filter { !removedAllModulesComponents.contains(it) }
     }
 
-    private fun ModuleConfigurationBuilder.getDependencies(allModulesConfiguration: AllModulesConfigurationBuilder) =
+    private fun SingleComponentBasedModuleBuilder.getDependencies(allModulesConfiguration: AllComponentBasedModulesBuilder) =
         (allModulesConfiguration.dependencies + dependencies)
             .filter { !it.includesAny(removedAllModulesComponents) }
             .groupBy(ComponentDependency::source) { Dependency(it.dependsOn, it.type) }
