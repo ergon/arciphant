@@ -29,19 +29,15 @@ open class ModulithExtension {
     }
 
     fun library(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): LibraryModuleReference {
-        return module(LibraryModuleReference(name), configure, isLibrary = true)
+        return module(LibraryModuleReference(name), configure)
     }
 
     fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): DomainModuleReference {
-        return module(DomainModuleReference(name), configure, isLibrary = false)
+        return module(DomainModuleReference(name), configure)
     }
 
-    private fun <M : ComponentBasedModuleReference> module(
-        reference: M,
-        configure: ModuleConfigurationBuilder.() -> Unit = {},
-        isLibrary: Boolean
-    ): M {
-        val module = ModuleConfigurationBuilder(reference, isLibrary)
+    private fun <M : ComponentBasedModuleReference> module(reference: M, configure: ModuleConfigurationBuilder.() -> Unit = {}): M {
+        val module = ModuleConfigurationBuilder(reference)
         module.configure()
         modules.add(module)
         return reference

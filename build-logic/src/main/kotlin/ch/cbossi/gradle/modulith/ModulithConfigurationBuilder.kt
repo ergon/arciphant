@@ -42,7 +42,6 @@ class AllModulesConfigurationBuilder : ModulithConfigurationBuilder()
 
 class ModuleConfigurationBuilder(
     internal val reference: ComponentBasedModuleReference,
-    internal val isLibrary: Boolean,
 ) : ModulithConfigurationBuilder() {
     internal var removeAllModulesComponents: Boolean = false
     internal val removedAllModulesComponents = mutableListOf<ComponentReference>()
