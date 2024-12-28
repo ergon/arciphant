@@ -3,7 +3,6 @@ package ch.cbossi.gradle.modulith
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
-import org.gradle.internal.declarativedsl.objectGraph.reflect
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
@@ -24,16 +23,17 @@ class ModulithSettingsPlugin : Plugin<Settings> {
 }
 
 private fun ModulithConfiguration.createProjectStructure() =
-    modules.flatMap { it.componentPaths() } + bundleModules.filterIsInstance<ChildBundleModule>().map { it.name }
+    modules.flatMap { it.componentPaths() } +
+            bundleModules.map { it.reference }.filterIsInstance<ChildBundleModuleReference>().map { it.name }
 
 private fun ModulithConfiguration.configureModules(rootProject: Project) {
     modules.forEach { ModuleConfigurer(this, it, rootProject.childProject(it.name)).configure() }
     bundleModules.forEach { BundleModuleConfigurer(this, it, it.project(rootProject)).configure() }
 }
 
-private fun BundleModule.project(rootProject: Project) = when (this) {
-    is RootBundleModule -> rootProject
-    is ChildBundleModule -> rootProject.childProject(name)
+private fun BundleModule.project(rootProject: Project) = when (this.reference) {
+    is RootBundleModuleReference -> rootProject
+    is ChildBundleModuleReference -> rootProject.childProject(this.reference.name)
 }
 
 internal class ModuleConfigurer(

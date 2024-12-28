@@ -26,21 +26,15 @@ internal data class Module(
 
 data class ModuleReference internal constructor(internal val name: String)
 
-internal sealed interface BundleModule {
-    val plugin: Plugin
-    val modules: List<ModuleReference>
-}
+internal sealed interface BundleModuleReference
+internal data class ChildBundleModuleReference(val name: String) : BundleModuleReference
+internal object RootBundleModuleReference : BundleModuleReference
 
-internal data class RootBundleModule(
-    override val plugin: Plugin,
-    override val modules: List<ModuleReference>,
-) : BundleModule
-
-internal data class ChildBundleModule(
-    val name: String,
-    override val plugin: Plugin,
-    override val modules: List<ModuleReference>,
-) : BundleModule
+internal data class BundleModule(
+    val reference: BundleModuleReference,
+    val plugin: Plugin,
+    val modules: List<ModuleReference>,
+)
 
 internal data class Component(
     val reference: ComponentReference,
