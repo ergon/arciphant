@@ -3,6 +3,7 @@ package ch.cbossi.gradle.modulith
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
+import org.gradle.internal.declarativedsl.objectGraph.reflect
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
@@ -23,10 +24,16 @@ class ModulithSettingsPlugin : Plugin<Settings> {
 }
 
 private fun ModulithConfiguration.createProjectStructure() =
-    modules.flatMap { module -> module.components.map { "${module.name}:${it.name}" } }
+    modules.flatMap { it.componentPaths() } + bundleModules.filterIsInstance<ChildBundleModule>().map { it.name }
 
 private fun ModulithConfiguration.configureModules(rootProject: Project) {
     modules.forEach { ModuleConfigurer(this, it, rootProject.childProject(it.name)).configure() }
+    bundleModules.forEach { BundleModuleConfigurer(this, it, it.project(rootProject)).configure() }
+}
+
+private fun BundleModule.project(rootProject: Project) = when (this) {
+    is RootBundleModule -> rootProject
+    is ChildBundleModule -> rootProject.childProject(name)
 }
 
 internal class ModuleConfigurer(
@@ -56,11 +63,32 @@ internal class ModuleConfigurer(
                 componentProject.logger.info("Add library dependency: ${componentProject.path} -> $libraryComponentPath")
                 componentProject.dependencies { add("api", project(libraryComponentPath)) }
                 componentProject.pluginManager.withPlugin("java-test-fixtures") {
-                    componentProject.dependencies { add("testFixturesApi", testFixtures(project(libraryComponentPath))) }
+                    componentProject.dependencies {
+                        add(
+                            "testFixturesApi",
+                            testFixtures(project(libraryComponentPath))
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+internal class BundleModuleConfigurer(
+    private val configuration: ModulithConfiguration,
+    private val bundle: BundleModule,
+    private val bundleProject: Project,
+) {
+    fun configure() {
+        bundleProject.apply(plugin = bundle.plugin.id)
+        configuration.modules.filter { bundle.modules.contains(it.reference) }.flatMap { it.componentPaths() }.forEach {
+            bundleProject.logger.info("Add bundle dependency: ${bundleProject.path} -> $it")
+            bundleProject.dependencies { add("implementation", project(it)) }
+        }
+    }
+}
+
 private fun Project.childProject(name: String) = childProjects.getValue(name)
+
+private fun Module.componentPaths() = components.map { "${name}:${it.name}" }
