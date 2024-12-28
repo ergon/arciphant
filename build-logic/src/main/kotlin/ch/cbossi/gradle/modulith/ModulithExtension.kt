@@ -68,21 +68,20 @@ open class ModulithExtension {
     }
 
     private fun ModuleConfigurationBuilder.getConfiguration(allModulesConfiguration: AllModulesConfigurationBuilder): Module {
-        val mergedComponents = componentsInheritedFromAllModules(allModulesConfiguration) + components
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + componentPlugins
         val dependencies = getDependencies(allModulesConfiguration)
-        return Module(
-            reference = reference,
-            isLibrary = isLibrary,
-            components = mergedComponents.map {
-                Component(
-                    reference = it,
-                    plugin = mergedComponentPlugins[it] ?: allModulesPlugin,
-                    dependsOn = dependencies.getValue(it)
-                )
-            },
-        )
+        val mergedComponents = mergedComponents(allModulesConfiguration).map {
+            Component(
+                reference = it,
+                plugin = mergedComponentPlugins[it] ?: allModulesPlugin,
+                dependsOn = dependencies.getValue(it)
+            )
+        }
+        return Module(reference = reference, isLibrary = isLibrary, components = mergedComponents)
     }
+
+    private fun ModuleConfigurationBuilder.mergedComponents(allModulesConfiguration: AllModulesConfigurationBuilder) =
+        componentsInheritedFromAllModules(allModulesConfiguration) + components
 
     private fun ModuleConfigurationBuilder.componentsInheritedFromAllModules(
         allModulesConfiguration: AllModulesConfigurationBuilder
