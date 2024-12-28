@@ -41,7 +41,7 @@ sealed class ModulithConfigurationBuilder {
 class AllModulesConfigurationBuilder : ModulithConfigurationBuilder()
 
 class ModuleConfigurationBuilder(
-    internal val reference: ModuleReference,
+    internal val reference: ComponentBasedModuleReference,
     internal val isLibrary: Boolean,
 ) : ModulithConfigurationBuilder() {
     internal var removeAllModulesComponents: Boolean = false
@@ -64,9 +64,9 @@ internal data class ComponentDependency(
 
 class BundleModuleConfigurationBuilder(internal val name: String?) {
 
-    internal val includedModules = mutableListOf<ModuleReference>()
+    internal val includedModules = mutableListOf<ComponentBasedModuleReference>()
 
-    fun with(vararg modules: ModuleReference) {
+    fun with(vararg modules: ComponentBasedModuleReference) {
         includedModules.addAll(modules)
     }
 

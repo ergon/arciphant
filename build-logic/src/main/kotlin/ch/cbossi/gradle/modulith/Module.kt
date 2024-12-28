@@ -11,7 +11,7 @@ internal sealed class ComponentBasedModule : Module {
          }
      }
 
-    abstract val reference: ModuleReference
+    abstract val reference: ComponentBasedModuleReference
     abstract val components: List<Component>
 
     val name get() = reference.name
@@ -20,18 +20,18 @@ internal sealed class ComponentBasedModule : Module {
 }
 
 internal data class DomainModule(
-    override val reference: ModuleReference,
+    override val reference: ComponentBasedModuleReference,
     override val components: List<Component>,
 ) : ComponentBasedModule(components)
 
 internal data class LibraryModule(
-    override val reference: ModuleReference,
+    override val reference: ComponentBasedModuleReference,
     override val components: List<Component>,
 ) : ComponentBasedModule(components)
 
 
 
-data class ModuleReference internal constructor(internal val name: String)
+data class ComponentBasedModuleReference internal constructor(internal val name: String)
 
 internal sealed interface BundleModuleReference
 internal data class ChildBundleModuleReference(val name: String) : BundleModuleReference
@@ -40,7 +40,7 @@ internal object RootBundleModuleReference : BundleModuleReference
 internal data class BundleModule(
     val reference: BundleModuleReference,
     val plugin: Plugin,
-    val modules: List<ModuleReference>,
+    val modules: List<ComponentBasedModuleReference>,
 ) : Module
 
 internal data class Component(

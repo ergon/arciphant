@@ -28,11 +28,11 @@ open class ModulithExtension {
         allModulesPlugin = Plugin(id)
     }
 
-    fun library(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): ModuleReference {
+    fun library(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): ComponentBasedModuleReference {
         return module(name, configure, isLibrary = true)
     }
 
-    fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): ModuleReference {
+    fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): ComponentBasedModuleReference {
         return module(name, configure, isLibrary = false)
     }
 
@@ -46,8 +46,8 @@ open class ModulithExtension {
         name: String,
         configure: ModuleConfigurationBuilder.() -> Unit = {},
         isLibrary: Boolean
-    ): ModuleReference {
-        val reference = ModuleReference(name)
+    ): ComponentBasedModuleReference {
+        val reference = ComponentBasedModuleReference(name)
         val module = ModuleConfigurationBuilder(reference, isLibrary)
         module.configure()
         modules.add(module)
@@ -55,8 +55,8 @@ open class ModulithExtension {
     }
 
     internal fun getConfiguration() = ModulithConfiguration(
-        modules = modules.map { it.getConfiguration(allModulesComponents) },
-        bundles = this@ModulithExtension.bundles.map { it.getConfiguration() },
+        componentBasedModules = modules.map { it.getConfiguration(allModulesComponents) },
+        bundles = bundles.map { it.getConfiguration() },
     )
 
     private fun BundleModuleConfigurationBuilder.getConfiguration(): BundleModule {
