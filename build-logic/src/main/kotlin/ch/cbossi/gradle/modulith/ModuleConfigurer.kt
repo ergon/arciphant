@@ -5,13 +5,21 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
-internal class ComponentBasedModuleConfigurer(
-    private val configuration: ModuleStructure,
-    private val module: ComponentBasedModule,
-    private val moduleProject: Project,
+sealed class ModuleConfigurer<M : Module>(
+    internal val configuration: ModuleStructure,
+    internal val module: M,
+    internal val moduleProject: Project,
 ) {
+    abstract fun configure()
+}
 
-    fun configure() {
+internal class ComponentBasedModuleConfigurer(
+    configuration: ModuleStructure,
+    module: ComponentBasedModule,
+    moduleProject: Project,
+) : ModuleConfigurer<ComponentBasedModule>(configuration, module, moduleProject) {
+
+    override fun configure() {
         module.components.forEach { it.configureComponent() }
     }
 
@@ -45,16 +53,16 @@ internal class ComponentBasedModuleConfigurer(
 }
 
 internal class BundleModuleConfigurer(
-    private val configuration: ModuleStructure,
-    private val bundle: BundleModule,
-    private val bundleProject: Project,
-) {
-    fun configure() {
-        bundleProject.apply(plugin = bundle.plugin.id)
-        configuration.componentBasedModules.filter { bundle.includes.contains(it.reference) }
+    configuration: ModuleStructure,
+    module: BundleModule,
+    moduleProject: Project,
+) : ModuleConfigurer<BundleModule>(configuration, module, moduleProject) {
+    override fun configure() {
+        moduleProject.apply(plugin = module.plugin.id)
+        configuration.componentBasedModules.filter { module.includes.contains(it.reference) }
             .flatMap { it.componentPaths() }.forEach {
-                bundleProject.logger.info("Add bundle dependency: ${bundleProject.path} -> $it")
-                bundleProject.dependencies { add("implementation", project(it)) }
+                moduleProject.logger.info("Add bundle dependency: ${moduleProject.path} -> $it")
+                moduleProject.dependencies { add("implementation", project(it)) }
             }
     }
 }
