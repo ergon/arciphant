@@ -3,9 +3,6 @@ package ch.cbossi.gradle.modulith
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.project
 
 class ModulithSettingsPlugin : Plugin<Settings> {
 
@@ -22,7 +19,7 @@ class ModulithSettingsPlugin : Plugin<Settings> {
     }
 }
 
-private fun ModulithConfiguration.createProjectStructure() = modules.flatMap { it.createProjectStructure() }
+private fun ModuleStructure.createProjectStructure() = modules.flatMap { it.createProjectStructure() }
 
 private fun Module.createProjectStructure() = when (this) {
     is ComponentBasedModule -> componentPaths()
@@ -32,7 +29,7 @@ private fun Module.createProjectStructure() = when (this) {
     }
 }
 
-private fun ModulithConfiguration.configureModules(rootProject: Project) {
+private fun ModuleStructure.configureModules(rootProject: Project) {
     componentBasedModules.forEach { ModuleConfigurer(this, it, rootProject.childProject(it.name)).configure() }
     bundles.forEach { BundleModuleConfigurer(this, it, it.project(rootProject)).configure() }
 }

@@ -6,7 +6,7 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
 internal class ModuleConfigurer(
-    private val configuration: ModulithConfiguration,
+    private val configuration: ModuleStructure,
     private val module: ComponentBasedModule,
     private val moduleProject: Project,
 ) {
@@ -45,7 +45,7 @@ internal class ModuleConfigurer(
 }
 
 internal class BundleModuleConfigurer(
-    private val configuration: ModulithConfiguration,
+    private val configuration: ModuleStructure,
     private val bundle: BundleModule,
     private val bundleProject: Project,
 ) {

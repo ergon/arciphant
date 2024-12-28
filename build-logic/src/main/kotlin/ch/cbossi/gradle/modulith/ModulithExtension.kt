@@ -49,7 +49,7 @@ open class ModulithExtension {
         return bundle
     }
 
-    internal fun getConfiguration() = ModulithConfiguration(
+    internal fun getConfiguration() = ModuleStructure(
         componentBasedModules = modules.map { it.getConfiguration(allModulesComponents) },
         bundles = bundles.map { it.getConfiguration() },
     )
