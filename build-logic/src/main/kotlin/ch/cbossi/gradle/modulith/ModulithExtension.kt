@@ -36,12 +36,6 @@ open class ModulithExtension {
         return module(name, configure, isLibrary = false)
     }
 
-    fun bundle(name: String? = null): BundleModuleConfigurationBuilder {
-        val bundle = BundleModuleConfigurationBuilder(name?.emptyToNull())
-        this@ModulithExtension.bundles.add(bundle)
-        return bundle
-    }
-
     private fun module(
         name: String,
         configure: ModuleConfigurationBuilder.() -> Unit = {},
@@ -52,6 +46,12 @@ open class ModulithExtension {
         module.configure()
         modules.add(module)
         return reference
+    }
+
+    fun bundle(name: String? = null): BundleModuleConfigurationBuilder {
+        val bundle = BundleModuleConfigurationBuilder(name?.emptyToNull())
+        this@ModulithExtension.bundles.add(bundle)
+        return bundle
     }
 
     internal fun getConfiguration() = ModulithConfiguration(
