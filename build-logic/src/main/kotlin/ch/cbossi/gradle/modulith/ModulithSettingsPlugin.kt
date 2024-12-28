@@ -30,7 +30,7 @@ private fun Module.createProjectStructure() = when (this) {
 }
 
 private fun ModuleStructure.configureModules(rootProject: Project) {
-    componentBasedModules.forEach { ModuleConfigurer(this, it, rootProject.childProject(it.name)).configure() }
+    componentBasedModules.forEach { ComponentBasedModuleConfigurer(this, it, rootProject.childProject(it.name)).configure() }
     bundles.forEach { BundleModuleConfigurer(this, it, it.project(rootProject)).configure() }
 }
 

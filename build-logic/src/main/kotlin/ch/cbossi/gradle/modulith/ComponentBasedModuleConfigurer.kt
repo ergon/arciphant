@@ -5,7 +5,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
-internal class ModuleConfigurer(
+internal class ComponentBasedModuleConfigurer(
     private val configuration: ModuleStructure,
     private val module: ComponentBasedModule,
     private val moduleProject: Project,
