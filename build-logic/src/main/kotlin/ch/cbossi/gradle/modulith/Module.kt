@@ -20,12 +20,12 @@ internal sealed class ComponentBasedModule : Module {
 }
 
 internal data class DomainModule(
-    override val reference: ComponentBasedModuleReference,
+    override val reference: DomainModuleReference,
     override val components: List<Component>,
 ) : ComponentBasedModule(components)
 
 internal data class LibraryModule(
-    override val reference: ComponentBasedModuleReference,
+    override val reference: LibraryModuleReference,
     override val components: List<Component>,
 ) : ComponentBasedModule(components)
 
