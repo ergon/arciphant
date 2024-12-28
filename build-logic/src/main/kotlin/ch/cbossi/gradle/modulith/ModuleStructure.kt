@@ -5,5 +5,5 @@ internal data class ModuleStructure(
     val bundles: List<BundleModule>,
 ) {
     val modules by lazy { componentBasedModules + bundles }
-    val libraries by lazy { componentBasedModules.filterIsInstance<LibraryModule>() }
+    val libraries by lazy { modules.filterIsInstance<LibraryModule>() }
 }

@@ -59,7 +59,9 @@ internal class BundleModuleConfigurer(
 ) : ModuleConfigurer<BundleModule>(configuration, module, moduleProject) {
     override fun configure() {
         moduleProject.apply(plugin = module.plugin.id)
-        configuration.componentBasedModules.filter { module.includes.contains(it.reference) }
+        configuration.modules
+            .filterIsInstance<ComponentBasedModule>()
+            .filter { module.includes.contains(it.reference) }
             .flatMap { it.componentPaths() }.forEach {
                 moduleProject.logger.info("Add bundle dependency: ${moduleProject.path} -> $it")
                 moduleProject.dependencies { add("implementation", project(it)) }
