@@ -28,20 +28,19 @@ open class ModulithExtension {
         allModulesPlugin = Plugin(id)
     }
 
-    fun library(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): ComponentBasedModuleReference {
-        return module(name, configure, isLibrary = true)
+    fun library(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): LibraryModuleReference {
+        return module(LibraryModuleReference(name), configure, isLibrary = true)
     }
 
-    fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): ComponentBasedModuleReference {
-        return module(name, configure, isLibrary = false)
+    fun module(name: String, configure: ModuleConfigurationBuilder.() -> Unit = {}): DomainModuleReference {
+        return module(DomainModuleReference(name), configure, isLibrary = false)
     }
 
-    private fun module(
-        name: String,
+    private fun <M : ComponentBasedModuleReference> module(
+        reference: M,
         configure: ModuleConfigurationBuilder.() -> Unit = {},
         isLibrary: Boolean
-    ): ComponentBasedModuleReference {
-        val reference = ComponentBasedModuleReference(name)
+    ): M {
         val module = ModuleConfigurationBuilder(reference, isLibrary)
         module.configure()
         modules.add(module)
