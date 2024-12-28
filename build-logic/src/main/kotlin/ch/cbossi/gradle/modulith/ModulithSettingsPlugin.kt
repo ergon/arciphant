@@ -82,7 +82,7 @@ internal class BundleModuleConfigurer(
 ) {
     fun configure() {
         bundleProject.apply(plugin = bundle.plugin.id)
-        configuration.componentBasedModules.filter { bundle.modules.contains(it.reference) }.flatMap { it.componentPaths() }.forEach {
+        configuration.componentBasedModules.filter { bundle.includes.contains(it.reference) }.flatMap { it.componentPaths() }.forEach {
             bundleProject.logger.info("Add bundle dependency: ${bundleProject.path} -> $it")
             bundleProject.dependencies { add("implementation", project(it)) }
         }
