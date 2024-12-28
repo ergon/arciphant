@@ -1,6 +1,8 @@
 package ch.cbossi.gradle.modulith
 
-sealed interface Module
+sealed interface Module {
+    val reference: ModuleReference
+}
 
 internal sealed class ComponentBasedModule : Module {
 
@@ -11,7 +13,7 @@ internal sealed class ComponentBasedModule : Module {
          }
      }
 
-    abstract val reference: ComponentBasedModuleReference
+    abstract override val reference: ComponentBasedModuleReference
     abstract val components: List<Component>
 
     val name get() = reference.name
@@ -30,7 +32,7 @@ internal data class LibraryModule(
 ) : ComponentBasedModule(components)
 
 internal data class BundleModule(
-    val reference: BundleModuleReference,
+    override val reference: BundleModuleReference,
     val plugin: Plugin,
     val includes: List<ComponentBasedModuleReference>,
 ) : Module
