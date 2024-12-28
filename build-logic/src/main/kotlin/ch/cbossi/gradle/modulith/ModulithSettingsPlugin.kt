@@ -9,7 +9,7 @@ class ModulithSettingsPlugin : Plugin<Settings> {
     override fun apply(settings: Settings) {
         with(settings) {
             val extension = extensions.getByType(ModulithExtension::class.java)
-            val configuration = extension.getConfiguration()
+            val configuration = extension.createModuleStructure()
             configuration.createProjectStructure().forEach { include(it) }
             gradle.projectsLoaded {
                 configuration.configureModules(gradle.rootProject)

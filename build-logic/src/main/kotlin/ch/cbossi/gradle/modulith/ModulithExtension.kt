@@ -49,12 +49,12 @@ open class ModulithExtension {
         return bundle
     }
 
-    internal fun getConfiguration() = ModuleStructure(
-        componentBasedModules = modules.map { it.getConfiguration(allModulesComponents) },
-        bundles = bundles.map { it.getConfiguration() },
+    internal fun createModuleStructure() = ModuleStructure(
+        componentBasedModules = modules.map { it.createModule(allModulesComponents) },
+        bundles = bundles.map { it.createBundle() },
     )
 
-    private fun BundleModuleConfigurationBuilder.getConfiguration(): BundleModule {
+    private fun BundleModuleConfigurationBuilder.createBundle(): BundleModule {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
             plugin = allModulesPlugin,
@@ -62,10 +62,10 @@ open class ModulithExtension {
         )
     }
 
-    private fun ModuleConfigurationBuilder.getConfiguration(allModulesConfiguration: AllModulesConfigurationBuilder): ComponentBasedModule {
+    private fun ModuleConfigurationBuilder.createModule(allModulesConfiguration: AllModulesConfigurationBuilder): ComponentBasedModule {
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + componentPlugins
         val dependencies = getDependencies(allModulesConfiguration)
-        val mergedComponents = mergedComponents(allModulesConfiguration).map {
+        val mergedComponents = mergeComponents(allModulesConfiguration).map {
             Component(
                 reference = it,
                 plugin = mergedComponentPlugins[it] ?: allModulesPlugin,
@@ -78,7 +78,7 @@ open class ModulithExtension {
         }
     }
 
-    private fun ModuleConfigurationBuilder.mergedComponents(allModulesConfiguration: AllModulesConfigurationBuilder) =
+    private fun ModuleConfigurationBuilder.mergeComponents(allModulesConfiguration: AllModulesConfigurationBuilder) =
         componentsInheritedFromAllModules(allModulesConfiguration) + components
 
     private fun ModuleConfigurationBuilder.componentsInheritedFromAllModules(
