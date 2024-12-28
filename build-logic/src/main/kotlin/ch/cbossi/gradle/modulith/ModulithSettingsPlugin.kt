@@ -91,4 +91,4 @@ internal class BundleModuleConfigurer(
 
 private fun Project.childProject(name: String) = childProjects.getValue(name)
 
-private fun Module.componentPaths() = components.map { "${name}:${it.name}" }
+private fun Module.componentPaths() = components.map { ":$name:${it.name}" }
