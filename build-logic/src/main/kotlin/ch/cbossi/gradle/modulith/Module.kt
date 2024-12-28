@@ -29,15 +29,16 @@ internal data class LibraryModule(
     override val components: List<Component>,
 ) : ComponentBasedModule(components)
 
+interface ModuleReference
 
-sealed class ComponentBasedModuleReference {
+sealed class ComponentBasedModuleReference : ModuleReference {
     internal abstract val name: String
 }
 
 data class DomainModuleReference internal constructor(override val name: String) : ComponentBasedModuleReference()
 data class LibraryModuleReference internal constructor(override val name: String) : ComponentBasedModuleReference()
 
-internal sealed interface BundleModuleReference
+internal sealed interface BundleModuleReference : ModuleReference
 internal data class ChildBundleModuleReference(val name: String) : BundleModuleReference
 internal object RootBundleModuleReference : BundleModuleReference
 
