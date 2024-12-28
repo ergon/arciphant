@@ -60,7 +60,7 @@ open class ModulithExtension {
 
     private fun BundleModuleConfigurationBuilder.getConfiguration(): BundleModule {
         return BundleModule(
-            reference = if(name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
+            reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
             plugin = allModulesPlugin,
             modules = if (includedModules.isNotEmpty()) includedModules else modules.map { it.reference }
         )
@@ -76,10 +76,9 @@ open class ModulithExtension {
                 dependsOn = dependencies.getValue(it)
             )
         }
-        return if(isLibrary) {
-            LibraryModule(reference, mergedComponents)
-        } else {
-            DomainModule(reference, mergedComponents)
+        return when (reference) {
+            is DomainModuleReference -> DomainModule(reference, mergedComponents)
+            is LibraryModuleReference -> LibraryModule(reference, mergedComponents)
         }
     }
 
