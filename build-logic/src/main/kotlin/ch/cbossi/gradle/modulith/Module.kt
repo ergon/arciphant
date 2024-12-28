@@ -37,7 +37,7 @@ internal data class BundleModule(
     val includes: List<ComponentBasedModuleReference>,
 ) : Module
 
-interface ModuleReference
+sealed interface ModuleReference
 
 sealed class ComponentBasedModuleReference : ModuleReference {
     internal abstract val name: String

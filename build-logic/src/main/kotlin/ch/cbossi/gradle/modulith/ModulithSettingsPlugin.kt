@@ -30,11 +30,12 @@ private fun Module.createProjectStructure() = when (this) {
 }
 
 private fun ModuleStructure.configureModules(rootProject: Project) {
-    componentBasedModules.forEach { ComponentBasedModuleConfigurer(this, it, rootProject.childProject(it.name)).configure() }
-    bundles.forEach { BundleModuleConfigurer(this, it, it.project(rootProject)).configure() }
+    componentBasedModules.forEach { ComponentBasedModuleConfigurer(this, it, it.reference.project(rootProject)).configure() }
+    bundles.forEach { BundleModuleConfigurer(this, it, it.reference.project(rootProject)).configure() }
 }
 
-private fun BundleModule.project(rootProject: Project) = when (this.reference) {
+private fun ModuleReference.project(rootProject: Project) = when (this) {
+    is ComponentBasedModuleReference -> rootProject.childProject(this.name)
+    is ChildBundleModuleReference -> rootProject.childProject(this.name)
     is RootBundleModuleReference -> rootProject
-    is ChildBundleModuleReference -> rootProject.childProject(this.reference.name)
 }
