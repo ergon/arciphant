@@ -80,7 +80,6 @@ internal class BundleModuleComposer(
     override fun configure() {
         moduleProject.apply(plugin = module.plugin.id)
         configuration.modules
-            .filterIsInstance<ComponentBasedModule>()
             .filter { module.includes.contains(it.reference) }
             .flatMap { it.gradleProjectPaths() }.forEach {
                 moduleProject.addDependency(IMPLEMENTATION, it.value)

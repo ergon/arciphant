@@ -121,9 +121,9 @@ internal data class ComponentDependency(
 
 class BundleModuleDsl internal constructor(internal val name: String?) {
 
-    internal val includes = mutableListOf<ComponentBasedModuleReference>()
+    internal val includes = mutableListOf<ModuleReference>()
 
-    fun include(vararg modules: ComponentBasedModuleReference) {
+    fun include(vararg modules: ModuleReference) {
         includes.addAll(modules)
     }
 

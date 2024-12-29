@@ -32,7 +32,7 @@ internal data class LibraryModule(
 internal data class BundleModule(
     override val reference: BundleModuleReference,
     val plugin: Plugin,
-    val includes: List<ComponentBasedModuleReference>,
+    val includes: List<ModuleReference>,
 ) : Module
 
 internal sealed interface NamedReference {
