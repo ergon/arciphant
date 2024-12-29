@@ -21,7 +21,9 @@ modulith {
   val dbSchema = createComponent("db-schema")
   val dbModel = createComponent("db-model")
 
-  basePlugin("modulith")
+  allComponents {
+    plugin("modulith")
+  }
 
   allModules {
     addComponent(api)

@@ -38,6 +38,27 @@ sealed class ComponentBasedModuleBuilder {
     }
 }
 
+object AllComponentsBuilder {
+
+    /**
+     * See [plugin].
+     */
+    internal var allComponentsPlugin: Plugin = Plugin("kotlin")
+        private set
+
+    /**
+     * This plugin is applied to all components that do NOT specify a specific plugin.
+     * The plugin configured here should transitively apply either the Java or Kotlin plugin.
+     * The reason is that the modulith plugin requires the gradle configurations created by these JVM plugins
+     * ('implementation', 'api') to apply the configured dependencies.
+     * If no plugin is specified, the 'kotlin'-Plugin is applied as fallback.
+     */
+    fun plugin(id: String) {
+        allComponentsPlugin = Plugin(id)
+    }
+
+}
+
 class AllComponentBasedModulesBuilder : ComponentBasedModuleBuilder()
 
 class SingleComponentBasedModuleBuilder(

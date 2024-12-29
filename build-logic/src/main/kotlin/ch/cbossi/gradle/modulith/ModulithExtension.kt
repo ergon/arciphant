@@ -6,26 +6,14 @@ open class ModulithExtension {
     private val modules = mutableSetOf<SingleComponentBasedModuleBuilder>()
     private val bundles = mutableSetOf<BundleModuleBuilder>()
 
-    /**
-     * See [basePlugin].
-     */
-    private var allModulesPlugin: Plugin = Plugin("kotlin")
-
     fun createComponent(name: String): ComponentReference = ComponentReference(name)
 
     fun allModules(configure: AllComponentBasedModulesBuilder.() -> Unit = {}) {
         allModulesComponents.configure()
     }
 
-    /**
-     * The base plugin is applied to all components that do NOT specify a specific plugin.
-     * If you configure a base plugin, you should ensure that this plugin applies either the Java or Kotlin plugin.
-     * The reason is that the modulith plugin requires the gradle configurations created by these JVM plugins
-     * ('implementation', 'api') to apply the configured dependencies.
-     * If no base plugin is specified, the 'kotlin'-Plugin is applied as fallback.
-     */
-    fun basePlugin(id: String) {
-        allModulesPlugin = Plugin(id)
+    fun allComponents(configure: AllComponentsBuilder.() -> Unit = {}) {
+        AllComponentsBuilder.configure()
     }
 
     fun library(name: String, configure: SingleComponentBasedModuleBuilder.() -> Unit = {}): LibraryModuleReference {
@@ -56,7 +44,7 @@ open class ModulithExtension {
     private fun BundleModuleBuilder.createBundle(): BundleModule {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
-            plugin = allModulesPlugin,
+            plugin = AllComponentsBuilder.allComponentsPlugin,
             includes = if (includes.isNotEmpty()) includes else modules.map { it.reference }
         )
     }
@@ -67,7 +55,7 @@ open class ModulithExtension {
         val mergedComponents = mergeComponents(allModulesConfiguration).map {
             Component(
                 reference = it,
-                plugin = mergedComponentPlugins[it] ?: allModulesPlugin,
+                plugin = mergedComponentPlugins[it] ?: AllComponentsBuilder.allComponentsPlugin,
                 dependsOn = dependencies.getValue(it)
             )
         }
