@@ -45,7 +45,7 @@ open class ModulithExtension {
 
     fun bundle(name: String? = null): BundleModuleBuilder {
         val bundle = BundleModuleBuilder(name?.emptyToNull())
-        this@ModulithExtension.bundles.add(bundle)
+        this.bundles.add(bundle)
         return bundle
     }
 
