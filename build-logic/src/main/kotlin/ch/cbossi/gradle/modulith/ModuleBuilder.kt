@@ -1,5 +1,23 @@
 package ch.cbossi.gradle.modulith
 
+class AllComponentsBuilder internal constructor() {
+
+    internal var plugin: Plugin = Plugin("kotlin")
+        private set
+
+    /**
+     * This plugin is applied to all components that do NOT specify a specific plugin.
+     * The plugin configured here should transitively apply either the Java or Kotlin plugin.
+     * The reason is that the modulith plugin requires the gradle configurations created by these JVM plugins
+     * ('implementation', 'api') to apply the configured dependencies.
+     * If no plugin is specified, the 'kotlin'-Plugin is applied as fallback.
+     */
+    fun plugin(id: String) {
+        plugin = Plugin(id)
+    }
+
+}
+
 sealed class ComponentBasedModuleBuilder {
     internal val components = mutableListOf<ComponentReference>()
     internal val dependencies = mutableListOf<ComponentDependency>()
@@ -36,24 +54,6 @@ sealed class ComponentBasedModuleBuilder {
         dependencies.addAll(components.map { ComponentDependency(this, type, it) })
         return this
     }
-}
-
-class AllComponentsBuilder internal constructor() {
-
-    internal var plugin: Plugin = Plugin("kotlin")
-        private set
-
-    /**
-     * This plugin is applied to all components that do NOT specify a specific plugin.
-     * The plugin configured here should transitively apply either the Java or Kotlin plugin.
-     * The reason is that the modulith plugin requires the gradle configurations created by these JVM plugins
-     * ('implementation', 'api') to apply the configured dependencies.
-     * If no plugin is specified, the 'kotlin'-Plugin is applied as fallback.
-     */
-    fun plugin(id: String) {
-        plugin = Plugin(id)
-    }
-
 }
 
 class AllComponentBasedModulesBuilder internal constructor() : ComponentBasedModuleBuilder()
