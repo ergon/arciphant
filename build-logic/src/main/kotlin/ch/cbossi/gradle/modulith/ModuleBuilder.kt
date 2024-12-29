@@ -63,10 +63,10 @@ internal data class ComponentDependency(
 
 class BundleModuleBuilder(internal val name: String?) {
 
-    internal val includedModules = mutableListOf<ComponentBasedModuleReference>()
+    internal val includes = mutableListOf<ComponentBasedModuleReference>()
 
-    fun with(vararg modules: ComponentBasedModuleReference) {
-        includedModules.addAll(modules)
+    fun include(vararg modules: ComponentBasedModuleReference) {
+        includes.addAll(modules)
     }
 
 }

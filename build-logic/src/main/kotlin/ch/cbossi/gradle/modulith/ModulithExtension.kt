@@ -57,7 +57,7 @@ open class ModulithExtension {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
             plugin = allModulesPlugin,
-            includes = if (includedModules.isNotEmpty()) includedModules else modules.map { it.reference }
+            includes = if (includes.isNotEmpty()) includes else modules.map { it.reference }
         )
     }
 
