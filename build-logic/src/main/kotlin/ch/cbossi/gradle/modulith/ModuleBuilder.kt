@@ -40,10 +40,7 @@ sealed class ComponentBasedModuleBuilder {
 
 class AllComponentsBuilder internal constructor() {
 
-    /**
-     * See [plugin].
-     */
-    internal var allComponentsPlugin: Plugin = Plugin("kotlin")
+    internal var plugin: Plugin = Plugin("kotlin")
         private set
 
     /**
@@ -54,12 +51,12 @@ class AllComponentsBuilder internal constructor() {
      * If no plugin is specified, the 'kotlin'-Plugin is applied as fallback.
      */
     fun plugin(id: String) {
-        allComponentsPlugin = Plugin(id)
+        plugin = Plugin(id)
     }
 
 }
 
-class AllComponentBasedModulesBuilder internal constructor(): ComponentBasedModuleBuilder()
+class AllComponentBasedModulesBuilder internal constructor() : ComponentBasedModuleBuilder()
 
 class SingleComponentBasedModuleBuilder internal constructor(
     internal val reference: ComponentBasedModuleReference,
