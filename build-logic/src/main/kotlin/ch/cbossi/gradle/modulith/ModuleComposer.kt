@@ -64,7 +64,7 @@ internal class DomainModuleComposer(configuration: ModuleStructure, module: Doma
 
     private fun addDependenciesToLibraries(component: Component, componentProject: Project) {
         configuration.libraries.filter { it.hasComponent(component) }.forEach {
-            val libraryComponentPath = it.componentPath(component).value
+            val libraryComponentPath = it.gradleProjectPath(component).value
             componentProject.addDependency(API, libraryComponentPath)
             componentProject.addTestFixturesDependency(libraryComponentPath)
         }
@@ -89,12 +89,12 @@ internal class BundleModuleComposer(
 }
 
 internal fun Module.gradleProjectPaths() = when (this) {
-    is ComponentBasedModule -> components.map { componentPath(it) }
+    is ComponentBasedModule -> components.map { gradleProjectPath(it) }
     is BundleModule -> when (reference) {
         is ChildBundleModuleReference -> listOf(GradleProjectPath(reference.name))
         is RootBundleModuleReference -> listOf(GradleProjectPath())
     }
 }
 
-private fun ComponentBasedModule.componentPath(component: Component) =
+private fun ComponentBasedModule.gradleProjectPath(component: Component) =
     GradleProjectPath(reference.name, component.reference.name)

@@ -10,7 +10,7 @@ class ModulithSettingsPlugin : Plugin<Settings> {
         with(settings) {
             val extension = extensions.getByType(ModulithExtension::class.java)
             val structure = extension.createModuleStructure()
-            structure.toGradleProjectStructure().forEach { include(it.value) }
+            structure.toGradleProjectPaths().forEach { include(it.value) }
             gradle.projectsLoaded {
                 structure.createComposers(gradle.rootProject).forEach { it.configure() }
             }
@@ -19,7 +19,7 @@ class ModulithSettingsPlugin : Plugin<Settings> {
     }
 }
 
-private fun ModuleStructure.toGradleProjectStructure() = modules.flatMap { it.gradleProjectPaths() }
+private fun ModuleStructure.toGradleProjectPaths() = modules.flatMap { it.gradleProjectPaths() }
 
 private fun ModuleStructure.createComposers(rootProject: Project) = modules.map {
     val project = it.reference.project(rootProject)
