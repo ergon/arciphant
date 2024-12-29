@@ -1,5 +1,45 @@
 package ch.cbossi.gradle.modulith
 
+sealed class ModulithDsl {
+
+    protected val allModules = AllComponentBasedModulesDsl()
+    protected val allComponents = AllComponentsDsl()
+    protected val modules = mutableSetOf<SingleComponentBasedModuleDsl>()
+    protected val bundles = mutableSetOf<BundleModuleDsl>()
+
+    fun createComponent(name: String): ComponentReference = ComponentReference(name)
+
+    fun allModules(configure: AllComponentBasedModulesDsl.() -> Unit = {}) {
+        allModules.configure()
+    }
+
+    fun allComponents(configure: AllComponentsDsl.() -> Unit = {}) {
+        allComponents.configure()
+    }
+
+    fun library(name: String, configure: SingleComponentBasedModuleDsl.() -> Unit = {}): LibraryModuleReference {
+        return module(LibraryModuleReference(name), configure)
+    }
+
+    fun module(name: String, configure: SingleComponentBasedModuleDsl.() -> Unit = {}): DomainModuleReference {
+        return module(DomainModuleReference(name), configure)
+    }
+
+    private fun <M : ComponentBasedModuleReference> module(reference: M, configure: SingleComponentBasedModuleDsl.() -> Unit = {}): M {
+        val module = SingleComponentBasedModuleDsl(reference)
+        module.configure()
+        modules.add(module)
+        return reference
+    }
+
+    fun bundle(name: String? = null): BundleModuleDsl {
+        val bundle = BundleModuleDsl(name?.emptyToNull())
+        this.bundles.add(bundle)
+        return bundle
+    }
+
+}
+
 class AllComponentsDsl internal constructor() {
 
     internal var plugin: Plugin = Plugin("kotlin")

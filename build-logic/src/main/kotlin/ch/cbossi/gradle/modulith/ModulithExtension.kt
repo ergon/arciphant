@@ -1,42 +1,6 @@
 package ch.cbossi.gradle.modulith
 
-open class ModulithExtension {
-
-    private val allModules = AllComponentBasedModulesDsl()
-    private val allComponents = AllComponentsDsl()
-    private val modules = mutableSetOf<SingleComponentBasedModuleDsl>()
-    private val bundles = mutableSetOf<BundleModuleDsl>()
-
-    fun createComponent(name: String): ComponentReference = ComponentReference(name)
-
-    fun allModules(configure: AllComponentBasedModulesDsl.() -> Unit = {}) {
-        allModules.configure()
-    }
-
-    fun allComponents(configure: AllComponentsDsl.() -> Unit = {}) {
-        allComponents.configure()
-    }
-
-    fun library(name: String, configure: SingleComponentBasedModuleDsl.() -> Unit = {}): LibraryModuleReference {
-        return module(LibraryModuleReference(name), configure)
-    }
-
-    fun module(name: String, configure: SingleComponentBasedModuleDsl.() -> Unit = {}): DomainModuleReference {
-        return module(DomainModuleReference(name), configure)
-    }
-
-    private fun <M : ComponentBasedModuleReference> module(reference: M, configure: SingleComponentBasedModuleDsl.() -> Unit = {}): M {
-        val module = SingleComponentBasedModuleDsl(reference)
-        module.configure()
-        modules.add(module)
-        return reference
-    }
-
-    fun bundle(name: String? = null): BundleModuleDsl {
-        val bundle = BundleModuleDsl(name?.emptyToNull())
-        this.bundles.add(bundle)
-        return bundle
-    }
+open class ModulithExtension : ModulithDsl() {
 
     internal fun createModuleStructure() = ModuleStructure(
         modules = modules.map { it.createModule(allModules) } + bundles.map { it.createBundle() },
