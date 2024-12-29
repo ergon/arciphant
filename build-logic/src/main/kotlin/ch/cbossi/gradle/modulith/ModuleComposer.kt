@@ -82,13 +82,19 @@ internal class BundleModuleComposer(
         configuration.modules
             .filterIsInstance<ComponentBasedModule>()
             .filter { module.includes.contains(it.reference) }
-            .flatMap { it.componentPaths() }.forEach {
+            .flatMap { it.gradleProjectPaths() }.forEach {
                 moduleProject.addDependency(IMPLEMENTATION, it.value)
             }
     }
 }
 
-internal fun ComponentBasedModule.componentPaths() = components.map { componentPath(it) }
+internal fun Module.gradleProjectPaths() = when (this) {
+    is ComponentBasedModule -> components.map { componentPath(it) }
+    is BundleModule -> when (reference) {
+        is ChildBundleModuleReference -> listOf(GradleProjectPath(reference.name))
+        is RootBundleModuleReference -> listOf(GradleProjectPath())
+    }
+}
 
-internal fun ComponentBasedModule.componentPath(component: Component) =
+private fun ComponentBasedModule.componentPath(component: Component) =
     GradleProjectPath(reference.name, component.reference.name)
