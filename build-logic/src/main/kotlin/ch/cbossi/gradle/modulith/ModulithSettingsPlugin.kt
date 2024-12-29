@@ -19,7 +19,7 @@ class ModulithSettingsPlugin : Plugin<Settings> {
     }
 }
 
-private fun ModuleStructure.toGradleProjectPaths() = modules.flatMap { it.gradleProjectPaths() }
+private fun ModuleStructure.toGradleProjectPaths() = modules.flatMap { it.gradleProjectPaths() }.filter { !it.isRoot }
 
 private fun ModuleStructure.createComposers(rootProject: Project) = modules.map {
     val project = it.reference.project(rootProject)
