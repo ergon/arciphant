@@ -38,7 +38,7 @@ sealed class ComponentBasedModuleBuilder {
     }
 }
 
-object AllComponentsBuilder {
+class AllComponentsBuilder internal constructor() {
 
     /**
      * See [plugin].
@@ -59,9 +59,9 @@ object AllComponentsBuilder {
 
 }
 
-class AllComponentBasedModulesBuilder : ComponentBasedModuleBuilder()
+class AllComponentBasedModulesBuilder internal constructor(): ComponentBasedModuleBuilder()
 
-class SingleComponentBasedModuleBuilder(
+class SingleComponentBasedModuleBuilder internal constructor(
     internal val reference: ComponentBasedModuleReference,
 ) : ComponentBasedModuleBuilder() {
     internal var removeAllModulesComponents: Boolean = false
@@ -82,7 +82,7 @@ internal data class ComponentDependency(
     val dependsOn: ComponentReference,
 )
 
-class BundleModuleBuilder(internal val name: String?) {
+class BundleModuleBuilder internal constructor(internal val name: String?) {
 
     internal val includes = mutableListOf<ComponentBasedModuleReference>()
 

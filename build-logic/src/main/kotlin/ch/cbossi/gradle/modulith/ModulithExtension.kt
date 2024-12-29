@@ -3,6 +3,7 @@ package ch.cbossi.gradle.modulith
 open class ModulithExtension {
 
     private val allModulesComponents = AllComponentBasedModulesBuilder()
+    private val allComponents = AllComponentsBuilder()
     private val modules = mutableSetOf<SingleComponentBasedModuleBuilder>()
     private val bundles = mutableSetOf<BundleModuleBuilder>()
 
@@ -13,7 +14,7 @@ open class ModulithExtension {
     }
 
     fun allComponents(configure: AllComponentsBuilder.() -> Unit = {}) {
-        AllComponentsBuilder.configure()
+        allComponents.configure()
     }
 
     fun library(name: String, configure: SingleComponentBasedModuleBuilder.() -> Unit = {}): LibraryModuleReference {
@@ -44,7 +45,7 @@ open class ModulithExtension {
     private fun BundleModuleBuilder.createBundle(): BundleModule {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
-            plugin = AllComponentsBuilder.allComponentsPlugin,
+            plugin = allComponents.allComponentsPlugin,
             includes = if (includes.isNotEmpty()) includes else modules.map { it.reference }
         )
     }
@@ -55,7 +56,7 @@ open class ModulithExtension {
         val mergedComponents = mergeComponents(allModulesConfiguration).map {
             Component(
                 reference = it,
-                plugin = mergedComponentPlugins[it] ?: AllComponentsBuilder.allComponentsPlugin,
+                plugin = mergedComponentPlugins[it] ?: allComponents.allComponentsPlugin,
                 dependsOn = dependencies.getValue(it)
             )
         }
