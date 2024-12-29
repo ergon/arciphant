@@ -20,10 +20,10 @@ internal sealed class ComponentBasedModuleComposer<M : ComponentBasedModule>(
 ) : ModuleComposer<M>(configuration, module, moduleProject) {
 
     override fun configure() {
-        module.components.forEach { configureComponent(it) }
+        module.components.forEach { configure(it) }
     }
 
-    private fun configureComponent(component: Component) {
+    private fun configure(component: Component) {
         val componentProject = moduleProject.childProject(component.reference)
         componentProject.apply(plugin = component.plugin.id)
         component.dependsOn.forEach {
@@ -34,22 +34,10 @@ internal sealed class ComponentBasedModuleComposer<M : ComponentBasedModule>(
                 componentProject.dependencies { add("testFixturesApi", testFixtures(project(dependencyProject.path))) }
             }
         }
-        if (module is DomainModule) {
-            configuration.libraries.filter { it.hasComponent(component) }.forEach {
-                val libraryComponentPath = it.componentPath(component)
-                componentProject.logger.info("Add library dependency: ${componentProject.path} -> $libraryComponentPath")
-                componentProject.dependencies { add("api", project(libraryComponentPath)) }
-                componentProject.pluginManager.withPlugin("java-test-fixtures") {
-                    componentProject.dependencies {
-                        add(
-                            "testFixturesApi",
-                            testFixtures(project(libraryComponentPath))
-                        )
-                    }
-                }
-            }
-        }
+        configure(component, componentProject)
     }
+
+    protected abstract fun configure(component: Component, componentProject: Project)
 }
 
 internal class LibraryModuleComposer(
@@ -58,6 +46,10 @@ internal class LibraryModuleComposer(
     moduleProject: Project,
 ) : ComponentBasedModuleComposer<LibraryModule>(configuration, module, moduleProject) {
 
+    override fun configure(component: Component, componentProject: Project) {
+        // nothing to do in case of library module
+    }
+
 }
 
 internal class DomainModuleComposer(
@@ -65,6 +57,17 @@ internal class DomainModuleComposer(
     module: DomainModule,
     moduleProject: Project,
 ) : ComponentBasedModuleComposer<DomainModule>(configuration, module, moduleProject) {
+
+    override fun configure(component: Component, componentProject: Project) {
+        configuration.libraries.filter { it.hasComponent(component) }.forEach {
+            val libraryComponentPath = it.componentPath(component)
+            componentProject.logger.info("Add library dependency: ${componentProject.path} -> $libraryComponentPath")
+            componentProject.dependencies { add("api", project(libraryComponentPath)) }
+            componentProject.pluginManager.withPlugin("java-test-fixtures") {
+                componentProject.dependencies { add("testFixturesApi", testFixtures(project(libraryComponentPath))) }
+            }
+        }
+    }
 
 }
 
