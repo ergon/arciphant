@@ -12,7 +12,7 @@ class ModulithSettingsPlugin : Plugin<Settings> {
             val structure = extension.createModuleStructure()
             structure.toGradleProjectStructure().forEach { include(it) }
             gradle.projectsLoaded {
-                structure.createModuleConfigurer(gradle.rootProject).forEach { it.configure() }
+                structure.createComposers(gradle.rootProject).forEach { it.configure() }
             }
         }
 
@@ -29,11 +29,11 @@ private fun Module.toGradleProjectStructure() = when (this) {
     }
 }
 
-private fun ModuleStructure.createModuleConfigurer(rootProject: Project) = modules.map {
+private fun ModuleStructure.createComposers(rootProject: Project) = modules.map {
     val project = it.reference.project(rootProject)
     when(it) {
-        is ComponentBasedModule -> ComponentBasedModuleConfigurer(this, it, project)
-        is BundleModule -> BundleModuleConfigurer(this, it, project)
+        is ComponentBasedModule -> ComponentBasedModuleComposer(this, it, project)
+        is BundleModule -> BundleModuleComposer(this, it, project)
     }
 }
 

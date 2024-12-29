@@ -5,7 +5,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
-sealed class ModuleConfigurer<M : Module>(
+sealed class ModuleComposer<M : Module>(
     internal val configuration: ModuleStructure,
     internal val module: M,
     internal val moduleProject: Project,
@@ -13,11 +13,11 @@ sealed class ModuleConfigurer<M : Module>(
     abstract fun configure()
 }
 
-internal class ComponentBasedModuleConfigurer(
+internal class ComponentBasedModuleComposer(
     configuration: ModuleStructure,
     module: ComponentBasedModule,
     moduleProject: Project,
-) : ModuleConfigurer<ComponentBasedModule>(configuration, module, moduleProject) {
+) : ModuleComposer<ComponentBasedModule>(configuration, module, moduleProject) {
 
     override fun configure() {
         module.components.forEach { it.configureComponent() }
@@ -52,11 +52,11 @@ internal class ComponentBasedModuleConfigurer(
     }
 }
 
-internal class BundleModuleConfigurer(
+internal class BundleModuleComposer(
     configuration: ModuleStructure,
     module: BundleModule,
     moduleProject: Project,
-) : ModuleConfigurer<BundleModule>(configuration, module, moduleProject) {
+) : ModuleComposer<BundleModule>(configuration, module, moduleProject) {
     override fun configure() {
         moduleProject.apply(plugin = module.plugin.id)
         configuration.modules
