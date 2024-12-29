@@ -1,16 +1,23 @@
 package ch.cbossi.gradle.modulith
 
+import ch.cbossi.gradle.modulith.DependencyType.API
+import ch.cbossi.gradle.modulith.DependencyType.IMPLEMENTATION
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
-sealed class ModuleComposer<M : Module>(
-    internal val configuration: ModuleStructure,
-    internal val module: M,
-    internal val moduleProject: Project,
+internal sealed class ModuleComposer<M : Module>(
+    protected val configuration: ModuleStructure,
+    protected val module: M,
+    protected val moduleProject: Project,
 ) {
     abstract fun configure()
+
+    protected fun Project.addDependency(type: DependencyType, dependencyProjectPath: String) {
+        logger.info("Add ${type.configurationName} dependency: $path -> $dependencyProjectPath")
+        dependencies { add(type.configurationName, project(dependencyProjectPath)) }
+    }
 }
 
 internal sealed class ComponentBasedModuleComposer<M : ComponentBasedModule>(
@@ -32,11 +39,14 @@ internal sealed class ComponentBasedModuleComposer<M : ComponentBasedModule>(
         componentProject.apply(plugin = component.plugin.id)
         component.dependsOn.forEach {
             val dependencyProject = moduleProject.childProject(it.component)
-            componentProject.logger.info("Add component dependency: ${it.type.configurationName} ${componentProject.path} -> ${dependencyProject.path}")
-            componentProject.dependencies.add(it.type.configurationName, dependencyProject)
-            componentProject.pluginManager.withPlugin("java-test-fixtures") {
-                componentProject.dependencies { add("testFixturesApi", testFixtures(project(dependencyProject.path))) }
-            }
+            componentProject.addDependency(it.type, dependencyProject.path)
+            componentProject.addTestFixturesDependency(dependencyProject.path)
+        }
+    }
+
+    protected fun Project.addTestFixturesDependency(dependencyProjectPath: String) {
+        pluginManager.withPlugin("java-test-fixtures") {
+            dependencies { add("testFixturesApi", testFixtures(project(dependencyProjectPath))) }
         }
     }
 }
@@ -55,11 +65,8 @@ internal class DomainModuleComposer(configuration: ModuleStructure, module: Doma
     private fun addDependenciesToLibraries(component: Component, componentProject: Project) {
         configuration.libraries.filter { it.hasComponent(component) }.forEach {
             val libraryComponentPath = it.componentPath(component)
-            componentProject.logger.info("Add library dependency: ${componentProject.path} -> $libraryComponentPath")
-            componentProject.dependencies { add("api", project(libraryComponentPath)) }
-            componentProject.pluginManager.withPlugin("java-test-fixtures") {
-                componentProject.dependencies { add("testFixturesApi", testFixtures(project(libraryComponentPath))) }
-            }
+            componentProject.addDependency(API, libraryComponentPath)
+            componentProject.addTestFixturesDependency(libraryComponentPath)
         }
     }
 
@@ -76,8 +83,7 @@ internal class BundleModuleComposer(
             .filterIsInstance<ComponentBasedModule>()
             .filter { module.includes.contains(it.reference) }
             .flatMap { it.componentPaths() }.forEach {
-                moduleProject.logger.info("Add bundle dependency: ${moduleProject.path} -> $it")
-                moduleProject.dependencies { add("implementation", project(it)) }
+                moduleProject.addDependency(IMPLEMENTATION, it)
             }
     }
 }
