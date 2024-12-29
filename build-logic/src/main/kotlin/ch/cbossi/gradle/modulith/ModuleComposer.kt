@@ -25,6 +25,10 @@ internal sealed class ComponentBasedModuleComposer<M : ComponentBasedModule>(
 
     private fun configure(component: Component) {
         val componentProject = moduleProject.childProject(component.reference)
+        configure(component, componentProject)
+    }
+
+    protected open fun configure(component: Component, componentProject: Project) {
         componentProject.apply(plugin = component.plugin.id)
         component.dependsOn.forEach {
             val dependencyProject = moduleProject.childProject(it.component)
@@ -34,23 +38,14 @@ internal sealed class ComponentBasedModuleComposer<M : ComponentBasedModule>(
                 componentProject.dependencies { add("testFixturesApi", testFixtures(project(dependencyProject.path))) }
             }
         }
-        configure(component, componentProject)
     }
-
-    protected abstract fun configure(component: Component, componentProject: Project)
 }
 
 internal class LibraryModuleComposer(
     configuration: ModuleStructure,
     module: LibraryModule,
     moduleProject: Project,
-) : ComponentBasedModuleComposer<LibraryModule>(configuration, module, moduleProject) {
-
-    override fun configure(component: Component, componentProject: Project) {
-        // nothing to do in case of library module
-    }
-
-}
+) : ComponentBasedModuleComposer<LibraryModule>(configuration, module, moduleProject)
 
 internal class DomainModuleComposer(
     configuration: ModuleStructure,
@@ -59,6 +54,11 @@ internal class DomainModuleComposer(
 ) : ComponentBasedModuleComposer<DomainModule>(configuration, module, moduleProject) {
 
     override fun configure(component: Component, componentProject: Project) {
+        super.configure(component, componentProject)
+        addDependenciesToLibraries(component, componentProject)
+    }
+
+    private fun addDependenciesToLibraries(component: Component, componentProject: Project) {
         configuration.libraries.filter { it.hasComponent(component) }.forEach {
             val libraryComponentPath = it.componentPath(component)
             componentProject.logger.info("Add library dependency: ${componentProject.path} -> $libraryComponentPath")
