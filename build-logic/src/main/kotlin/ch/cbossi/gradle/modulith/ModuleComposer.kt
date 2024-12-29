@@ -41,17 +41,11 @@ internal sealed class ComponentBasedModuleComposer<M : ComponentBasedModule>(
     }
 }
 
-internal class LibraryModuleComposer(
-    configuration: ModuleStructure,
-    module: LibraryModule,
-    moduleProject: Project,
-) : ComponentBasedModuleComposer<LibraryModule>(configuration, module, moduleProject)
+internal class LibraryModuleComposer(configuration: ModuleStructure, module: LibraryModule, moduleProject: Project) :
+    ComponentBasedModuleComposer<LibraryModule>(configuration, module, moduleProject)
 
-internal class DomainModuleComposer(
-    configuration: ModuleStructure,
-    module: DomainModule,
-    moduleProject: Project,
-) : ComponentBasedModuleComposer<DomainModule>(configuration, module, moduleProject) {
+internal class DomainModuleComposer(configuration: ModuleStructure, module: DomainModule, moduleProject: Project) :
+    ComponentBasedModuleComposer<DomainModule>(configuration, module, moduleProject) {
 
     override fun configure(component: Component, componentProject: Project) {
         super.configure(component, componentProject)
