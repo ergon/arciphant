@@ -13,11 +13,11 @@ sealed class ModuleComposer<M : Module>(
     abstract fun configure()
 }
 
-internal class ComponentBasedModuleComposer(
+internal sealed class ComponentBasedModuleComposer<M : ComponentBasedModule>(
     configuration: ModuleStructure,
-    module: ComponentBasedModule,
+    module: M,
     moduleProject: Project,
-) : ModuleComposer<ComponentBasedModule>(configuration, module, moduleProject) {
+) : ModuleComposer<M>(configuration, module, moduleProject) {
 
     override fun configure() {
         module.components.forEach { it.configureComponent() }
@@ -50,6 +50,22 @@ internal class ComponentBasedModuleComposer(
             }
         }
     }
+}
+
+internal class LibraryModuleComposer(
+    configuration: ModuleStructure,
+    module: LibraryModule,
+    moduleProject: Project,
+) : ComponentBasedModuleComposer<LibraryModule>(configuration, module, moduleProject) {
+
+}
+
+internal class DomainModuleComposer(
+    configuration: ModuleStructure,
+    module: DomainModule,
+    moduleProject: Project,
+) : ComponentBasedModuleComposer<DomainModule>(configuration, module, moduleProject) {
+
 }
 
 internal class BundleModuleComposer(

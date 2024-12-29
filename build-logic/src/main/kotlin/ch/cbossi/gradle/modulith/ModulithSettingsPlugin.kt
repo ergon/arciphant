@@ -32,7 +32,8 @@ private fun Module.toGradleProjectStructure() = when (this) {
 private fun ModuleStructure.createComposers(rootProject: Project) = modules.map {
     val project = it.reference.project(rootProject)
     when(it) {
-        is ComponentBasedModule -> ComponentBasedModuleComposer(this, it, project)
+        is LibraryModule -> LibraryModuleComposer(this, it, project)
+        is DomainModule -> DomainModuleComposer(this, it, project)
         is BundleModule -> BundleModuleComposer(this, it, project)
     }
 }
