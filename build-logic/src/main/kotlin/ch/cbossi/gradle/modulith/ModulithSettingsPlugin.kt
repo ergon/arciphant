@@ -24,7 +24,7 @@ private fun ModuleStructure.toGradleProjectStructure() = modules.flatMap { it.to
 private fun Module.toGradleProjectStructure() = when (this) {
     is ComponentBasedModule -> componentPaths()
     is BundleModule -> when (reference) {
-        is ChildBundleModuleReference -> listOf(reference.name)
+        is ChildBundleModuleReference -> listOf(":${reference.name}")
         is RootBundleModuleReference -> emptyList()
     }
 }
