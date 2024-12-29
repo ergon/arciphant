@@ -1,6 +1,6 @@
 package ch.cbossi.gradle.modulith
 
-class AllComponentsBuilder internal constructor() {
+class AllComponentsDsl internal constructor() {
 
     internal var plugin: Plugin = Plugin("kotlin")
         private set
@@ -18,7 +18,7 @@ class AllComponentsBuilder internal constructor() {
 
 }
 
-sealed class ComponentBasedModuleBuilder {
+sealed class ComponentBasedModuleDsl {
     internal val components = mutableListOf<ComponentReference>()
     internal val dependencies = mutableListOf<ComponentDependency>()
     internal val componentPlugins = mutableMapOf<ComponentReference, Plugin>()
@@ -56,11 +56,11 @@ sealed class ComponentBasedModuleBuilder {
     }
 }
 
-class AllComponentBasedModulesBuilder internal constructor() : ComponentBasedModuleBuilder()
+class AllComponentBasedModulesDsl internal constructor() : ComponentBasedModuleDsl()
 
-class SingleComponentBasedModuleBuilder internal constructor(
+class SingleComponentBasedModuleDsl internal constructor(
     internal val reference: ComponentBasedModuleReference,
-) : ComponentBasedModuleBuilder() {
+) : ComponentBasedModuleDsl() {
     internal var removeAllModulesComponents: Boolean = false
     internal val removedAllModulesComponents = mutableListOf<ComponentReference>()
 
@@ -79,7 +79,7 @@ internal data class ComponentDependency(
     val dependsOn: ComponentReference,
 )
 
-class BundleModuleBuilder internal constructor(internal val name: String?) {
+class BundleModuleDsl internal constructor(internal val name: String?) {
 
     internal val includes = mutableListOf<ComponentBasedModuleReference>()
 

@@ -2,38 +2,38 @@ package ch.cbossi.gradle.modulith
 
 open class ModulithExtension {
 
-    private val allModules = AllComponentBasedModulesBuilder()
-    private val allComponents = AllComponentsBuilder()
-    private val modules = mutableSetOf<SingleComponentBasedModuleBuilder>()
-    private val bundles = mutableSetOf<BundleModuleBuilder>()
+    private val allModules = AllComponentBasedModulesDsl()
+    private val allComponents = AllComponentsDsl()
+    private val modules = mutableSetOf<SingleComponentBasedModuleDsl>()
+    private val bundles = mutableSetOf<BundleModuleDsl>()
 
     fun createComponent(name: String): ComponentReference = ComponentReference(name)
 
-    fun allModules(configure: AllComponentBasedModulesBuilder.() -> Unit = {}) {
+    fun allModules(configure: AllComponentBasedModulesDsl.() -> Unit = {}) {
         allModules.configure()
     }
 
-    fun allComponents(configure: AllComponentsBuilder.() -> Unit = {}) {
+    fun allComponents(configure: AllComponentsDsl.() -> Unit = {}) {
         allComponents.configure()
     }
 
-    fun library(name: String, configure: SingleComponentBasedModuleBuilder.() -> Unit = {}): LibraryModuleReference {
+    fun library(name: String, configure: SingleComponentBasedModuleDsl.() -> Unit = {}): LibraryModuleReference {
         return module(LibraryModuleReference(name), configure)
     }
 
-    fun module(name: String, configure: SingleComponentBasedModuleBuilder.() -> Unit = {}): DomainModuleReference {
+    fun module(name: String, configure: SingleComponentBasedModuleDsl.() -> Unit = {}): DomainModuleReference {
         return module(DomainModuleReference(name), configure)
     }
 
-    private fun <M : ComponentBasedModuleReference> module(reference: M, configure: SingleComponentBasedModuleBuilder.() -> Unit = {}): M {
-        val module = SingleComponentBasedModuleBuilder(reference)
+    private fun <M : ComponentBasedModuleReference> module(reference: M, configure: SingleComponentBasedModuleDsl.() -> Unit = {}): M {
+        val module = SingleComponentBasedModuleDsl(reference)
         module.configure()
         modules.add(module)
         return reference
     }
 
-    fun bundle(name: String? = null): BundleModuleBuilder {
-        val bundle = BundleModuleBuilder(name?.emptyToNull())
+    fun bundle(name: String? = null): BundleModuleDsl {
+        val bundle = BundleModuleDsl(name?.emptyToNull())
         this.bundles.add(bundle)
         return bundle
     }
@@ -42,7 +42,7 @@ open class ModulithExtension {
         modules = modules.map { it.createModule(allModules) } + bundles.map { it.createBundle() },
     )
 
-    private fun BundleModuleBuilder.createBundle(): BundleModule {
+    private fun BundleModuleDsl.createBundle(): BundleModule {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
             plugin = allComponents.plugin,
@@ -50,7 +50,7 @@ open class ModulithExtension {
         )
     }
 
-    private fun SingleComponentBasedModuleBuilder.createModule(allModulesConfiguration: AllComponentBasedModulesBuilder): ComponentBasedModule {
+    private fun SingleComponentBasedModuleDsl.createModule(allModulesConfiguration: AllComponentBasedModulesDsl): ComponentBasedModule {
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + componentPlugins
         val dependencies = getDependencies(allModulesConfiguration)
         val mergedComponents = mergeComponents(allModulesConfiguration).map {
@@ -66,11 +66,11 @@ open class ModulithExtension {
         }
     }
 
-    private fun SingleComponentBasedModuleBuilder.mergeComponents(allModulesConfiguration: AllComponentBasedModulesBuilder) =
+    private fun SingleComponentBasedModuleDsl.mergeComponents(allModulesConfiguration: AllComponentBasedModulesDsl) =
         componentsInheritedFromAllModules(allModulesConfiguration) + components
 
-    private fun SingleComponentBasedModuleBuilder.componentsInheritedFromAllModules(
-        allModulesConfiguration: AllComponentBasedModulesBuilder
+    private fun SingleComponentBasedModuleDsl.componentsInheritedFromAllModules(
+        allModulesConfiguration: AllComponentBasedModulesDsl
     ): List<ComponentReference> {
         return if (removeAllModulesComponents)
             emptyList()
@@ -78,7 +78,7 @@ open class ModulithExtension {
             allModulesConfiguration.components.filter { !removedAllModulesComponents.contains(it) }
     }
 
-    private fun SingleComponentBasedModuleBuilder.getDependencies(allModulesConfiguration: AllComponentBasedModulesBuilder) =
+    private fun SingleComponentBasedModuleDsl.getDependencies(allModulesConfiguration: AllComponentBasedModulesDsl) =
         (allModulesConfiguration.dependencies + dependencies)
             .filter { !it.includesAny(removedAllModulesComponents) }
             .groupBy(ComponentDependency::source) { Dependency(it.dependsOn, it.type) }
