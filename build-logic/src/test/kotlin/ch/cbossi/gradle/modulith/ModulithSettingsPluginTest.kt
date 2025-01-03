@@ -8,6 +8,10 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 
+/**
+ * Before running this test with IntelliJ, the project should be built using Gradle.
+ * See https://jdriven.com/blog/2021/01/gradlerunner-tests-intellij
+ */
 class ModulithSettingsPluginTest {
 
     @TempDir
