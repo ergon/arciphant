@@ -4,7 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 
 /**
- * This plugin solely created the extension consumed by the plugin [ModulithSettingsPlugin].
+ * This plugin solely creates the extension consumed by the plugin [ModulithSettingsPlugin].
  * This is necessary, since values set in an extension are not yet available in the apply-method of the plugin creating an extension.
  */
 class ModulithConfigurationSettingsPlugin : Plugin<Settings> {
