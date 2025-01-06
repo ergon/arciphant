@@ -12,3 +12,9 @@ Or use IntelliJ Run configuration `Dev DB Up`.
 ```
 docker compose -p webshop-dev down
 ```
+
+## Setup IntelliJ Datasource
+
+* Copy the content of [intellij-datasource.xml](./intellij-datasource.xml) into clipboard
+* Click the '+' icon in the IntelliJ Database Tool Window and choose *Import from Clipboard*
+* Add the password (see [docker-compose.yml](./docker-compose.yml)) to the password field
