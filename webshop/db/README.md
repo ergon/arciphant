@@ -2,7 +2,7 @@
 
 ## Start: 
 ```
-docker compose -p webshop-dev -f .\db\docker-compose.yml up -d
+docker compose -p webshop-dev -f .\webshop\db\docker-compose.yml up -d
 ```
 
 Or use IntelliJ Run configuration `Dev DB Up`.

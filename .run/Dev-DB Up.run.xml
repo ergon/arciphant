@@ -4,7 +4,7 @@
       <settings>
         <option name="composeProjectName" value="webshop-dev" />
         <option name="envFilePath" value="" />
-        <option name="sourceFilePath" value="db/docker-compose.yml" />
+        <option name="sourceFilePath" value="webshop/db/docker-compose.yml" />
       </settings>
     </deployment>
     <method v="2" />
