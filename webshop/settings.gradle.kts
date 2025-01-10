@@ -22,7 +22,7 @@ arciphant {
   val dbModel = createComponent("db-model")
 
   allComponents {
-    plugin("modulith")
+    plugin("component")
   }
 
   allModules {

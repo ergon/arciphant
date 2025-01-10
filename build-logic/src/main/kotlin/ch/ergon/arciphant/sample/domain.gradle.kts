@@ -1,5 +1,5 @@
 plugins {
-    id("modulith")
+    id("component")
 }
 
 dependencies {
