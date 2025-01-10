@@ -12,7 +12,7 @@ plugins {
   id("ch.ergon.arciphant.dsl")
 }
 
-modulith {
+arciphant {
   val api = createComponent("api")
   val domain = createComponent("domain")
   val webApi = createComponent("web-api")

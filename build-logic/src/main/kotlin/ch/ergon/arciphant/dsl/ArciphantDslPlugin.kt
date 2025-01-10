@@ -10,6 +10,6 @@ import org.gradle.api.initialization.Settings
 class ArciphantDslPlugin : Plugin<Settings> {
 
     override fun apply(settings: Settings) {
-        settings.extensions.create("modulith", ArciphantExtension::class.java)
+        settings.extensions.create("arciphant", ArciphantExtension::class.java)
     }
 }

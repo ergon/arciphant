@@ -48,7 +48,7 @@ class ArciphantCorePluginTest {
     fun `test that module without components is not allowed`() {
         buildSettingsFileWithArciphantPlugins(
             """
-            modulith {
+            arciphant {
                 module("test")
             }
         """
@@ -71,7 +71,7 @@ class ArciphantCorePluginTest {
                 id("ch.ergon.arciphant.dsl")
             }
             
-            modulith {
+            arciphant {
                 $arciphantConfiguration
             }
             
