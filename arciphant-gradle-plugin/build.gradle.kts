@@ -11,6 +11,15 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.0")
 }
 
+gradlePlugin {
+    plugins {
+        create("artifact-dsl-plugin") {
+            id = "ch.ergon.arciphant.dsl"
+            implementationClass = "ch.ergon.arciphant.dsl.ArciphantDslPlugin"
+        }
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
