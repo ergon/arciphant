@@ -9,7 +9,7 @@ pluginManagement {
 }
 
 plugins {
-  id("ch.cbossi.gradle.modulith.modulith-configuration-settings-plugin")
+  id("ch.ergon.arciphant.dsl")
 }
 
 modulith {

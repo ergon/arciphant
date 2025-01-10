@@ -14,7 +14,7 @@ dependencies {
 gradlePlugin {
     plugins {
         create("modulith-configuration-settings-plugin") {
-            id = "ch.cbossi.gradle.modulith.modulith-configuration-settings-plugin"
+            id = "ch.ergon.arciphant.dsl"
             implementationClass = "ch.ergon.arciphant.dsl.ModulithConfigurationSettingsPlugin"
         }
     }

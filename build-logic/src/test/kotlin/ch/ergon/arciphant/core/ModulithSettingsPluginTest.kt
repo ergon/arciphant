@@ -68,7 +68,7 @@ class ModulithSettingsPluginTest {
         import ch.cbossi.gradle.modulith.ModulithSettingsPlugin
             
             plugins {
-                id("ch.cbossi.gradle.modulith.modulith-configuration-settings-plugin")
+                id("ch.ergon.arciphant.dsl")
             }
             
             modulith {
