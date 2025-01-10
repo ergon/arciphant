@@ -6,7 +6,7 @@ pluginManagement {
     gradlePluginPortal()
   }
   includeBuild("../arciphant-gradle-plugin")
-  includeBuild("../build-logic")
+  includeBuild("./build-logic")
 }
 
 plugins {
