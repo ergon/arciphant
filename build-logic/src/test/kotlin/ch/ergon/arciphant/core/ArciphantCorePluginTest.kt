@@ -17,6 +17,8 @@ class ArciphantCorePluginTest {
     @TempDir
     private lateinit var projectFolder: File
 
+    private val settingsFile by lazy { projectFolder.resolve("settings.gradle.kts") }
+
     private val gradleRunner by lazy {
         GradleRunner.create()
             .withProjectDir(projectFolder)
@@ -26,7 +28,7 @@ class ArciphantCorePluginTest {
 
     @Test
     fun `test that project structure is created according to module configuration`() {
-        buildSettingsFileWithArciphantPlugins(
+        settingsFileWithArciphant(
             """
             allModules {
                 addComponent("api")
@@ -46,7 +48,7 @@ class ArciphantCorePluginTest {
 
     @Test
     fun `test that module without components is not allowed`() {
-        buildSettingsFileWithArciphantPlugins(
+        settingsFileWithArciphant(
             """
             arciphant {
                 module("test")
@@ -63,7 +65,7 @@ class ArciphantCorePluginTest {
         Assertions.assertThat(error.message).contains("Module 'test' has no components.")
     }
 
-    private fun buildSettingsFileWithArciphantPlugins(arciphantConfiguration: String) = buildSettingsFile(
+    private fun settingsFileWithArciphant(arciphantConfiguration: String) = settingsFile.write(
         """
         import ch.ergon.arciphant.core.ArciphantCorePlugin
             
@@ -79,11 +81,6 @@ class ArciphantCorePluginTest {
     """
     )
 
-    private fun buildSettingsFile(content: String) = buildFile("settings.gradle.kts", content)
-
-    private fun buildFile(name: String, content: String) {
-        val buildFile = File(projectFolder, name)
-        buildFile.writeText(content.trimIndent())
-    }
+    private fun File.write(content: String) = writeText(content.trimIndent())
 
 }
