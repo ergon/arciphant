@@ -1,4 +1,9 @@
 plugins {
+    /**
+     * Event though we do not use the Kotlin DSL to write the arciphant plugin, it is helpful to use the 'kotlin-dsl'
+     * plugin instead of the kotlin-plugin itself, since it does some useful stuff, see:
+     * https://docs.gradle.org/current/userguide/kotlin_dsl.html#sec:kotlin-dsl_plugin
+     */
     `kotlin-dsl`
 }
 
