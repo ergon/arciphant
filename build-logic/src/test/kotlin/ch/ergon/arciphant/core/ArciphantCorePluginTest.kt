@@ -15,7 +15,7 @@ import java.io.File
 class ArciphantCorePluginTest {
 
     @TempDir
-    lateinit var projectFolder: File
+    private lateinit var projectFolder: File
 
     private val gradleRunner by lazy {
         GradleRunner.create()
