@@ -1,2 +1,2 @@
 includeBuild("./build-logic")
-includeBuild("./webshop")
+includeBuild("./arciphant-sample-project")
