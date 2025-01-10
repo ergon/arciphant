@@ -1,15 +1,15 @@
 package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.dsl.ModulithExtension
+import ch.ergon.arciphant.dsl.ArciphantExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 
-class ModulithSettingsPlugin : Plugin<Settings> {
+class ArciphantCorePlugin : Plugin<Settings> {
 
     override fun apply(settings: Settings) {
         with(settings) {
-            val extension = extensions.getByType(ModulithExtension::class.java)
+            val extension = extensions.getByType(ArciphantExtension::class.java)
             val structure = extension.createModuleStructure()
             structure.toGradleProjectPaths().forEach { include(it.value) }
             gradle.projectsLoaded {

@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    // since Kotlin plugin is applied from within the ModulithSettingsPlugin, we need this dependency here
+    // since Kotlin plugin is applied from within the ArciphantCorePlugin, we need this dependency here
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
@@ -15,7 +15,7 @@ gradlePlugin {
     plugins {
         create("modulith-configuration-settings-plugin") {
             id = "ch.ergon.arciphant.dsl"
-            implementationClass = "ch.ergon.arciphant.dsl.ModulithConfigurationSettingsPlugin"
+            implementationClass = "ch.ergon.arciphant.dsl.ArciphantDslPlugin"
         }
     }
 }

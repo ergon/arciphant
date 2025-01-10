@@ -1,4 +1,4 @@
-import ch.ergon.arciphant.core.ModulithSettingsPlugin
+import ch.ergon.arciphant.core.ArciphantCorePlugin
 
 // plugins that extend the gradle build (gradle plugin portal, other binary repositories or local plugins from other builds)
 pluginManagement {
@@ -47,7 +47,7 @@ modulith {
 }
 
 // plugin should be applied after usage of the components-extension
-apply<ModulithSettingsPlugin>()
+apply<ArciphantCorePlugin>()
 
 // components the production code may depend on (repositories or other gradle builds)
 dependencyResolutionManagement {

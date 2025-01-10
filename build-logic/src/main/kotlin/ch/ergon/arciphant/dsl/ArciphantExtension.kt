@@ -11,7 +11,7 @@ import ch.ergon.arciphant.core.LibraryModule
 import ch.ergon.arciphant.core.ModuleStructure
 import ch.ergon.arciphant.core.RootBundleModuleReference
 
-open class ModulithExtension : ModulithDsl() {
+open class ArciphantExtension : ArciphantDsl() {
 
     internal fun createModuleStructure() = ModuleStructure(
         modules = modules.map { it.createModule(allModules) } + bundles.map { it.createBundle() },

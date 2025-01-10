@@ -4,7 +4,7 @@ import ch.ergon.arciphant.core.*
 import ch.ergon.arciphant.core.DependencyType
 import ch.ergon.arciphant.core.Plugin
 
-sealed class ModulithDsl {
+sealed class ArciphantDsl {
 
     protected val allModules = AllComponentBasedModulesDsl()
     protected val allComponents = AllComponentsDsl()
@@ -52,7 +52,7 @@ class AllComponentsDsl internal constructor() {
     /**
      * This plugin is applied to all components that do NOT specify a specific plugin.
      * The plugin configured here should transitively apply either the Java or Kotlin plugin.
-     * The reason is that the modulith plugin requires the gradle configurations created by these JVM plugins
+     * The reason is that the arciphant plugin requires the gradle configurations created by these JVM plugins
      * ('implementation', 'api') to apply the configured dependencies.
      * If no plugin is specified, the 'kotlin'-Plugin is applied as fallback.
      */

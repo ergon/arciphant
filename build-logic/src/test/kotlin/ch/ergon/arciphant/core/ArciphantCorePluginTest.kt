@@ -12,7 +12,7 @@ import java.io.File
  * Before running this test with IntelliJ, the project should be built using Gradle.
  * See https://jdriven.com/blog/2021/01/gradlerunner-tests-intellij
  */
-class ModulithSettingsPluginTest {
+class ArciphantCorePluginTest {
 
     @TempDir
     lateinit var projectFolder: File
@@ -26,7 +26,7 @@ class ModulithSettingsPluginTest {
 
     @Test
     fun `test that project structure is created according to module configuration`() {
-        buildSettingsFileWithModulithPlugin(
+        buildSettingsFileWithArciphantPlugins(
             """
             allModules {
                 addComponent("api")
@@ -46,7 +46,7 @@ class ModulithSettingsPluginTest {
 
     @Test
     fun `test that module without components is not allowed`() {
-        buildSettingsFileWithModulithPlugin(
+        buildSettingsFileWithArciphantPlugins(
             """
             modulith {
                 module("test")
@@ -63,19 +63,19 @@ class ModulithSettingsPluginTest {
         Assertions.assertThat(error.message).contains("Module 'test' has no components.")
     }
 
-    private fun buildSettingsFileWithModulithPlugin(modulithConfiguration: String) = buildSettingsFile(
+    private fun buildSettingsFileWithArciphantPlugins(arciphantConfiguration: String) = buildSettingsFile(
         """
-        import ch.cbossi.gradle.modulith.ModulithSettingsPlugin
+        import ch.ergon.arciphant.core.ArciphantCorePlugin
             
             plugins {
                 id("ch.ergon.arciphant.dsl")
             }
             
             modulith {
-                $modulithConfiguration
+                $arciphantConfiguration
             }
             
-            apply<ModulithSettingsPlugin>()
+            apply<ArciphantCorePlugin>()
     """
     )
 
