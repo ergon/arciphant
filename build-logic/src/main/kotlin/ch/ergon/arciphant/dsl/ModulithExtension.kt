@@ -21,7 +21,7 @@ open class ModulithExtension : ModulithDsl() {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
             plugin = allComponents.plugin,
-            includes = if (includes.isNotEmpty()) includes else modules.map { it.reference }
+            includes = includes.ifEmpty { modules.map { it.reference } }
         )
     }
 
