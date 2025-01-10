@@ -1,4 +1,8 @@
-package ch.cbossi.gradle.modulith
+package ch.ergon.arciphant.dsl
+
+import ch.ergon.arciphant.core.*
+import ch.ergon.arciphant.core.DependencyType
+import ch.ergon.arciphant.core.Plugin
 
 sealed class ModulithDsl {
 

@@ -1,4 +1,4 @@
-import ch.cbossi.gradle.modulith.ModulithSettingsPlugin
+import ch.ergon.arciphant.core.ModulithSettingsPlugin
 
 // plugins that extend the gradle build (gradle plugin portal, other binary repositories or local plugins from other builds)
 pluginManagement {

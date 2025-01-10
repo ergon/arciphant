@@ -1,4 +1,4 @@
-package ch.cbossi.gradle.modulith
+package ch.ergon.arciphant.core
 
 import org.junit.jupiter.api.TestFactory
 

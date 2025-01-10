@@ -1,4 +1,15 @@
-package ch.cbossi.gradle.modulith
+package ch.ergon.arciphant.dsl
+
+import ch.ergon.arciphant.core.*
+import ch.ergon.arciphant.core.BundleModule
+import ch.ergon.arciphant.core.ChildBundleModuleReference
+import ch.ergon.arciphant.core.Component
+import ch.ergon.arciphant.core.ComponentBasedModule
+import ch.ergon.arciphant.core.Dependency
+import ch.ergon.arciphant.core.DomainModule
+import ch.ergon.arciphant.core.LibraryModule
+import ch.ergon.arciphant.core.ModuleStructure
+import ch.ergon.arciphant.core.RootBundleModuleReference
 
 open class ModulithExtension : ModulithDsl() {
 

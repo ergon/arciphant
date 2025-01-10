@@ -1,7 +1,7 @@
-package ch.cbossi.gradle.modulith
+package ch.ergon.arciphant.core
 
-import ch.cbossi.gradle.modulith.DependencyType.API
-import ch.cbossi.gradle.modulith.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.core.DependencyType.API
+import ch.ergon.arciphant.core.DependencyType.IMPLEMENTATION
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies

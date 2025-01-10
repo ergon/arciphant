@@ -1,4 +1,4 @@
-package ch.cbossi.gradle.modulith
+package ch.ergon.arciphant.core
 
 import org.assertj.core.api.Assertions
 import org.gradle.testkit.runner.GradleRunner

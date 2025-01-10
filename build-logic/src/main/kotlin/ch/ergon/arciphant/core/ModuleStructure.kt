@@ -1,4 +1,4 @@
-package ch.cbossi.gradle.modulith
+package ch.ergon.arciphant.core
 
 internal data class ModuleStructure(
     val modules: List<Module>,

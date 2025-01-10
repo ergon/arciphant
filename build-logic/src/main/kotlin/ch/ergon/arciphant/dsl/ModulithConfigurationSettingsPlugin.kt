@@ -1,4 +1,4 @@
-package ch.cbossi.gradle.modulith
+package ch.ergon.arciphant.dsl
 
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
