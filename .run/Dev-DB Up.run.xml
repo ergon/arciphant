@@ -2,9 +2,9 @@
   <configuration default="false" name="Dev-DB Up" type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
     <deployment type="docker-compose.yml">
       <settings>
-        <option name="composeProjectName" value="webshop-dev" />
+        <option name="composeProjectName" value="artifact-sample-project" />
         <option name="envFilePath" value="" />
-        <option name="sourceFilePath" value="webshop/db/docker-compose.yml" />
+        <option name="sourceFilePath" value="arciphant-sample-project/db/docker-compose.yml" />
       </settings>
     </deployment>
     <method v="2" />

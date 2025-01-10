@@ -2,7 +2,7 @@
 
 ## Start: 
 ```
-docker compose -p webshop-dev -f .\webshop\db\docker-compose.yml up -d
+docker compose -p artifact-sample-project -f .\db\docker-compose.yml up -d
 ```
 
 Or use IntelliJ Run configuration `Dev DB Up`.
@@ -10,7 +10,7 @@ Or use IntelliJ Run configuration `Dev DB Up`.
 ## Stop
 
 ```
-docker compose -p webshop-dev down
+docker compose -p artifact-sample-project down
 ```
 
 ## Setup IntelliJ Datasource

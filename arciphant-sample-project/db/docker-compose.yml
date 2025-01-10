@@ -9,6 +9,6 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=webshoppw
-      - POSTGRES_USER=webshopu
-      - POSTGRES_DB=webshop
+      - POSTGRES_USER=arciphant
+      - POSTGRES_PASSWORD=arciphantpw
+      - POSTGRES_DB=arciphant-sample-project
