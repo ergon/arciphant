@@ -13,7 +13,7 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("modulith-configuration-settings-plugin") {
+        create("artifact-dsl-plugin") {
             id = "ch.ergon.arciphant.dsl"
             implementationClass = "ch.ergon.arciphant.dsl.ArciphantDslPlugin"
         }
