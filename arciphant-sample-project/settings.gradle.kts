@@ -5,6 +5,7 @@ pluginManagement {
   repositories {
     gradlePluginPortal()
   }
+  includeBuild("../arciphant-gradle-plugin")
   includeBuild("../build-logic")
 }
 
