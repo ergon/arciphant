@@ -10,6 +10,8 @@ pluginManagement {
 }
 
 plugins {
+  id("component") apply false
+  id("domain") apply false
   id("ch.ergon.arciphant.dsl")
 }
 
