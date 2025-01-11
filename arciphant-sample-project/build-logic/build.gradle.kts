@@ -11,6 +11,11 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.0")
 }
 
+gradlePlugin {
+
+}
+
 tasks.withType<Test> {
+    systemProperty("pluginUnderTestClasspath", sourceSets.main.get().runtimeClasspath.asPath)
     useJUnitPlatform()
 }
