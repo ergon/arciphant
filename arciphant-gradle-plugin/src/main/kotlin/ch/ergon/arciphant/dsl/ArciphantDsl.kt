@@ -4,12 +4,12 @@ import ch.ergon.arciphant.core.*
 import ch.ergon.arciphant.core.DependencyType
 import ch.ergon.arciphant.core.Plugin
 
-sealed class ArciphantDsl {
+open class ArciphantDsl {
 
-    protected val allModules = AllFunctionalModulesDsl()
-    protected val allComponents = AllComponentsDsl()
-    protected val modules = mutableSetOf<SingleFunctionalModuleDsl>()
-    protected val bundles = mutableSetOf<BundleModuleDsl>()
+    internal val allModules = AllFunctionalModulesDsl()
+    internal val allComponents = AllComponentsDsl()
+    internal val modules = mutableSetOf<SingleFunctionalModuleDsl>()
+    internal val bundles = mutableSetOf<BundleModuleDsl>()
 
     fun createComponent(name: String): ComponentReference = ComponentReference(name)
 

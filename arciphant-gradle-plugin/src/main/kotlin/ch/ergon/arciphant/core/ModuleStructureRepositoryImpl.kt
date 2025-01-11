@@ -1,27 +1,23 @@
-package ch.ergon.arciphant.dsl
+package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.core.*
-import ch.ergon.arciphant.core.BundleModule
-import ch.ergon.arciphant.core.ChildBundleModuleReference
-import ch.ergon.arciphant.core.Component
-import ch.ergon.arciphant.core.FunctionalModule
-import ch.ergon.arciphant.core.Dependency
-import ch.ergon.arciphant.core.DomainModule
-import ch.ergon.arciphant.core.LibraryModule
-import ch.ergon.arciphant.core.ModuleStructure
-import ch.ergon.arciphant.core.RootBundleModuleReference
+import ch.ergon.arciphant.dsl.AllFunctionalModulesDsl
+import ch.ergon.arciphant.dsl.ArciphantDsl
+import ch.ergon.arciphant.dsl.BundleModuleDsl
+import ch.ergon.arciphant.dsl.ComponentDependency
+import ch.ergon.arciphant.dsl.SingleFunctionalModuleDsl
+import kotlin.collections.ifEmpty
 
-open class ArciphantExtension : ArciphantDsl() {
+internal class ModuleStructureRepositoryImpl(private val dsl: ArciphantDsl) : ModuleStructureRepository {
 
-    internal fun createModuleStructure() = ModuleStructure(
-        modules = modules.map { it.createModule(allModules) } + bundles.map { it.createBundle() },
+    override fun create() = ModuleStructure(
+        modules = dsl.modules.map { it.createModule(dsl.allModules) } + dsl.bundles.map { it.createBundle() },
     )
 
     private fun BundleModuleDsl.createBundle(): BundleModule {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
-            plugin = allComponents.plugin,
-            includes = includes.ifEmpty { modules.map { it.reference } }
+            plugin = dsl.allComponents.plugin,
+            includes = includes.ifEmpty { dsl.modules.map { it.reference } }
         )
     }
 
@@ -31,7 +27,7 @@ open class ArciphantExtension : ArciphantDsl() {
         val mergedComponents = mergeComponents(allModulesConfiguration).map {
             Component(
                 reference = it,
-                plugin = mergedComponentPlugins[it] ?: allComponents.plugin,
+                plugin = mergedComponentPlugins[it] ?: dsl.allComponents.plugin,
                 dependsOn = dependencies.getValue(it)
             )
         }
@@ -61,4 +57,5 @@ open class ArciphantExtension : ArciphantDsl() {
 
     private fun ComponentDependency.includesAny(components: Collection<ComponentReference>) =
         components.any { source == it || dependsOn == it }
+
 }
