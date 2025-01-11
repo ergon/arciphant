@@ -32,7 +32,7 @@ private fun ModuleStructure.createComposers(rootProject: Project) = modules.map 
 }
 
 private fun ModuleReference.project(rootProject: Project) = when (this) {
-    is ComponentBasedModuleReference -> rootProject.childProject(this)
+    is FunctionalModuleReference -> rootProject.childProject(this)
     is ChildBundleModuleReference -> rootProject.childProject(this)
     is RootBundleModuleReference -> rootProject
 }

@@ -4,7 +4,7 @@ import ch.ergon.arciphant.core.*
 import ch.ergon.arciphant.core.BundleModule
 import ch.ergon.arciphant.core.ChildBundleModuleReference
 import ch.ergon.arciphant.core.Component
-import ch.ergon.arciphant.core.ComponentBasedModule
+import ch.ergon.arciphant.core.FunctionalModule
 import ch.ergon.arciphant.core.Dependency
 import ch.ergon.arciphant.core.DomainModule
 import ch.ergon.arciphant.core.LibraryModule
@@ -25,7 +25,7 @@ open class ArciphantExtension : ArciphantDsl() {
         )
     }
 
-    private fun SingleModuleDsl.createModule(allModulesConfiguration: AllModulesDsl): ComponentBasedModule {
+    private fun SingleFunctionalModuleDsl.createModule(allModulesConfiguration: AllFunctionalModulesDsl): FunctionalModule {
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + componentPlugins
         val dependencies = getDependencies(allModulesConfiguration)
         val mergedComponents = mergeComponents(allModulesConfiguration).map {
@@ -41,11 +41,11 @@ open class ArciphantExtension : ArciphantDsl() {
         }
     }
 
-    private fun SingleModuleDsl.mergeComponents(allModulesConfiguration: AllModulesDsl) =
+    private fun SingleFunctionalModuleDsl.mergeComponents(allModulesConfiguration: AllFunctionalModulesDsl) =
         componentsInheritedFromAllModules(allModulesConfiguration) + components
 
-    private fun SingleModuleDsl.componentsInheritedFromAllModules(
-        allModulesConfiguration: AllModulesDsl
+    private fun SingleFunctionalModuleDsl.componentsInheritedFromAllModules(
+        allModulesConfiguration: AllFunctionalModulesDsl
     ): List<ComponentReference> {
         return if (removeAllModulesComponents)
             emptyList()
@@ -53,7 +53,7 @@ open class ArciphantExtension : ArciphantDsl() {
             allModulesConfiguration.components.filter { !removedAllModulesComponents.contains(it) }
     }
 
-    private fun SingleModuleDsl.getDependencies(allModulesConfiguration: AllModulesDsl) =
+    private fun SingleFunctionalModuleDsl.getDependencies(allModulesConfiguration: AllFunctionalModulesDsl) =
         (allModulesConfiguration.dependencies + dependencies)
             .filter { !it.includesAny(removedAllModulesComponents) }
             .groupBy(ComponentDependency::source) { Dependency(it.dependsOn, it.type) }

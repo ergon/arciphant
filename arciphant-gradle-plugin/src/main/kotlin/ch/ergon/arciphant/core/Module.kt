@@ -4,16 +4,16 @@ sealed interface Module {
     val reference: ModuleReference
 }
 
-internal sealed class ComponentBasedModule : Module {
+internal sealed class FunctionalModule : Module {
 
-     constructor(components: List<Component>, reference: ComponentBasedModuleReference) {
+     constructor(components: List<Component>, reference: FunctionalModuleReference) {
          require(components.isNotEmpty()) {
              "Module '${reference.name}' has no components. " +
                      "This is not allowed, since the module gradle project is implicitly created through its components"
          }
      }
 
-    abstract override val reference: ComponentBasedModuleReference
+    abstract override val reference: FunctionalModuleReference
     abstract val components: List<Component>
 
     fun hasComponent(component: Component) = components.map { it.reference }.contains(component.reference)
@@ -22,12 +22,12 @@ internal sealed class ComponentBasedModule : Module {
 internal data class DomainModule(
     override val reference: DomainModuleReference,
     override val components: List<Component>,
-) : ComponentBasedModule(components, reference)
+) : FunctionalModule(components, reference)
 
 internal data class LibraryModule(
     override val reference: LibraryModuleReference,
     override val components: List<Component>,
-) : ComponentBasedModule(components, reference)
+) : FunctionalModule(components, reference)
 
 internal data class BundleModule(
     override val reference: BundleModuleReference,
@@ -41,12 +41,12 @@ internal sealed interface NamedReference {
 
 sealed interface ModuleReference
 
-sealed class ComponentBasedModuleReference : ModuleReference, NamedReference {
+sealed class FunctionalModuleReference : ModuleReference, NamedReference {
     abstract override val name: String
 }
 
-data class DomainModuleReference internal constructor(override val name: String) : ComponentBasedModuleReference()
-data class LibraryModuleReference internal constructor(override val name: String) : ComponentBasedModuleReference()
+data class DomainModuleReference internal constructor(override val name: String) : FunctionalModuleReference()
+data class LibraryModuleReference internal constructor(override val name: String) : FunctionalModuleReference()
 
 internal sealed interface BundleModuleReference : ModuleReference
 internal data class ChildBundleModuleReference(override val name: String) : BundleModuleReference, NamedReference

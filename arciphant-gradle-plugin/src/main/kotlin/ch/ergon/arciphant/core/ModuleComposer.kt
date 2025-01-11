@@ -20,7 +20,7 @@ internal sealed class ModuleComposer<M : Module>(
     }
 }
 
-internal sealed class ComponentBasedModuleComposer<M : ComponentBasedModule>(
+internal sealed class FunctionalModuleComposer<M : FunctionalModule>(
     configuration: ModuleStructure,
     module: M,
     moduleProject: Project,
@@ -52,10 +52,10 @@ internal sealed class ComponentBasedModuleComposer<M : ComponentBasedModule>(
 }
 
 internal class LibraryModuleComposer(configuration: ModuleStructure, module: LibraryModule, moduleProject: Project) :
-    ComponentBasedModuleComposer<LibraryModule>(configuration, module, moduleProject)
+    FunctionalModuleComposer<LibraryModule>(configuration, module, moduleProject)
 
 internal class DomainModuleComposer(configuration: ModuleStructure, module: DomainModule, moduleProject: Project) :
-    ComponentBasedModuleComposer<DomainModule>(configuration, module, moduleProject) {
+    FunctionalModuleComposer<DomainModule>(configuration, module, moduleProject) {
 
     override fun configure(component: Component, componentProject: Project) {
         super.configure(component, componentProject)
@@ -88,12 +88,12 @@ internal class BundleModuleComposer(
 }
 
 internal fun Module.gradleProjectPaths() = when (this) {
-    is ComponentBasedModule -> components.map { gradleProjectPath(it) }
+    is FunctionalModule -> components.map { gradleProjectPath(it) }
     is BundleModule -> when (reference) {
         is ChildBundleModuleReference -> listOf(GradleProjectPath(reference.name))
         is RootBundleModuleReference -> listOf(GradleProjectPath())
     }
 }
 
-private fun ComponentBasedModule.gradleProjectPath(component: Component) =
+private fun FunctionalModule.gradleProjectPath(component: Component) =
     GradleProjectPath(reference.name, component.reference.name)

@@ -6,14 +6,14 @@ import ch.ergon.arciphant.core.Plugin
 
 sealed class ArciphantDsl {
 
-    protected val allModules = AllModulesDsl()
+    protected val allModules = AllFunctionalModulesDsl()
     protected val allComponents = AllComponentsDsl()
-    protected val modules = mutableSetOf<SingleModuleDsl>()
+    protected val modules = mutableSetOf<SingleFunctionalModuleDsl>()
     protected val bundles = mutableSetOf<BundleModuleDsl>()
 
     fun createComponent(name: String): ComponentReference = ComponentReference(name)
 
-    fun allModules(configure: AllModulesDsl.() -> Unit = {}) {
+    fun allModules(configure: AllFunctionalModulesDsl.() -> Unit = {}) {
         allModules.configure()
     }
 
@@ -21,16 +21,16 @@ sealed class ArciphantDsl {
         allComponents.configure()
     }
 
-    fun library(name: String, configure: SingleModuleDsl.() -> Unit = {}): LibraryModuleReference {
+    fun library(name: String, configure: SingleFunctionalModuleDsl.() -> Unit = {}): LibraryModuleReference {
         return module(LibraryModuleReference(name), configure)
     }
 
-    fun module(name: String, configure: SingleModuleDsl.() -> Unit = {}): DomainModuleReference {
+    fun module(name: String, configure: SingleFunctionalModuleDsl.() -> Unit = {}): DomainModuleReference {
         return module(DomainModuleReference(name), configure)
     }
 
-    private fun <M : ComponentBasedModuleReference> module(reference: M, configure: SingleModuleDsl.() -> Unit = {}): M {
-        val module = SingleModuleDsl(reference)
+    private fun <M : FunctionalModuleReference> module(reference: M, configure: SingleFunctionalModuleDsl.() -> Unit = {}): M {
+        val module = SingleFunctionalModuleDsl(reference)
         module.configure()
         modules.add(module)
         return reference
@@ -62,7 +62,7 @@ class AllComponentsDsl internal constructor() {
 
 }
 
-sealed class ModuleDsl {
+sealed class FunctionalModuleDsl {
     internal val components = mutableListOf<ComponentReference>()
     internal val dependencies = mutableListOf<ComponentDependency>()
     internal val componentPlugins = mutableMapOf<ComponentReference, Plugin>()
@@ -100,11 +100,11 @@ sealed class ModuleDsl {
     }
 }
 
-class AllModulesDsl internal constructor() : ModuleDsl()
+class AllFunctionalModulesDsl internal constructor() : FunctionalModuleDsl()
 
-class SingleModuleDsl internal constructor(
-    internal val reference: ComponentBasedModuleReference,
-) : ModuleDsl() {
+class SingleFunctionalModuleDsl internal constructor(
+    internal val reference: FunctionalModuleReference,
+) : FunctionalModuleDsl() {
     internal var removeAllModulesComponents: Boolean = false
     internal val removedAllModulesComponents = mutableListOf<ComponentReference>()
 
