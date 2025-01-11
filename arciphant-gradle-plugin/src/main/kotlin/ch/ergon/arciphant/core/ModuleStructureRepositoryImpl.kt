@@ -1,24 +1,7 @@
 package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.dsl.AllFunctionalModulesDsl
-import ch.ergon.arciphant.dsl.ArciphantDsl
-import ch.ergon.arciphant.dsl.BundleModuleDsl
-import ch.ergon.arciphant.dsl.ComponentDependency
-import ch.ergon.arciphant.dsl.SingleFunctionalModuleDsl
-import ch.ergon.arciphant.model.BundleModule
-import ch.ergon.arciphant.model.ChildBundleModuleReference
-import ch.ergon.arciphant.model.Component
-import ch.ergon.arciphant.model.ComponentReference
-import ch.ergon.arciphant.model.Dependency
-import ch.ergon.arciphant.model.DomainModule
-import ch.ergon.arciphant.model.DomainModuleReference
-import ch.ergon.arciphant.model.FunctionalModule
-import ch.ergon.arciphant.model.LibraryModule
-import ch.ergon.arciphant.model.LibraryModuleReference
-import ch.ergon.arciphant.model.ModuleStructure
-import ch.ergon.arciphant.model.ModuleStructureRepository
-import ch.ergon.arciphant.model.RootBundleModuleReference
-import kotlin.collections.ifEmpty
+import ch.ergon.arciphant.dsl.*
+import ch.ergon.arciphant.model.*
 
 internal class ModuleStructureRepositoryImpl(private val dsl: ArciphantDsl) : ModuleStructureRepository {
 

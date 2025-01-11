@@ -1,12 +1,6 @@
 package ch.ergon.arciphant.dsl
 
-import ch.ergon.arciphant.model.ComponentReference
-import ch.ergon.arciphant.model.DependencyType
-import ch.ergon.arciphant.model.DomainModuleReference
-import ch.ergon.arciphant.model.FunctionalModuleReference
-import ch.ergon.arciphant.model.LibraryModuleReference
-import ch.ergon.arciphant.model.ModuleReference
-import ch.ergon.arciphant.model.Plugin
+import ch.ergon.arciphant.model.*
 import ch.ergon.arciphant.util.emptyToNull
 
 open class ArciphantDsl {
