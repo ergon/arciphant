@@ -1,4 +1,4 @@
-package ch.ergon.arciphant.core
+package ch.ergon.arciphant.model
 
 sealed interface Module {
     val reference: ModuleReference

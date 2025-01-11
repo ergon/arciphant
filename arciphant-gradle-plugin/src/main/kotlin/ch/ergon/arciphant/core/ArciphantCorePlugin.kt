@@ -1,6 +1,14 @@
 package ch.ergon.arciphant.core
 
 import ch.ergon.arciphant.dsl.ArciphantDsl
+import ch.ergon.arciphant.model.BundleModule
+import ch.ergon.arciphant.model.ChildBundleModuleReference
+import ch.ergon.arciphant.model.DomainModule
+import ch.ergon.arciphant.model.FunctionalModuleReference
+import ch.ergon.arciphant.model.LibraryModule
+import ch.ergon.arciphant.model.ModuleReference
+import ch.ergon.arciphant.model.ModuleStructure
+import ch.ergon.arciphant.model.RootBundleModuleReference
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings

@@ -1,7 +1,17 @@
 package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.core.DependencyType.API
-import ch.ergon.arciphant.core.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.model.BundleModule
+import ch.ergon.arciphant.model.ChildBundleModuleReference
+import ch.ergon.arciphant.model.Component
+import ch.ergon.arciphant.model.DependencyType
+import ch.ergon.arciphant.model.DependencyType.API
+import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.model.DomainModule
+import ch.ergon.arciphant.model.FunctionalModule
+import ch.ergon.arciphant.model.LibraryModule
+import ch.ergon.arciphant.model.Module
+import ch.ergon.arciphant.model.ModuleStructure
+import ch.ergon.arciphant.model.RootBundleModuleReference
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
