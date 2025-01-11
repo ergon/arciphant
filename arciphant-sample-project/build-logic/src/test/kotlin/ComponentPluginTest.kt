@@ -1,5 +1,11 @@
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Condition
+import org.assertj.core.api.ObjectEnumerableAssert
+import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
 import org.gradle.testfixtures.ProjectBuilder
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -36,11 +42,33 @@ class ComponentPluginTest {
     fun `plugins are applied`() {
         val project = ProjectBuilder.builder().build()
 
-        project.pluginManager.apply("kotlin")
         project.pluginManager.apply("component")
 
         assertThat(project.plugins.hasPlugin("kotlin")).isTrue()
         assertThat(project.plugins.hasPlugin("java-test-fixtures")).isTrue()
+    }
+
+    @Test
+    fun `dependencies are added`() {
+        val project = ProjectBuilder.builder().build()
+        project.pluginManager.apply("component")
+
+        assertThat(project.configuration("testImplementation").dependencies).contains("org.junit.jupiter", "junit-jupiter-api")
+        assertThat(project.configuration("testImplementation").dependencies).contains("org.assertj", "assertj-core")
+        assertThat(project.configuration("testImplementation").dependencies).contains("org.mockito.kotlin", "mockito-kotlin")
+        assertThat(project.configuration("testRuntimeOnly").dependencies).contains("org.junit.jupiter", "junit-jupiter-engine")
+    }
+
+    private fun Project.configuration(name: String) = configurations.getByName(name)
+
+    private fun ObjectEnumerableAssert<*, Dependency>.contains(group: String, name: String, version: String? = null) {
+        haveAtLeastOne(hasDependency(group, name, version))
+    }
+
+    private fun hasDependency(group: String, name: String, version: String? = null): Condition<Dependency> {
+        val versionAsText = version ?: "*"
+        val description = "dependency $group:$name:$versionAsText"
+        return Condition({ it.group == group && it.name == name && (version == null || it.version == version) }, description)
     }
 
 }
