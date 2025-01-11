@@ -4,11 +4,13 @@ import org.assertj.core.api.ObjectEnumerableAssert
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.testfixtures.ProjectBuilder
-import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
+ * This test does not work when running with the IntelliJ Builder. There are two problems:
+ * - the [ProjectBuilder] from Gradle used in the test needs additional vm options. This is solved and described below.
+ * - the plugin is not on the class path and cannot be found. This problem is so far unsolved.
+ *
  * Tests that use Gradle's [ProjectBuilder] fail by default when executed with the IntelliJ Runner:
  * org.gradle.api.GradleException: Could not inject synthetic classes.
  * java.lang.IllegalAccessException: module java.base does not open java.lang to unnamed module
