@@ -25,7 +25,7 @@ open class ArciphantExtension : ArciphantDsl() {
         )
     }
 
-    private fun SingleComponentBasedModuleDsl.createModule(allModulesConfiguration: AllComponentBasedModulesDsl): ComponentBasedModule {
+    private fun SingleModuleDsl.createModule(allModulesConfiguration: AllModulesDsl): ComponentBasedModule {
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + componentPlugins
         val dependencies = getDependencies(allModulesConfiguration)
         val mergedComponents = mergeComponents(allModulesConfiguration).map {
@@ -41,11 +41,11 @@ open class ArciphantExtension : ArciphantDsl() {
         }
     }
 
-    private fun SingleComponentBasedModuleDsl.mergeComponents(allModulesConfiguration: AllComponentBasedModulesDsl) =
+    private fun SingleModuleDsl.mergeComponents(allModulesConfiguration: AllModulesDsl) =
         componentsInheritedFromAllModules(allModulesConfiguration) + components
 
-    private fun SingleComponentBasedModuleDsl.componentsInheritedFromAllModules(
-        allModulesConfiguration: AllComponentBasedModulesDsl
+    private fun SingleModuleDsl.componentsInheritedFromAllModules(
+        allModulesConfiguration: AllModulesDsl
     ): List<ComponentReference> {
         return if (removeAllModulesComponents)
             emptyList()
@@ -53,7 +53,7 @@ open class ArciphantExtension : ArciphantDsl() {
             allModulesConfiguration.components.filter { !removedAllModulesComponents.contains(it) }
     }
 
-    private fun SingleComponentBasedModuleDsl.getDependencies(allModulesConfiguration: AllComponentBasedModulesDsl) =
+    private fun SingleModuleDsl.getDependencies(allModulesConfiguration: AllModulesDsl) =
         (allModulesConfiguration.dependencies + dependencies)
             .filter { !it.includesAny(removedAllModulesComponents) }
             .groupBy(ComponentDependency::source) { Dependency(it.dependsOn, it.type) }
