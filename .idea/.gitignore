@@ -7,3 +7,6 @@
 /dataSources/
 /dataSources.local.xml
 detekt.xml
+gradle.xml
+modules.xml
+modules
