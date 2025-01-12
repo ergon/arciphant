@@ -15,4 +15,8 @@ class CustomerService(private val repository: CustomerRepository) {
         return repository.loadCustomer(id)
     }
 
+    fun getCustomers(): List<Customer> {
+        return repository.fetchCustomers()
+    }
+
 }

@@ -9,4 +9,6 @@ interface CustomerRepository {
 
     fun loadCustomer(id: CustomerId): Customer
 
+    fun fetchCustomers(): List<Customer>
+
 }
