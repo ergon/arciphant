@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/arciphant-sample-project/customer/web-api/arciphant-sample-project.customer.web-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/arciphant-sample-project/customer/web-api/arciphant-sample-project.customer.web-api.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/arciphant-sample-project/customer/web/arciphant-sample-project.customer.web.main.iml" filepath="$PROJECT_DIR$/.idea/modules/arciphant-sample-project/customer/web/arciphant-sample-project.customer.web.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/arciphant-sample-project/arciphant-sample-project.main.iml" filepath="$PROJECT_DIR$/.idea/modules/arciphant-sample-project/arciphant-sample-project.main.iml" />
     </modules>
   </component>
