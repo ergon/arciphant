@@ -9,3 +9,7 @@ allprojects {
     plugins.apply("org.springframework.boot")
     plugins.apply("io.spring.dependency-management")
 }
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter")
+}
