@@ -31,11 +31,11 @@ arciphant {
   allModules {
     addComponent(api)
     addComponent(domain).withPlugin("domain").dependsOnApi(api)
-    addComponent(webApi)
-    addComponent(web).dependsOn(webApi, domain)
+    addComponent(webApi).withPlugin("web")
+    addComponent(web).withPlugin("web").dependsOn(webApi, domain)
     addComponent(dbSchema)
     addComponent(dbModel)
-    addComponent(db).dependsOn(dbModel, domain)
+    addComponent(db).withPlugin("db").dependsOn(dbModel, domain)
   }
 
   library("shared") {
