@@ -2,7 +2,7 @@
 
 ## Start: 
 ```
-docker compose -p artifact-sample-project -f .\db\docker-compose.yml up -d
+docker compose -p artifact-sample-project -f .\arciphant-sample-project\db\docker-compose.yml up -d
 ```
 
 Or use IntelliJ Run configuration `Dev DB Up`.
