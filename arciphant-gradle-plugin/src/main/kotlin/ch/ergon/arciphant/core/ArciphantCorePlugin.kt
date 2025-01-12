@@ -13,7 +13,7 @@ class ArciphantCorePlugin : Plugin<Settings> {
             val extension = extensions.getByType(ArciphantDsl::class.java)
             val structure = ModuleStructureRepositoryImpl(extension).create()
             structure.toGradleProjectPaths().forEach { include(it.value) }
-            gradle.projectsLoaded {
+            gradle.beforeProject {
                 structure.createComposers(gradle.rootProject).forEach { it.configure() }
             }
         }
