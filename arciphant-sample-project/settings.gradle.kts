@@ -46,7 +46,7 @@ arciphant {
     addComponent("api-client").dependsOn(domain)
   }
 
-  bundle()
+  bundle().withPlugin("bundle")
 }
 
 // plugin should be applied after usage of the components-extension
