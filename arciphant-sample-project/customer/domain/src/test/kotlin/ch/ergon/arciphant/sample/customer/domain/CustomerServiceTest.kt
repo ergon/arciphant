@@ -1,7 +1,7 @@
 package ch.ergon.arciphant.sample.customer.domain
 
 import ch.ergon.arciphant.sample.customer.api.CustomerFixtures
-import ch.ergon.arciphant.sample.shared.api.IdFixtures
+import ch.ergon.arciphant.sample.shared.base.IdFixtures
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock

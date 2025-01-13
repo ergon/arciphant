@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.sample.customer.api
 
-import ch.ergon.arciphant.sample.shared.api.IdFixtures
+import ch.ergon.arciphant.sample.shared.base.IdFixtures
 
 object CustomerFixtures {
 
