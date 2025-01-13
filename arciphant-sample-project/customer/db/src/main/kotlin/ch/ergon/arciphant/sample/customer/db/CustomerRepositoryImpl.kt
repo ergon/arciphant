@@ -21,8 +21,8 @@ class CustomerRepositoryImpl : CustomerRepository {
 
     override fun fetchCustomers(): List<Customer> {
         return listOf(
-            Customer(CustomerId(UUID.randomUUID()), "Max", "Muster"),
-            Customer(CustomerId(UUID.randomUUID()), "John", "Doe"),
+            Customer(CustomerId(UUID.fromString("257ee41e-c989-4753-a5ff-e0ec45f6b609")), "Max", "Muster"),
+            Customer(CustomerId(UUID.fromString("9783cad4-2c83-4b7e-a82d-e827fb6d99e4")), "John", "Doe"),
         )
     }
 }
