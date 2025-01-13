@@ -22,7 +22,7 @@ class CustomerIntegrationTest {
             .expectStatus().isOk
             .expectBodyList(CustomerDto::class.java)
             .returnResult()
-            .responseBody
+            .body()
 
         assertThat(customers).containsExactlyInAnyOrder(
             CustomerDto("Max", "Muster"),

@@ -1,0 +1,21 @@
+# @name get all orders
+GET {{base-url}}/orders
+
+###
+
+# @name get single order
+GET {{base-url}}/orders/5859228d-be7b-43dd-8885-67a0f9f77a28
+
+###
+
+# @name create order
+POST {{base-url}}/orders
+Content-Type: application/json
+
+{
+  "id": "5859228d-be7b-43dd-8885-67a0f9f77a28",
+  "customerId": "a9463b26-8fdf-4a34-92eb-b28c23cb718e",
+  "amount": 42.5
+}
+
+###
