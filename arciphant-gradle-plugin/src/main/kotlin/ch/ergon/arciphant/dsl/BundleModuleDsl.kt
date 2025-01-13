@@ -10,12 +10,14 @@ class BundleModuleDsl internal constructor(internal val name: String?) {
     internal var plugin: Plugin? = null
         private set
 
-    fun include(vararg modules: ModuleReference) {
+    fun include(vararg modules: ModuleReference): BundleModuleDsl {
         includes.addAll(modules)
+        return this
     }
 
-    fun withPlugin(pluginId: String) {
+    fun withPlugin(pluginId: String): BundleModuleDsl {
         plugin = Plugin(pluginId)
+        return this
     }
 
 }
