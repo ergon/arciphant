@@ -13,5 +13,5 @@ class CustomerControllerImpl(private val customerService: CustomerService) : Cus
         return customerService.getCustomers().map { it.toApi() }
     }
 
-    private fun Customer.toApi() = CustomerDto(id.value, firstname, lastname)
+    private fun Customer.toApi() = CustomerDto(id, firstname, lastname)
 }

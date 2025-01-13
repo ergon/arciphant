@@ -1,6 +1,7 @@
 package ch.ergon.arciphant.sample
 
 import ch.ergon.arciphant.sample.customer.webapi.CustomerDto
+import ch.ergon.arciphant.sample.shared.base.CustomerId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,8 +27,8 @@ class CustomerIntegrationTest {
             .body()
 
         assertThat(customers).containsExactlyInAnyOrder(
-            CustomerDto(UUID.fromString("257ee41e-c989-4753-a5ff-e0ec45f6b609"), "Max", "Muster"),
-            CustomerDto(UUID.fromString("9783cad4-2c83-4b7e-a82d-e827fb6d99e4"), "John", "Doe"),
+            CustomerDto(CustomerId(UUID.fromString("257ee41e-c989-4753-a5ff-e0ec45f6b609")), "Max", "Muster"),
+            CustomerDto(CustomerId(UUID.fromString("9783cad4-2c83-4b7e-a82d-e827fb6d99e4")), "John", "Doe"),
         )
     }
 }

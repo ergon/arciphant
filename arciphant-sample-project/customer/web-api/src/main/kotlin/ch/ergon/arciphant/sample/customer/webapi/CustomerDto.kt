@@ -1,9 +1,10 @@
 package ch.ergon.arciphant.sample.customer.webapi
 
-import java.util.*
+import ch.ergon.arciphant.sample.shared.base.CustomerId
+
 
 data class CustomerDto(
-    val id: UUID,
+    val id: CustomerId,
     val firstName: String,
     val lastName: String,
 )

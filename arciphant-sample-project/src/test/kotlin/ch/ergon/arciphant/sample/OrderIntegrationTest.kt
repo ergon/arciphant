@@ -2,6 +2,7 @@ package ch.ergon.arciphant.sample
 
 import ch.ergon.arciphant.sample.order.webapi.CreateOrderDto
 import ch.ergon.arciphant.sample.order.webapi.OrderDto
+import ch.ergon.arciphant.sample.shared.base.CustomerId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +19,7 @@ class OrderIntegrationTest {
 
     @Test
     fun `test orders`() {
-        val customerId = UUID.randomUUID()
+        val customerId = CustomerId(UUID.randomUUID())
         val amount = 42.5
         val createdOrder = webTestClient.post()
             .uri("orders")
@@ -45,7 +46,7 @@ class OrderIntegrationTest {
         )
 
         val order = webTestClient.get()
-            .uri("orders/${createdOrder.id}")
+            .uri("orders/${createdOrder.id.value}")
             .exchange()
             .expectStatus().isOk
             .expectBody(OrderDto::class.java)
