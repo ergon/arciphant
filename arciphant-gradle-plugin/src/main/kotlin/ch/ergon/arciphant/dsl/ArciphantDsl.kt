@@ -54,8 +54,8 @@ class AllComponentsDsl internal constructor() {
      * The reason is that the arciphant plugin requires the gradle configurations created by these JVM plugins
      * ('implementation', 'api') to apply the configured dependencies.
      */
-    fun plugin(id: String) {
-        plugin = Plugin(id)
+    fun plugin(pluginId: String) {
+        plugin = Plugin(pluginId)
     }
 
 }

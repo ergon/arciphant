@@ -21,8 +21,8 @@ sealed class FunctionalModuleDsl {
      * Overrides the base plugin for this component.
      * Important: Since the base plugin is overridden, the plugin itself should apply the base plugin
      */
-    fun ComponentReference.withPlugin(id: String): ComponentReference {
-        componentPlugins[this] = Plugin(id)
+    fun ComponentReference.withPlugin(pluginId: String): ComponentReference {
+        componentPlugins[this] = Plugin(pluginId)
         return this
     }
 

@@ -14,8 +14,8 @@ class BundleModuleDsl internal constructor(internal val name: String?) {
         includes.addAll(modules)
     }
 
-    fun withPlugin(id: String) {
-        plugin = Plugin(id)
+    fun withPlugin(pluginId: String) {
+        plugin = Plugin(pluginId)
     }
 
 }
