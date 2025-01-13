@@ -12,7 +12,7 @@ internal class ModuleStructureRepositoryImpl(private val dsl: ArciphantDsl) : Mo
     private fun BundleModuleDsl.createBundle(): BundleModule {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
-            plugin = dsl.allComponents.plugin,
+            plugin = plugin ?: dsl.allComponents.plugin,
             includes = includes.ifEmpty { dsl.modules.map { it.reference } }
         )
     }
