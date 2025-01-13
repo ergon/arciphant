@@ -45,7 +45,7 @@ open class ArciphantDsl {
 
 class AllComponentsDsl internal constructor() {
 
-    internal var plugin: Plugin = Plugin("kotlin")
+    internal var plugin: Plugin? = null
         private set
 
     /**
@@ -53,7 +53,6 @@ class AllComponentsDsl internal constructor() {
      * The plugin configured here should transitively apply either the Java or Kotlin plugin.
      * The reason is that the arciphant plugin requires the gradle configurations created by these JVM plugins
      * ('implementation', 'api') to apply the configured dependencies.
-     * If no plugin is specified, the 'kotlin'-Plugin is applied as fallback.
      */
     fun plugin(id: String) {
         plugin = Plugin(id)

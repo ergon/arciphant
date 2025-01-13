@@ -31,7 +31,7 @@ internal data class LibraryModule(
 
 internal data class BundleModule(
     override val reference: BundleModuleReference,
-    val plugin: Plugin,
+    val plugin: Plugin?,
     val includes: List<ModuleReference>,
 ) : Module
 
@@ -54,7 +54,7 @@ internal object RootBundleModuleReference : BundleModuleReference
 
 internal data class Component(
     val reference: ComponentReference,
-    val plugin: Plugin,
+    val plugin: Plugin?,
     val dependsOn: Collection<Dependency>,
 )
 

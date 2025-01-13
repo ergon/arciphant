@@ -37,7 +37,7 @@ internal sealed class FunctionalModuleComposer<M : FunctionalModule>(
     }
 
     protected open fun configure(component: Component, componentProject: Project) {
-        componentProject.apply(plugin = component.plugin.id)
+        component.plugin?.let { componentProject.apply(plugin = it.id) }
         component.dependsOn.forEach {
             val dependencyProject = moduleProject.childProject(it.component)
             componentProject.addDependency(it.type, dependencyProject.path)
@@ -79,7 +79,7 @@ internal class BundleModuleComposer(
     moduleProject: Project,
 ) : ModuleComposer<BundleModule>(configuration, module, moduleProject) {
     override fun configure() {
-        moduleProject.apply(plugin = module.plugin.id)
+        module.plugin?.let { moduleProject.apply(plugin = it.id) }
         configuration.modules
             .filter { module.includes.contains(it.reference) }
             .flatMap { it.gradleProjectPaths() }.forEach {
