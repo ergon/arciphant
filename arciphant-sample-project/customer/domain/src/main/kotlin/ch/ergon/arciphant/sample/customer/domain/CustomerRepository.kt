@@ -1,7 +1,7 @@
 package ch.ergon.arciphant.sample.customer.domain
 
 import ch.ergon.arciphant.sample.customer.api.Customer
-import ch.ergon.arciphant.sample.shared.api.CustomerId
+import ch.ergon.arciphant.sample.shared.base.CustomerId
 
 interface CustomerRepository {
 

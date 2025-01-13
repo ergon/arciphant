@@ -2,7 +2,7 @@ package ch.ergon.arciphant.sample.customer.db
 
 import ch.ergon.arciphant.sample.customer.api.Customer
 import ch.ergon.arciphant.sample.customer.domain.CustomerRepository
-import ch.ergon.arciphant.sample.shared.api.CustomerId
+import ch.ergon.arciphant.sample.shared.base.CustomerId
 import org.springframework.stereotype.Repository
 import java.util.*
 

@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.sample.customer.api
 
-import ch.ergon.arciphant.sample.shared.api.CustomerId
+import ch.ergon.arciphant.sample.shared.base.CustomerId
 
 data class Customer(val id: CustomerId, val firstname: String, val lastname: String) {
 
