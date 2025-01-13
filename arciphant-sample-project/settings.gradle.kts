@@ -39,7 +39,10 @@ arciphant {
   }
 
   library("shared") {
-    removeComponent(webApi, web)
+    removeComponent(web)
+    val base = addComponent("base")
+    api.dependsOnApi(base)
+    webApi.dependsOnApi(base)
   }
   module("customer")
   module("order") {
