@@ -17,7 +17,7 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("artifact-dsl-plugin") {
+        create("arciphant-dsl-plugin") {
             id = "ch.ergon.arciphant.dsl"
             implementationClass = "ch.ergon.arciphant.dsl.ArciphantDslPlugin"
         }
