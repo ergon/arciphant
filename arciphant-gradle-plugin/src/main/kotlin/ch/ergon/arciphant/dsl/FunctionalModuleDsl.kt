@@ -61,7 +61,7 @@ class SingleFunctionalModuleDsl internal constructor(
         removeAllModulesComponents = true
     }
 
-    fun removeComponent(vararg component: ComponentReference) {
-        removedAllModulesComponents.addAll(component)
+    fun removeComponent(vararg components: ComponentReference) {
+        removedAllModulesComponents.addAll(components)
     }
 }
