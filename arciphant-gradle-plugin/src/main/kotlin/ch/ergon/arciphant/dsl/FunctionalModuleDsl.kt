@@ -26,10 +26,16 @@ sealed class FunctionalModuleDsl {
         return this
     }
 
+    fun ComponentReference.dependsOnApi(vararg componentNames: String) =
+        dependsOnApi(componentNames.map { ComponentReference(it) })
+
     fun ComponentReference.dependsOnApi(vararg components: ComponentReference) = dependsOnApi(components.toList())
 
     private fun ComponentReference.dependsOnApi(components: Collection<ComponentReference>) =
         dependsOn(components, DependencyType.API)
+
+    fun ComponentReference.dependsOn(vararg componentNames: String) =
+        dependsOn(componentNames.map { ComponentReference(it) })
 
     fun ComponentReference.dependsOn(vararg components: ComponentReference) = dependsOn(components.toList())
 
@@ -62,6 +68,12 @@ class SingleFunctionalModuleDsl internal constructor(
     fun removeAllModulesComponents() {
         removeAllModulesComponents = true
     }
+
+    fun getComponent(componentName: String): ComponentReference {
+        return ComponentReference(componentName)
+    }
+
+    fun removeComponent(vararg componentNames: String) = removeComponent(componentNames.map { ComponentReference(it) })
 
     fun removeComponent(vararg components: ComponentReference) = removeComponent(components.toList())
 
