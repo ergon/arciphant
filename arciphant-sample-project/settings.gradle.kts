@@ -16,13 +16,13 @@ plugins {
 }
 
 arciphant {
-  val api = createComponent("api")
-  val domain = createComponent("domain")
-  val webApi = createComponent("web-api")
-  val web = createComponent("web")
-  val db = createComponent("db")
-  val dbSchema = createComponent("db-schema")
-  val dbModel = createComponent("db-model")
+  val api = "api"
+  val domain = "domain"
+  val webApi = "web-api"
+  val web = "web"
+  val db = "db"
+  val dbSchema = "db-schema"
+  val dbModel = "db-model"
 
   allComponents {
     plugin("component")
@@ -41,8 +41,8 @@ arciphant {
   library("shared") {
     removeComponent(web)
     val base = addComponent("base")
-    api.dependsOnApi(base)
-    webApi.dependsOnApi(base)
+    getComponent(api).dependsOnApi(base)
+    getComponent(webApi).dependsOnApi(base)
   }
   module("customer")
   module("order") {
