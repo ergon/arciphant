@@ -10,8 +10,6 @@ open class ArciphantDsl {
     internal val modules = mutableSetOf<SingleFunctionalModuleDsl>()
     internal val bundles = mutableSetOf<BundleModuleDsl>()
 
-    fun createComponent(name: String): ComponentReference = ComponentReference(name)
-
     fun allModules(configure: AllFunctionalModulesDsl.() -> Unit = {}) {
         allModules.configure()
     }
