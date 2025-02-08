@@ -80,6 +80,8 @@ internal data class ComponentDependency(
     val dependsOn: ComponentReference,
 )
 
+class StencilDsl : FunctionalModuleDsl()
+
 class AllFunctionalModulesDsl internal constructor() : FunctionalModuleDsl()
 
 class SingleFunctionalModuleDsl internal constructor(
