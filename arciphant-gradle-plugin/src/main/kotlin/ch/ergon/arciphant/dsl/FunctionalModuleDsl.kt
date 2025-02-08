@@ -6,9 +6,14 @@ import ch.ergon.arciphant.model.FunctionalModuleReference
 import ch.ergon.arciphant.model.Plugin
 
 sealed class FunctionalModuleDsl {
+    protected var baseStencils = mutableListOf<Stencil>()
     internal val components = mutableListOf<ComponentReference>()
     internal val dependencies = mutableListOf<ComponentDependency>()
     internal val componentPlugins = mutableMapOf<ComponentReference, Plugin>()
+
+    fun basedOn(vararg stencils: Stencil) {
+        this.baseStencils.addAll(stencils)
+    }
 
     fun getComponent(componentName: String): ComponentReference {
         return ComponentReference(componentName)

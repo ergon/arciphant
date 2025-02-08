@@ -5,13 +5,8 @@ import ch.ergon.arciphant.model.Plugin
 import ch.ergon.arciphant.util.merge
 
 class StencilDsl : FunctionalModuleDsl() {
-
-    private var baseStencils = mutableListOf<Stencil>()
+    
     private var defaultComponentPlugin: Plugin? = null
-
-    fun basedOn(vararg stencils: Stencil) {
-        this.baseStencils.addAll(stencils)
-    }
 
     fun defaultComponentPlugin(pluginId: String) {
         defaultComponentPlugin = Plugin(pluginId)
