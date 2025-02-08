@@ -9,7 +9,7 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
 internal sealed class ModuleComposer<M : Module>(
-    protected val configuration: ModuleStructure,
+    protected val modules: List<Module>,
     protected val module: M,
     protected val moduleProject: Project,
 ) {
@@ -22,10 +22,10 @@ internal sealed class ModuleComposer<M : Module>(
 }
 
 internal sealed class FunctionalModuleComposer<M : FunctionalModule>(
-    configuration: ModuleStructure,
+    modules: List<Module>,
     module: M,
     moduleProject: Project,
-) : ModuleComposer<M>(configuration, module, moduleProject) {
+) : ModuleComposer<M>(modules, module, moduleProject) {
 
     override fun configure() {
         module.components.forEach { configure(it) }
@@ -52,11 +52,11 @@ internal sealed class FunctionalModuleComposer<M : FunctionalModule>(
     }
 }
 
-internal class LibraryModuleComposer(configuration: ModuleStructure, module: LibraryModule, moduleProject: Project) :
-    FunctionalModuleComposer<LibraryModule>(configuration, module, moduleProject)
+internal class LibraryModuleComposer(modules: List<Module>, module: LibraryModule, moduleProject: Project) :
+    FunctionalModuleComposer<LibraryModule>(modules, module, moduleProject)
 
-internal class DomainModuleComposer(configuration: ModuleStructure, module: DomainModule, moduleProject: Project) :
-    FunctionalModuleComposer<DomainModule>(configuration, module, moduleProject) {
+internal class DomainModuleComposer(modules: List<Module>, module: DomainModule, moduleProject: Project) :
+    FunctionalModuleComposer<DomainModule>(modules, module, moduleProject) {
 
     override fun configure(component: Component, componentProject: Project) {
         super.configure(component, componentProject)
@@ -64,23 +64,25 @@ internal class DomainModuleComposer(configuration: ModuleStructure, module: Doma
     }
 
     private fun addDependenciesToLibraries(component: Component, componentProject: Project) {
-        configuration.libraries.filter { it.hasComponent(component) }.forEach {
+        libraries.filter { it.hasComponent(component) }.forEach {
             val libraryComponentPath = it.gradleProjectPath(component).value
             componentProject.addDependency(API, libraryComponentPath)
             componentProject.addTestFixturesDependency(libraryComponentPath)
         }
     }
 
+    private val libraries by lazy { modules.filterIsInstance<LibraryModule>() }
+
 }
 
 internal class BundleModuleComposer(
-    configuration: ModuleStructure,
+    modules: List<Module>,
     module: BundleModule,
     moduleProject: Project,
-) : ModuleComposer<BundleModule>(configuration, module, moduleProject) {
+) : ModuleComposer<BundleModule>(modules, module, moduleProject) {
     override fun configure() {
         module.plugin?.let { moduleProject.apply(plugin = it.id) }
-        configuration.modules
+        modules
             .filter { module.includes.contains(it.reference) }
             .flatMap { it.gradleProjectPaths() }.forEach {
                 moduleProject.addDependency(IMPLEMENTATION, it.value)

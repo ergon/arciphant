@@ -11,19 +11,19 @@ class ArciphantCorePlugin : Plugin<Settings> {
     override fun apply(settings: Settings) {
         with(settings) {
             val extension = extensions.getByType(ArciphantDsl::class.java)
-            val structure = ModuleStructureRepositoryImpl(extension).create()
-            structure.toGradleProjectPaths().forEach { include(it.value) }
+            val modules = ModuleStructureRepositoryImpl(extension).create().modules
+            modules.toGradleProjectPaths().forEach { include(it.value) }
             gradle.beforeProject {
-                structure.createComposers(gradle.rootProject).forEach { it.configure() }
+                modules.createComposers(gradle.rootProject).forEach { it.configure() }
             }
         }
 
     }
 }
 
-private fun ModuleStructure.toGradleProjectPaths() = modules.flatMap { it.gradleProjectPaths() }.filter { !it.isRoot }
+private fun List<Module>.toGradleProjectPaths() = flatMap { it.gradleProjectPaths() }.filter { !it.isRoot }
 
-private fun ModuleStructure.createComposers(rootProject: Project) = modules.map {
+private fun List<Module>.createComposers(rootProject: Project) = map {
     val project = it.reference.project(rootProject)
     when (it) {
         is LibraryModule -> LibraryModuleComposer(this, it, project)
