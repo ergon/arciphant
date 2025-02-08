@@ -18,6 +18,12 @@ open class ArciphantDsl {
         allComponents.configure()
     }
 
+    fun stencil(configure: StencilDsl.() -> Unit = {}): Stencil {
+        val stencilBuilder = StencilDsl()
+        stencilBuilder.configure()
+        return stencilBuilder.build()
+    }
+
     fun library(name: String, configure: SingleFunctionalModuleDsl.() -> Unit = {}): LibraryModuleReference {
         return module(LibraryModuleReference(name), configure)
     }
