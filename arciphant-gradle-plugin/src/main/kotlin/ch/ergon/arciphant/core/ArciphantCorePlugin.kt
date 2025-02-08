@@ -11,7 +11,7 @@ class ArciphantCorePlugin : Plugin<Settings> {
     override fun apply(settings: Settings) {
         with(settings) {
             val extension = extensions.getByType(ArciphantDsl::class.java)
-            val modules = ModuleRepositoryImpl(extension).create()
+            val modules = ModuleRepositoryImpl(extension).load()
             modules.toGradleProjectPaths().forEach { include(it.value) }
             gradle.beforeProject {
                 modules.createComposers(gradle.rootProject).forEach { it.configure() }
