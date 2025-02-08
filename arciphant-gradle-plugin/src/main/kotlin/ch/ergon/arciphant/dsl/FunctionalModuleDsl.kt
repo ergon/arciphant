@@ -7,12 +7,18 @@ import ch.ergon.arciphant.model.Plugin
 
 sealed class FunctionalModuleDsl {
     protected var baseStencils = mutableListOf<Stencil>()
+    internal var defaultComponentPlugin: Plugin? = null
+
     internal val components = mutableListOf<ComponentReference>()
     internal val dependencies = mutableListOf<ComponentDependency>()
     internal val componentPlugins = mutableMapOf<ComponentReference, Plugin>()
 
     fun basedOn(vararg stencils: Stencil) {
         this.baseStencils.addAll(stencils)
+    }
+
+    fun defaultComponentPlugin(pluginId: String) {
+        defaultComponentPlugin = Plugin(pluginId)
     }
 
     fun getComponent(componentName: String): ComponentReference {
