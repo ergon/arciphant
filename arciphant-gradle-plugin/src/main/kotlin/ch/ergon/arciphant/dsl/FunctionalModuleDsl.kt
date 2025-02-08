@@ -4,10 +4,11 @@ import ch.ergon.arciphant.model.ComponentReference
 import ch.ergon.arciphant.model.DependencyType
 import ch.ergon.arciphant.model.FunctionalModuleReference
 import ch.ergon.arciphant.model.Plugin
+import ch.ergon.arciphant.util.merge
 
 sealed class FunctionalModuleDsl {
-    protected var baseStencils = mutableListOf<Stencil>()
-    internal var defaultComponentPlugin: Plugin? = null
+    private var baseStencils = mutableListOf<Stencil>()
+    private var defaultComponentPlugin: Plugin? = null
 
     internal val components = mutableListOf<ComponentReference>()
     internal val dependencies = mutableListOf<ComponentDependency>()
@@ -64,6 +65,13 @@ sealed class FunctionalModuleDsl {
         dependencies.addAll(components.map { ComponentDependency(this, type, it) })
         return this
     }
+
+    internal fun build() = Stencil(
+        components = baseStencils.flatMap { it.components } + components,
+        dependencies = baseStencils.flatMap { it.dependencies } + dependencies,
+        componentPlugins = baseStencils.map { it.componentPlugins }.merge() + componentPlugins,
+        defaultComponentPlugin = defaultComponentPlugin ?: baseStencils.map { it.defaultComponentPlugin }.last(),
+    )
 }
 
 internal data class ComponentDependency(
