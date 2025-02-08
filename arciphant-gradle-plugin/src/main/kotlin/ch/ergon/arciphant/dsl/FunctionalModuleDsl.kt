@@ -10,6 +10,10 @@ sealed class FunctionalModuleDsl {
     internal val dependencies = mutableListOf<ComponentDependency>()
     internal val componentPlugins = mutableMapOf<ComponentReference, Plugin>()
 
+    fun getComponent(componentName: String): ComponentReference {
+        return ComponentReference(componentName)
+    }
+
     fun addComponent(name: String) = addComponent(ComponentReference(name))
 
     fun addComponent(component: ComponentReference): ComponentReference {
@@ -67,10 +71,6 @@ class SingleFunctionalModuleDsl internal constructor(
 
     fun removeAllModulesComponents() {
         removeAllModulesComponents = true
-    }
-
-    fun getComponent(componentName: String): ComponentReference {
-        return ComponentReference(componentName)
     }
 
     fun removeComponent(vararg componentNames: String) = removeComponent(componentNames.map { ComponentReference(it) })
