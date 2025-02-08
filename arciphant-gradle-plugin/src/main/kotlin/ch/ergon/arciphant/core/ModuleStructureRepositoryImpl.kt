@@ -5,9 +5,7 @@ import ch.ergon.arciphant.model.*
 
 internal class ModuleStructureRepositoryImpl(private val dsl: ArciphantDsl) : ModuleStructureRepository {
 
-    override fun create() = ModuleStructure(
-        modules = dsl.modules.map { it.createModule(dsl.allModules) } + dsl.bundles.map { it.createBundle() },
-    )
+    override fun create() = dsl.modules.map { it.createModule(dsl.allModules) } + dsl.bundles.map { it.createBundle() }
 
     private fun BundleModuleDsl.createBundle(): BundleModule {
         return BundleModule(
