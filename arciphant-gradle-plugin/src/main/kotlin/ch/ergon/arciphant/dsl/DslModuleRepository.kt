@@ -13,7 +13,7 @@ import ch.ergon.arciphant.model.LibraryModuleReference
 import ch.ergon.arciphant.model.ModuleRepository
 import ch.ergon.arciphant.model.RootBundleModuleReference
 
-internal class ModuleRepositoryImpl(private val dsl: ArciphantDsl) : ModuleRepository {
+internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleRepository {
 
     override fun load() = dsl.modules.map { it.createModule(dsl.allModules) } + dsl.bundles.map { it.createBundle() }
 

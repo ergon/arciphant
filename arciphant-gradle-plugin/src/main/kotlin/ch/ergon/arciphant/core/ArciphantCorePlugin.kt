@@ -1,7 +1,7 @@
 package ch.ergon.arciphant.core
 
 import ch.ergon.arciphant.dsl.ArciphantDsl
-import ch.ergon.arciphant.dsl.ModuleRepositoryImpl
+import ch.ergon.arciphant.dsl.DslModuleRepository
 import ch.ergon.arciphant.model.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,7 +12,7 @@ class ArciphantCorePlugin : Plugin<Settings> {
     override fun apply(settings: Settings) {
         with(settings) {
             val extension = extensions.getByType(ArciphantDsl::class.java)
-            val modules = ModuleRepositoryImpl(extension).load()
+            val modules = DslModuleRepository(extension).load()
             modules.toGradleProjectPaths().forEach { include(it.value) }
             gradle.beforeProject {
                 modules.createComposers(gradle.rootProject).forEach { it.configure() }
