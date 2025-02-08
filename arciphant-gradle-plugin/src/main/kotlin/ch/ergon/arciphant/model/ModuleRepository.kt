@@ -1,5 +1,5 @@
 package ch.ergon.arciphant.model
 
-internal interface ModuleStructureRepository {
+internal interface ModuleRepository {
     fun create(): List<Module>
 }
