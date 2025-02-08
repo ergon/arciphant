@@ -1,6 +1,7 @@
 package ch.ergon.arciphant.core
 
 import ch.ergon.arciphant.dsl.ArciphantDsl
+import ch.ergon.arciphant.dsl.ModuleRepositoryImpl
 import ch.ergon.arciphant.model.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
