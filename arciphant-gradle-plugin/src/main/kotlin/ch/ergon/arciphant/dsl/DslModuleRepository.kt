@@ -4,9 +4,9 @@ import ch.ergon.arciphant.model.*
 
 internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleRepository {
 
-    override fun load() = dsl.modules.map { it.createModule() } + dsl.bundles.map { it.createBundle() }
+    override fun load() = dsl.modules.map { it.createFunctionalModule() } + dsl.bundles.map { it.createBundleModule() }
 
-    private fun BundleModuleDsl.createBundle(): BundleModule {
+    private fun BundleModuleDsl.createBundleModule(): BundleModule {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
             plugin = plugin,
@@ -14,7 +14,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         )
     }
 
-    private fun FunctionalModuleDsl.createModule(): FunctionalModule {
+    private fun FunctionalModuleDsl.createFunctionalModule(): FunctionalModule {
         val stencil = build()
         val dependencies = stencil.dependencies.toDependencyMap()
         val mergedComponents = stencil.components.map {
