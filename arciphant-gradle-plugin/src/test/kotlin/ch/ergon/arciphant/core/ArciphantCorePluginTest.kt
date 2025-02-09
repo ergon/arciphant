@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.core
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.UnexpectedBuildFailure
 import org.junit.jupiter.api.Test
@@ -42,8 +42,8 @@ class ArciphantCorePluginTest {
             .withArguments("-q", "projects")
             .build()
 
-        Assertions.assertThat(result.output).contains("Project ':test:api'")
-        Assertions.assertThat(result.output).contains("Project ':test:domain'")
+        assertThat(result.output).contains("Project ':test:api'")
+        assertThat(result.output).contains("Project ':test:domain'")
     }
 
     @Test
@@ -62,7 +62,7 @@ class ArciphantCorePluginTest {
                 .build()
         }
 
-        Assertions.assertThat(error.message).contains("Module 'test' has no components.")
+        assertThat(error.message).contains("Module 'test' has no components.")
     }
 
     private fun settingsFileWithArciphant(arciphantConfiguration: String) = settingsFile.write(
