@@ -30,7 +30,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + stencil.componentPlugins
         val dependencies = (allModulesConfiguration.dependencies + stencil.dependencies)
             .toDependencyMap()
-        val mergedComponents = (componentsInheritedFromAllModules(allModulesConfiguration) + stencil.components).map {
+        val mergedComponents = (allModulesConfiguration.components + stencil.components).map {
             Component(
                 reference = it,
                 plugin = mergedComponentPlugins[it] ?: stencil.defaultComponentPlugin ?: dsl.allComponents.plugin,
@@ -41,12 +41,6 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
             is DomainModuleReference -> DomainModule(reference, mergedComponents)
             is LibraryModuleReference -> LibraryModule(reference, mergedComponents)
         }
-    }
-
-    private fun SingleFunctionalModuleDsl.componentsInheritedFromAllModules(
-        allModulesConfiguration: AllFunctionalModulesDsl
-    ): List<ComponentReference> {
-        return allModulesConfiguration.components
     }
 
     private fun List<ComponentDependency>.toDependencyMap() =
