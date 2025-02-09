@@ -74,12 +74,6 @@ sealed class FunctionalModuleDsl {
     )
 }
 
-internal data class ComponentDependency(
-    val source: ComponentReference,
-    val type: DependencyType,
-    val dependsOn: ComponentReference,
-)
-
 class StencilDsl internal constructor() : FunctionalModuleDsl()
 
 class SingleFunctionalModuleDsl internal constructor(
