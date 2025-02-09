@@ -29,7 +29,6 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         val stencil = build()
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + stencil.componentPlugins
         val dependencies = (allModulesConfiguration.dependencies + stencil.dependencies)
-            .filter { !it.includesAny(removedAllModulesComponents) }
             .toDependencyMap()
         val mergedComponents = (componentsInheritedFromAllModules(allModulesConfiguration) + stencil.components).map {
             Component(
@@ -47,14 +46,8 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
     private fun SingleFunctionalModuleDsl.componentsInheritedFromAllModules(
         allModulesConfiguration: AllFunctionalModulesDsl
     ): List<ComponentReference> {
-        return if (removeAllModulesComponents)
-            emptyList()
-        else
-            allModulesConfiguration.components.filter { !removedAllModulesComponents.contains(it) }
+        return allModulesConfiguration.components
     }
-
-    private fun ComponentDependency.includesAny(components: Collection<ComponentReference>) =
-        components.any { source == it || dependsOn == it }
 
     private fun List<ComponentDependency>.toDependencyMap() =
         groupBy(ComponentDependency::source) { Dependency(it.dependsOn, it.type) }

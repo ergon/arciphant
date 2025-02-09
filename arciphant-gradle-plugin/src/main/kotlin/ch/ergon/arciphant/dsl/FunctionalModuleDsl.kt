@@ -86,19 +86,4 @@ class AllFunctionalModulesDsl internal constructor() : FunctionalModuleDsl()
 
 class SingleFunctionalModuleDsl internal constructor(
     internal val reference: FunctionalModuleReference,
-) : FunctionalModuleDsl() {
-    internal var removeAllModulesComponents: Boolean = false
-    internal val removedAllModulesComponents = mutableListOf<ComponentReference>()
-
-    fun removeAllModulesComponents() {
-        removeAllModulesComponents = true
-    }
-
-    fun removeComponent(vararg componentNames: String) = removeComponent(componentNames.map { ComponentReference(it) })
-
-    fun removeComponent(vararg components: ComponentReference) = removeComponent(components.toList())
-
-    private fun removeComponent(components: Collection<ComponentReference>) {
-        removedAllModulesComponents.addAll(components)
-    }
-}
+) : FunctionalModuleDsl()
