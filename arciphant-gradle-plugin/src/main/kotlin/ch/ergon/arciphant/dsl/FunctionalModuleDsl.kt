@@ -70,7 +70,7 @@ sealed class FunctionalModuleDsl {
         components = baseStencils.flatMap { it.components } + components,
         dependencies = baseStencils.flatMap { it.dependencies } + dependencies,
         componentPlugins = baseStencils.map { it.componentPlugins }.merge() + componentPlugins,
-        defaultComponentPlugin = defaultComponentPlugin ?: baseStencils.map { it.defaultComponentPlugin }.last(),
+        defaultComponentPlugin = defaultComponentPlugin ?: baseStencils.map { it.defaultComponentPlugin }.lastOrNull(),
     )
 }
 
