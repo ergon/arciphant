@@ -82,8 +82,6 @@ internal data class ComponentDependency(
 
 class StencilDsl internal constructor() : FunctionalModuleDsl()
 
-class AllFunctionalModulesDsl internal constructor() : FunctionalModuleDsl()
-
 class SingleFunctionalModuleDsl internal constructor(
     internal val reference: FunctionalModuleReference,
 ) : FunctionalModuleDsl()

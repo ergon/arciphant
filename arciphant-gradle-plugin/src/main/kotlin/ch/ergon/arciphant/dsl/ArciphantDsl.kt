@@ -5,14 +5,9 @@ import ch.ergon.arciphant.util.emptyToNull
 
 open class ArciphantDsl {
 
-    internal val allModules = AllFunctionalModulesDsl()
     internal val allComponents = AllComponentsDsl()
     internal val modules = mutableSetOf<SingleFunctionalModuleDsl>()
     internal val bundles = mutableSetOf<BundleModuleDsl>()
-
-    fun allModules(configure: AllFunctionalModulesDsl.() -> Unit = {}) {
-        allModules.configure()
-    }
 
     fun allComponents(configure: AllComponentsDsl.() -> Unit = {}) {
         allComponents.configure()
