@@ -15,14 +15,17 @@ open class ArciphantDsl {
     }
 
     fun library(name: String, configure: SingleFunctionalModuleDsl.() -> Unit = {}): LibraryModuleReference {
-        return module(LibraryModuleReference(name), configure)
+        return functionalModule(LibraryModuleReference(name), configure)
     }
 
     fun module(name: String, configure: SingleFunctionalModuleDsl.() -> Unit = {}): DomainModuleReference {
-        return module(DomainModuleReference(name), configure)
+        return functionalModule(DomainModuleReference(name), configure)
     }
 
-    private fun <M : FunctionalModuleReference> module(reference: M, configure: SingleFunctionalModuleDsl.() -> Unit = {}): M {
+    private fun <M : FunctionalModuleReference> functionalModule(
+        reference: M,
+        configure: SingleFunctionalModuleDsl.() -> Unit = {}
+    ): M {
         val module = SingleFunctionalModuleDsl(reference)
         module.configure()
         modules.add(module)
