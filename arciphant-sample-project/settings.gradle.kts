@@ -24,28 +24,34 @@ arciphant {
   val dbSchema = "db-schema"
   val dbModel = "db-model"
 
-  allComponents {
-    plugin("component")
-  }
+  val libraryStencil = stencil {
+    defaultComponentPlugin("component")
 
-  allModules {
     addComponent(api)
     addComponent(domain).withPlugin("domain").dependsOnApi(api)
     addComponent(webApi).withPlugin("web")
-    addComponent(web).withPlugin("web").dependsOn(webApi, domain)
     addComponent(dbSchema)
     addComponent(dbModel)
     addComponent(db).withPlugin("db").dependsOn(dbModel, domain)
   }
 
+  val moduleStencil = stencil {
+    basedOn(libraryStencil)
+
+    addComponent(web).withPlugin("web").dependsOn(webApi, domain)
+  }
+
   library("shared") {
-    removeComponent(web)
+    basedOn(libraryStencil)
+
     val base = addComponent("base")
     getComponent(api).dependsOnApi(base)
     getComponent(webApi).dependsOnApi(base)
   }
-  module("customer")
+  module("customer") { basedOn(moduleStencil) }
   module("order") {
+    basedOn(moduleStencil)
+
     addComponent("api-client").dependsOn(domain)
   }
 
