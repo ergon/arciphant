@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.model
 
-sealed interface Module {
+internal sealed interface Module {
     val reference: ModuleReference
 }
 
