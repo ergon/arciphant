@@ -26,14 +26,15 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
     }
 
     private fun SingleFunctionalModuleDsl.createModule(allModulesConfiguration: AllFunctionalModulesDsl): FunctionalModule {
-        val mergedComponentPlugins = allModulesConfiguration.componentPlugins + componentPlugins
-        val dependencies = (allModulesConfiguration.dependencies + dependencies)
+        val stencil = build()
+        val mergedComponentPlugins = allModulesConfiguration.componentPlugins + stencil.componentPlugins
+        val dependencies = (allModulesConfiguration.dependencies + stencil.dependencies)
             .filter { !it.includesAny(removedAllModulesComponents) }
             .toDependencyMap()
-        val mergedComponents = (componentsInheritedFromAllModules(allModulesConfiguration) + components).map {
+        val mergedComponents = (componentsInheritedFromAllModules(allModulesConfiguration) + stencil.components).map {
             Component(
                 reference = it,
-                plugin = mergedComponentPlugins[it] ?: dsl.allComponents.plugin,
+                plugin = mergedComponentPlugins[it] ?: stencil.defaultComponentPlugin ?: dsl.allComponents.plugin,
                 dependsOn = dependencies.getValue(it)
             )
         }
