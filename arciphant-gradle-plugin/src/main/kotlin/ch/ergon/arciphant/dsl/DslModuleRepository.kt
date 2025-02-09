@@ -14,7 +14,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         )
     }
 
-    private fun SingleFunctionalModuleDsl.createModule(): FunctionalModule {
+    private fun FunctionalModuleDsl.createModule(): FunctionalModule {
         val stencil = build()
         val dependencies = stencil.dependencies.toDependencyMap()
         val mergedComponents = stencil.components.map {

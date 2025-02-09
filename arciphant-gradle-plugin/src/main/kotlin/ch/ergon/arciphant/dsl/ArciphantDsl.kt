@@ -5,7 +5,7 @@ import ch.ergon.arciphant.util.emptyToNull
 
 open class ArciphantDsl {
 
-    internal val modules = mutableSetOf<SingleFunctionalModuleDsl>()
+    internal val modules = mutableSetOf<FunctionalModuleDsl>()
     internal val bundles = mutableSetOf<BundleModuleDsl>()
 
     fun stencil(configure: StencilDsl.() -> Unit = {}): Stencil {
@@ -14,19 +14,19 @@ open class ArciphantDsl {
         return stencilBuilder.build()
     }
 
-    fun library(name: String, configure: SingleFunctionalModuleDsl.() -> Unit = {}): LibraryModuleReference {
+    fun library(name: String, configure: FunctionalModuleDsl.() -> Unit = {}): LibraryModuleReference {
         return functionalModule(LibraryModuleReference(name), configure)
     }
 
-    fun module(name: String, configure: SingleFunctionalModuleDsl.() -> Unit = {}): DomainModuleReference {
+    fun module(name: String, configure: FunctionalModuleDsl.() -> Unit = {}): DomainModuleReference {
         return functionalModule(DomainModuleReference(name), configure)
     }
 
     private fun <M : FunctionalModuleReference> functionalModule(
         reference: M,
-        configure: SingleFunctionalModuleDsl.() -> Unit = {}
+        configure: FunctionalModuleDsl.() -> Unit = {}
     ): M {
-        val module = SingleFunctionalModuleDsl(reference)
+        val module = FunctionalModuleDsl(reference)
         module.configure()
         modules.add(module)
         return reference
