@@ -1,17 +1,6 @@
 package ch.ergon.arciphant.dsl
 
-import ch.ergon.arciphant.model.BundleModule
-import ch.ergon.arciphant.model.ChildBundleModuleReference
-import ch.ergon.arciphant.model.Component
-import ch.ergon.arciphant.model.ComponentReference
-import ch.ergon.arciphant.model.Dependency
-import ch.ergon.arciphant.model.DomainModule
-import ch.ergon.arciphant.model.DomainModuleReference
-import ch.ergon.arciphant.model.FunctionalModule
-import ch.ergon.arciphant.model.LibraryModule
-import ch.ergon.arciphant.model.LibraryModuleReference
-import ch.ergon.arciphant.model.ModuleRepository
-import ch.ergon.arciphant.model.RootBundleModuleReference
+import ch.ergon.arciphant.model.*
 
 internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleRepository {
 
