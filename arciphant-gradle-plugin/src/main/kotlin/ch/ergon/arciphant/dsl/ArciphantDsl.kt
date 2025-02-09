@@ -5,13 +5,8 @@ import ch.ergon.arciphant.util.emptyToNull
 
 open class ArciphantDsl {
 
-    internal val allComponents = AllComponentsDsl()
     internal val modules = mutableSetOf<SingleFunctionalModuleDsl>()
     internal val bundles = mutableSetOf<BundleModuleDsl>()
-
-    fun allComponents(configure: AllComponentsDsl.() -> Unit = {}) {
-        allComponents.configure()
-    }
 
     fun stencil(configure: StencilDsl.() -> Unit = {}): Stencil {
         val stencilBuilder = StencilDsl()
@@ -38,23 +33,6 @@ open class ArciphantDsl {
         val bundle = BundleModuleDsl(name?.emptyToNull())
         this.bundles.add(bundle)
         return bundle
-    }
-
-}
-
-class AllComponentsDsl internal constructor() {
-
-    internal var plugin: Plugin? = null
-        private set
-
-    /**
-     * This plugin is applied to all components that do NOT specify a specific plugin.
-     * The plugin configured here should transitively apply either the Java or Kotlin plugin.
-     * The reason is that the arciphant plugin requires the gradle configurations created by these JVM plugins
-     * ('implementation', 'api') to apply the configured dependencies.
-     */
-    fun plugin(pluginId: String) {
-        plugin = Plugin(pluginId)
     }
 
 }

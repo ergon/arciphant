@@ -20,7 +20,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
     private fun BundleModuleDsl.createBundle(): BundleModule {
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
-            plugin = plugin ?: dsl.allComponents.plugin,
+            plugin = plugin,
             includes = includes.ifEmpty { dsl.modules.map { it.reference } }
         )
     }
@@ -31,7 +31,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         val mergedComponents = stencil.components.map {
             Component(
                 reference = it,
-                plugin = stencil.componentPlugins[it] ?: stencil.defaultComponentPlugin ?: dsl.allComponents.plugin,
+                plugin = stencil.componentPlugins[it] ?: stencil.defaultComponentPlugin,
                 dependsOn = dependencies.getValue(it)
             )
         }
