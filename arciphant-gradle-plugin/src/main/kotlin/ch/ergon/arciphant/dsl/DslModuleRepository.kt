@@ -56,10 +56,13 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
     private fun SingleFunctionalModuleDsl.getDependencies(allModulesConfiguration: AllFunctionalModulesDsl) =
         (allModulesConfiguration.dependencies + dependencies)
             .filter { !it.includesAny(removedAllModulesComponents) }
-            .groupBy(ComponentDependency::source) { Dependency(it.dependsOn, it.type) }
-            .withDefault { emptyList() }
+            .toDependencyMap()
 
     private fun ComponentDependency.includesAny(components: Collection<ComponentReference>) =
         components.any { source == it || dependsOn == it }
+
+    private fun List<ComponentDependency>.toDependencyMap() =
+        groupBy(ComponentDependency::source) { Dependency(it.dependsOn, it.type) }
+            .withDefault { emptyList() }
 
 }
