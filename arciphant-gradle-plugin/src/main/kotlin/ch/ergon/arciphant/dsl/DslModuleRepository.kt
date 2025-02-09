@@ -27,8 +27,10 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
 
     private fun SingleFunctionalModuleDsl.createModule(allModulesConfiguration: AllFunctionalModulesDsl): FunctionalModule {
         val mergedComponentPlugins = allModulesConfiguration.componentPlugins + componentPlugins
-        val dependencies = getDependencies(allModulesConfiguration)
-        val mergedComponents = mergeComponents(allModulesConfiguration).map {
+        val dependencies = (allModulesConfiguration.dependencies + dependencies)
+            .filter { !it.includesAny(removedAllModulesComponents) }
+            .toDependencyMap()
+        val mergedComponents = (componentsInheritedFromAllModules(allModulesConfiguration) + components).map {
             Component(
                 reference = it,
                 plugin = mergedComponentPlugins[it] ?: dsl.allComponents.plugin,
@@ -41,9 +43,6 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         }
     }
 
-    private fun SingleFunctionalModuleDsl.mergeComponents(allModulesConfiguration: AllFunctionalModulesDsl) =
-        componentsInheritedFromAllModules(allModulesConfiguration) + components
-
     private fun SingleFunctionalModuleDsl.componentsInheritedFromAllModules(
         allModulesConfiguration: AllFunctionalModulesDsl
     ): List<ComponentReference> {
@@ -52,11 +51,6 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         else
             allModulesConfiguration.components.filter { !removedAllModulesComponents.contains(it) }
     }
-
-    private fun SingleFunctionalModuleDsl.getDependencies(allModulesConfiguration: AllFunctionalModulesDsl) =
-        (allModulesConfiguration.dependencies + dependencies)
-            .filter { !it.includesAny(removedAllModulesComponents) }
-            .toDependencyMap()
 
     private fun ComponentDependency.includesAny(components: Collection<ComponentReference>) =
         components.any { source == it || dependsOn == it }
