@@ -4,10 +4,10 @@ internal sealed interface Module {
     val reference: ModuleReference
 }
 
-internal sealed class FunctionalModule : Module {
+internal sealed interface FunctionalModule : Module {
 
-    abstract override val reference: FunctionalModuleReference
-    abstract val components: List<Component>
+    override val reference: FunctionalModuleReference
+    val components: List<Component>
 
     fun hasComponent(component: Component) = components.map { it.reference }.contains(component.reference)
 }
@@ -15,12 +15,12 @@ internal sealed class FunctionalModule : Module {
 internal data class DomainModule(
     override val reference: DomainModuleReference,
     override val components: List<Component>,
-) : FunctionalModule()
+) : FunctionalModule
 
 internal data class LibraryModule(
     override val reference: LibraryModuleReference,
     override val components: List<Component>,
-) : FunctionalModule()
+) : FunctionalModule
 
 internal data class BundleModule(
     override val reference: BundleModuleReference,
