@@ -8,6 +8,11 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
 
     private fun FunctionalModuleDsl.createFunctionalModule(): FunctionalModule {
         return with(build()) {
+            require(components.isNotEmpty()) {
+                "Module '${reference.name}' does not have any component. " +
+                        "Functional modules (domain modules and libraries) cannot be created without components. " +
+                        "Use bundle module instead if you need a module without components."
+            }
             val dependenciesByComponent = dependencies.toDependencyMap()
             val components = components.map {
                 Component(
