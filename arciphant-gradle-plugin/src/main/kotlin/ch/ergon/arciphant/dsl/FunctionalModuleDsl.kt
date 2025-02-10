@@ -10,9 +10,9 @@ sealed class AbstractFunctionalModuleDsl {
     private var baseStencils = mutableListOf<Stencil>()
     private var defaultComponentPlugin: Plugin? = null
 
-    internal val components = mutableListOf<ComponentReference>()
-    internal val dependencies = mutableListOf<ComponentDependency>()
-    internal val componentPlugins = mutableMapOf<ComponentReference, Plugin>()
+    private val components = mutableListOf<ComponentReference>()
+    private val dependencies = mutableListOf<ComponentDependency>()
+    private val componentPlugins = mutableMapOf<ComponentReference, Plugin>()
 
     fun basedOn(vararg stencils: Stencil) {
         this.baseStencils.addAll(stencils)
