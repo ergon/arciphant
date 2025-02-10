@@ -7,18 +7,19 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
     override fun load() = dsl.modules.map { it.createFunctionalModule() } + dsl.bundles.map { it.createBundleModule() }
 
     private fun FunctionalModuleDsl.createFunctionalModule(): FunctionalModule {
-        val stencil = build()
-        val dependenciesByComponent = stencil.dependencies.toDependencyMap()
-        val components = stencil.components.map {
-            Component(
-                reference = it,
-                plugin = stencil.componentPlugins[it] ?: stencil.defaultComponentPlugin,
-                dependsOn = dependenciesByComponent.getValue(it)
-            )
-        }
-        return when (reference) {
-            is DomainModuleReference -> DomainModule(reference, components)
-            is LibraryModuleReference -> LibraryModule(reference, components)
+        return with(build()) {
+            val dependenciesByComponent = dependencies.toDependencyMap()
+            val components = components.map {
+                Component(
+                    reference = it,
+                    plugin = componentPlugins[it] ?: defaultComponentPlugin,
+                    dependsOn = dependenciesByComponent.getValue(it)
+                )
+            }
+            when (reference) {
+                is DomainModuleReference -> DomainModule(reference, components)
+                is LibraryModuleReference -> LibraryModule(reference, components)
+            }
         }
     }
 
