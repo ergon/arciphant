@@ -4,7 +4,7 @@ internal sealed interface Module {
     val reference: ModuleReference
 }
 
-internal sealed class FunctionalModule(components: List<Component>, reference: FunctionalModuleReference) : Module {
+internal sealed class FunctionalModule : Module {
 
     abstract override val reference: FunctionalModuleReference
     abstract val components: List<Component>
@@ -15,12 +15,12 @@ internal sealed class FunctionalModule(components: List<Component>, reference: F
 internal data class DomainModule(
     override val reference: DomainModuleReference,
     override val components: List<Component>,
-) : FunctionalModule(components, reference)
+) : FunctionalModule()
 
 internal data class LibraryModule(
     override val reference: LibraryModuleReference,
     override val components: List<Component>,
-) : FunctionalModule(components, reference)
+) : FunctionalModule()
 
 internal data class BundleModule(
     override val reference: BundleModuleReference,
