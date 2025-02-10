@@ -6,13 +6,6 @@ internal sealed interface Module {
 
 internal sealed class FunctionalModule(components: List<Component>, reference: FunctionalModuleReference) : Module {
 
-    init {
-        require(components.isNotEmpty()) {
-            "Module '${reference.name}' has no components. " +
-                    "This is not allowed, since the module gradle project is implicitly created through its components"
-        }
-    }
-
     abstract override val reference: FunctionalModuleReference
     abstract val components: List<Component>
 
