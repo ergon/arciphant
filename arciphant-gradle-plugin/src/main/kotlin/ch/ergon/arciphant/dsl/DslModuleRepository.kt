@@ -8,17 +8,17 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
 
     private fun FunctionalModuleDsl.createFunctionalModule(): FunctionalModule {
         val stencil = build()
-        val dependencies = stencil.dependencies.toDependencyMap()
-        val mergedComponents = stencil.components.map {
+        val dependenciesByComponent = stencil.dependencies.toDependencyMap()
+        val components = stencil.components.map {
             Component(
                 reference = it,
                 plugin = stencil.componentPlugins[it] ?: stencil.defaultComponentPlugin,
-                dependsOn = dependencies.getValue(it)
+                dependsOn = dependenciesByComponent.getValue(it)
             )
         }
         return when (reference) {
-            is DomainModuleReference -> DomainModule(reference, mergedComponents)
-            is LibraryModuleReference -> LibraryModule(reference, mergedComponents)
+            is DomainModuleReference -> DomainModule(reference, components)
+            is LibraryModuleReference -> LibraryModule(reference, components)
         }
     }
 
