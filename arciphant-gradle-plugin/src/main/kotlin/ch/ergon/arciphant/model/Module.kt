@@ -19,7 +19,7 @@ internal data class LibraryModule(
     override val components: List<Component>,
 ) : FunctionalModule {
 
-    fun hasComponent(component: Component) = components.map { it.reference }.contains(component.reference)
+    fun hasComponent(component: ComponentReference) = components.map { it.reference }.contains(component)
 }
 
 internal data class BundleModule(

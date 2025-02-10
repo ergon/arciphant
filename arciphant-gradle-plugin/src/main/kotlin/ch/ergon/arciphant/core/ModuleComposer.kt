@@ -64,7 +64,7 @@ internal class DomainModuleComposer(modules: List<Module>, module: DomainModule,
     }
 
     private fun addDependenciesToLibraries(component: Component, componentProject: Project) {
-        libraries.filter { it.hasComponent(component) }.forEach {
+        libraries.filter { it.hasComponent(component.reference) }.forEach {
             val libraryComponentPath = it.gradleProjectPath(component).value
             componentProject.addDependency(API, libraryComponentPath)
             componentProject.addTestFixturesDependency(libraryComponentPath)
