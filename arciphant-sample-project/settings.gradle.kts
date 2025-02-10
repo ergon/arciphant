@@ -51,7 +51,7 @@ arciphant {
   module("order") {
     basedOn(moduleStencil)
 
-    addComponent("api-client").dependsOn(domain)
+    addComponent("external-api").dependsOn(domain)
   }
 
   bundle().withPlugin("bundle")
