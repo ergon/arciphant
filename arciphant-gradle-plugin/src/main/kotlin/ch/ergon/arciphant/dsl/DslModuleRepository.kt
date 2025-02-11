@@ -22,8 +22,8 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
                 )
             }
             when (reference) {
-                is DomainModuleReference -> DomainModule(reference, components)
-                is LibraryModuleReference -> LibraryModule(reference, components)
+                is DomainModuleReference -> DomainModule(reference, components.toSet())
+                is LibraryModuleReference -> LibraryModule(reference, components.toSet())
             }
         }
     }
@@ -36,7 +36,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         return BundleModule(
             reference = if (name != null) ChildBundleModuleReference(name) else RootBundleModuleReference,
             plugin = plugin,
-            includes = includes.ifEmpty { dsl.modules.map { it.reference } }
+            includes = includes.ifEmpty { dsl.modules.map { it.reference } }.toSet()
         )
     }
 

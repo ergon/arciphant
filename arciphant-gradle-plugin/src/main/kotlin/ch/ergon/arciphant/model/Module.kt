@@ -6,17 +6,17 @@ internal sealed interface Module {
 
 internal sealed interface FunctionalModule : Module {
     override val reference: FunctionalModuleReference
-    val components: List<Component>
+    val components: Set<Component>
 }
 
 internal data class DomainModule(
     override val reference: DomainModuleReference,
-    override val components: List<Component>,
+    override val components: Set<Component>,
 ) : FunctionalModule
 
 internal data class LibraryModule(
     override val reference: LibraryModuleReference,
-    override val components: List<Component>,
+    override val components: Set<Component>,
 ) : FunctionalModule {
 
     fun hasComponent(component: ComponentReference) = components.map { it.reference }.contains(component)
@@ -25,7 +25,7 @@ internal data class LibraryModule(
 internal data class BundleModule(
     override val reference: BundleModuleReference,
     val plugin: Plugin?,
-    val includes: List<ModuleReference>,
+    val includes: Set<ModuleReference>,
 ) : Module
 
 internal data class Component(
