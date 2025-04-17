@@ -10,3 +10,4 @@ detekt.xml
 gradle.xml
 modules.xml
 modules
+compiler.xml
