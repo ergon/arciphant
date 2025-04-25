@@ -26,7 +26,7 @@ sealed class AbstractFunctionalModuleDsl {
         return ComponentReference(componentName)
     }
 
-    fun addComponent(name: String) = addComponent(ComponentReference(name))
+    fun addComponent(componentName: String) = addComponent(ComponentReference(componentName))
 
     fun addComponent(component: ComponentReference): ComponentReference {
         components.add(component)
