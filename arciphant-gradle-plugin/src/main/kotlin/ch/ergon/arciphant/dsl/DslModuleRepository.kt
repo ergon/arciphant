@@ -6,7 +6,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
 
     override fun load() = dsl.modules.map { it.createFunctionalModule() } + dsl.bundles.map { it.createBundleModule() }
 
-    private fun FunctionalModuleDsl.createFunctionalModule(): FunctionalModule {
+    private fun FunctionalModuleInstanceDsl.createFunctionalModule(): FunctionalModule {
         return with(build()) {
             require(components.isNotEmpty()) {
                 "Module '${reference.name}' does not have any component. " +

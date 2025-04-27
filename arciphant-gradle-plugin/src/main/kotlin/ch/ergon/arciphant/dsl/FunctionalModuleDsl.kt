@@ -6,7 +6,7 @@ import ch.ergon.arciphant.model.FunctionalModuleReference
 import ch.ergon.arciphant.model.Plugin
 import ch.ergon.arciphant.util.merge
 
-sealed class AbstractFunctionalModuleDsl {
+sealed class FunctionalModuleDsl {
     private var baseStencils = mutableListOf<Stencil>()
     private var defaultComponentPlugin: Plugin? = null
 
@@ -74,8 +74,8 @@ sealed class AbstractFunctionalModuleDsl {
     )
 }
 
-class StencilDsl internal constructor() : AbstractFunctionalModuleDsl()
+class FunctionalModuleStencilDsl internal constructor() : FunctionalModuleDsl()
 
-class FunctionalModuleDsl internal constructor(
+class FunctionalModuleInstanceDsl internal constructor(
     internal val reference: FunctionalModuleReference,
-) : AbstractFunctionalModuleDsl()
+) : FunctionalModuleDsl()

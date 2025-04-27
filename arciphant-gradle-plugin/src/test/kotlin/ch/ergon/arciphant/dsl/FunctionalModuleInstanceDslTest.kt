@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class FunctionalModuleDslTest {
+class FunctionalModuleInstanceDslTest {
 
     @Nested
     inner class ComponentsTest {
@@ -23,7 +23,7 @@ class FunctionalModuleDslTest {
         fun `it should merge components with base stencils`() {
             val stencil1 = stencil(components = listOf(component1a, component1b))
             val stencil2 = stencil(components = listOf(component2a, component2b))
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 basedOn(stencil1)
                 basedOn(stencil2)
                 addComponent(component3a.name)
@@ -43,7 +43,7 @@ class FunctionalModuleDslTest {
         fun `it should merge components of base stencils`() {
             val stencil1 = stencil(components = listOf(component1a, component1b))
             val stencil2 = stencil(components = listOf(component2a, component2b))
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 basedOn(stencil1)
                 basedOn(stencil2)
             }
@@ -59,7 +59,7 @@ class FunctionalModuleDslTest {
 
         @Test
         fun `it should take components from stencil`() {
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 addComponent(component3a.name)
                 addComponent(component3b.name)
             }
@@ -91,7 +91,7 @@ class FunctionalModuleDslTest {
         fun `it should merge dependencies with base stencils`() {
             val stencil1 = stencil(dependencies = listOf(dependency1a, dependency1b))
             val stencil2 = stencil(dependencies = listOf(dependency2a, dependency2b))
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 basedOn(stencil1)
                 basedOn(stencil2)
                 addComponent(component3a.name).dependsOn(dependency3a.dependsOn.name)
@@ -119,7 +119,7 @@ class FunctionalModuleDslTest {
         fun `it should merge dependencies of base stencils`() {
             val stencil1 = stencil(dependencies = listOf(dependency1a, dependency1b))
             val stencil2 = stencil(dependencies = listOf(dependency2a, dependency2b))
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 basedOn(stencil1)
                 basedOn(stencil2)
             }
@@ -135,7 +135,7 @@ class FunctionalModuleDslTest {
 
         @Test
         fun `it should take dependencies from stencil`() {
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 addComponent(component3a.name).dependsOn(dependency3a.dependsOn.name)
                 addComponent(component3b.name).dependsOn(dependency3b.dependsOn.name)
             }
@@ -171,7 +171,7 @@ class FunctionalModuleDslTest {
         fun `it should merge component plugins with base stencils`() {
             val stencil1 = stencil(componentPlugins = mapOf(component1a to plugin1a, component1b to plugin1b))
             val stencil2 = stencil(componentPlugins = mapOf(component2a to plugin2a, component2b to plugin2b))
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 basedOn(stencil1)
                 basedOn(stencil2)
                 addComponent(component3a.name).withPlugin(plugin3a.id)
@@ -199,7 +199,7 @@ class FunctionalModuleDslTest {
         fun `it should merge component plugins of base stencils`() {
             val stencil1 = stencil(componentPlugins = mapOf(component1a to plugin1a, component1b to plugin1b))
             val stencil2 = stencil(componentPlugins = mapOf(component2a to plugin2a, component2b to plugin2b))
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 basedOn(stencil1)
                 basedOn(stencil2)
             }
@@ -220,7 +220,7 @@ class FunctionalModuleDslTest {
 
         @Test
         fun `it should take component plugins from stencil`() {
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 addComponent(component3a.name).withPlugin(plugin3a.id)
                 addComponent(component3b.name).withPlugin(plugin3b.id)
             }
@@ -249,7 +249,7 @@ class FunctionalModuleDslTest {
         fun `it should override plugins of base stencils`() {
             val stencil1 = stencil(defaultComponentPlugin = plugin1)
             val stencil2 = stencil(defaultComponentPlugin = plugin2)
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 basedOn(stencil1)
                 basedOn(stencil2)
                 defaultComponentPlugin(plugin3.id)
@@ -264,7 +264,7 @@ class FunctionalModuleDslTest {
         fun `it should fallback to plugin of latest base stencil`() {
             val stencil1 = stencil(defaultComponentPlugin = plugin1)
             val stencil2 = stencil(defaultComponentPlugin = plugin2)
-            val dsl = StencilDsl().apply {
+            val dsl = FunctionalModuleStencilDsl().apply {
                 basedOn(stencil1)
                 basedOn(stencil2)
             }
