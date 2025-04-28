@@ -21,7 +21,6 @@ arciphant {
   val web = "web"
   val db = "db"
   val dbSchema = "db-schema"
-  val dbModel = "db-model"
 
   val libraryStencil = stencil {
     defaultComponentPlugin("component")
@@ -30,8 +29,7 @@ arciphant {
     addComponent(domain).withPlugin("domain").dependsOnApi(api)
     addComponent(webApi).withPlugin("web")
     addComponent(dbSchema)
-    addComponent(dbModel)
-    addComponent(db).withPlugin("db").dependsOn(dbModel, domain)
+    addComponent(db).withPlugin("db").dependsOn(dbSchema, domain)
   }
 
   val moduleStencil = stencil {
