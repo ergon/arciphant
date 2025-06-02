@@ -59,8 +59,8 @@ internal abstract class IdApiType<ID : Id<*>>(
 }
 
 private class IdSerializer : StdSerializer<Id<*>>(Id::class.java) {
-    override fun serialize(value: Id<*>, gen: JsonGenerator, provider: SerializerProvider) {
-        gen.writeString(value.value.toString())
+    override fun serialize(value: Id<*>, jsonGenerator: JsonGenerator, provider: SerializerProvider) {
+        jsonGenerator.writeString(value.value.toString())
     }
 }
 
@@ -69,8 +69,8 @@ private abstract class IdDeserializer<ID : Id<*>>(
     private val constructor: (String) -> ID
 ) : StdDeserializer<ID>(idType) {
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ID? {
-        return p.valueAsString?.let { constructor(it) }
+    override fun deserialize(jsonParser: JsonParser, ctxt: DeserializationContext): ID? {
+        return jsonParser.valueAsString?.let { constructor(it) }
     }
 }
 
