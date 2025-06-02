@@ -19,6 +19,9 @@ import java.util.*
 @Configuration
 internal class IdApiTypeConfiguration(private val idApiTypes: List<IdApiType<*>>) : WebMvcConfigurer {
 
+    /**
+     * Required to use ID classes in request/response payload
+     */
     @Bean
     fun jacksonBuilder(): Jackson2ObjectMapperBuilder {
         val module = SimpleModule()
@@ -27,7 +30,7 @@ internal class IdApiTypeConfiguration(private val idApiTypes: List<IdApiType<*>>
     }
 
     /**
-     * Required to use ID-types in @PathVariable arguments
+     * Required to use ID classes in @PathVariable arguments
      */
     override fun addFormatters(registry: FormatterRegistry) {
         super.addFormatters(registry)
