@@ -17,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.util.*
 
 @Configuration
-internal class IdApiTypeConfiguration(private val idApiTypes: List<IdApiType<*>>) : WebMvcConfigurer {
+internal class IdWebMappingConfig(private val idClassMappers: List<IdWebMapper<*>>) : WebMvcConfigurer {
 
     /**
      * Required to use ID classes in request/response payload
@@ -25,7 +25,7 @@ internal class IdApiTypeConfiguration(private val idApiTypes: List<IdApiType<*>>
     @Bean
     fun jacksonBuilder(): Jackson2ObjectMapperBuilder {
         val module = SimpleModule()
-        idApiTypes.forEach { it.registerSerializerAndDeserializer(module) }
+        idClassMappers.forEach { it.registerSerializerAndDeserializer(module) }
         return Jackson2ObjectMapperBuilder().modulesToInstall(module)
     }
 
@@ -34,18 +34,18 @@ internal class IdApiTypeConfiguration(private val idApiTypes: List<IdApiType<*>>
      */
     override fun addFormatters(registry: FormatterRegistry) {
         super.addFormatters(registry)
-        idApiTypes.forEach { it.registerConverter(registry) }
+        idClassMappers.forEach { it.registerConverter(registry) }
     }
 
 
 }
 
-internal abstract class UuidApiType<ID : Id<UUID>>(
+internal abstract class UuidWebMapper<ID : Id<UUID>>(
     idClass: Class<ID>,
     constructor: (UUID) -> ID
-) : IdApiType<ID>(idClass, { constructor(UUID.fromString(it)) })
+) : IdWebMapper<ID>(idClass, { constructor(UUID.fromString(it)) })
 
-internal abstract class IdApiType<ID : Id<*>>(
+internal abstract class IdWebMapper<ID : Id<*>>(
     private val idClass: Class<ID>,
     private val constructor: (String) -> ID
 ) {
