@@ -56,10 +56,6 @@ internal abstract class IdApiType<ID : Id<*>>(
         registry.addConverter(String::class.java, idClass, object : IdConverter<ID>(constructor) {})
     }
 
-    fun createConverter(): Converter<String, ID> {
-        return object : IdConverter<ID>(constructor) {}
-    }
-
 }
 
 private class IdSerializer : StdSerializer<Id<*>>(Id::class.java) {
