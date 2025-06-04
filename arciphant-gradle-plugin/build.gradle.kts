@@ -19,7 +19,7 @@ gradlePlugin {
     plugins {
         create("arciphant-core-plugin") {
             id = "ch.ergon.arciphant.core"
-            implementationClass = "ch.ergon.arciphant.core.ArciphantCorePlugin"
+            implementationClass = "ch.ergon.arciphant.core.ArciphantPlugin"
         }
     }
 }
