@@ -11,11 +11,15 @@ class ArciphantCorePlugin : Plugin<Settings> {
 
     override fun apply(settings: Settings) {
         with(settings) {
-            val extension = extensions.getByType(ArciphantDsl::class.java)
-            val modules = DslModuleRepository(extension).load()
-            modules.toGradleProjectPaths().forEach { include(it.value) }
-            gradle.beforeProject {
-                modules.createComposers(gradle.rootProject).forEach { it.configure() }
+            val extension = extensions.create("arciphant", ArciphantDsl::class.java)
+
+            gradle.settingsEvaluated {
+                val modules = DslModuleRepository(extension).load()
+                modules.toGradleProjectPaths().forEach { include(it.value) }
+
+                gradle.beforeProject {
+                    modules.createComposers(gradle.rootProject).forEach { it.configure() }
+                }
             }
         }
 

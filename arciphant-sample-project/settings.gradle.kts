@@ -9,8 +9,7 @@ pluginManagement {
 
 plugins {
   id("component") apply false
-  id("ch.ergon.arciphant.dsl")
-  id("ch.ergon.arciphant.core") apply false
+  id("ch.ergon.arciphant.core")
 }
 
 arciphant {
@@ -53,9 +52,6 @@ arciphant {
 
   bundle().withPlugin("bundle")
 }
-
-// plugin should be applied after usage of the components-extension
-apply(plugin = "ch.ergon.arciphant.core")
 
 // components the production code may depend on (repositories or other gradle builds)
 dependencyResolutionManagement {
