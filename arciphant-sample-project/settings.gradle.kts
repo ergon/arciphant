@@ -9,7 +9,7 @@ pluginManagement {
 
 plugins {
   id("component") apply false
-  id("ch.ergon.arciphant.core")
+  id("ch.ergon.arciphant")
 }
 
 arciphant {

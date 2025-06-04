@@ -18,7 +18,7 @@ dependencies {
 gradlePlugin {
     plugins {
         create("arciphant-core-plugin") {
-            id = "ch.ergon.arciphant.core"
+            id = "ch.ergon.arciphant"
             implementationClass = "ch.ergon.arciphant.core.ArciphantPlugin"
         }
     }
