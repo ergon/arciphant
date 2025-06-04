@@ -21,6 +21,10 @@ gradlePlugin {
             id = "ch.ergon.arciphant.dsl"
             implementationClass = "ch.ergon.arciphant.dsl.ArciphantDslPlugin"
         }
+        create("arciphant-core-plugin") {
+            id = "ch.ergon.arciphant.core"
+            implementationClass = "ch.ergon.arciphant.core.ArciphantCorePlugin"
+        }
     }
 }
 

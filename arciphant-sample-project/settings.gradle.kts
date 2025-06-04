@@ -1,5 +1,3 @@
-import ch.ergon.arciphant.core.ArciphantCorePlugin
-
 // plugins that extend the gradle build (gradle plugin portal, other binary repositories or local plugins from other builds)
 pluginManagement {
   repositories {
@@ -12,6 +10,7 @@ pluginManagement {
 plugins {
   id("component") apply false
   id("ch.ergon.arciphant.dsl")
+  id("ch.ergon.arciphant.core") apply false
 }
 
 arciphant {
@@ -56,7 +55,7 @@ arciphant {
 }
 
 // plugin should be applied after usage of the components-extension
-apply<ArciphantCorePlugin>()
+apply(plugin = "ch.ergon.arciphant.core")
 
 // components the production code may depend on (repositories or other gradle builds)
 dependencyResolutionManagement {
