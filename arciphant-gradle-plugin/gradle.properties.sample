@@ -1,0 +1,2 @@
+gradle.publish.key=<key>
+gradle.publish.secret=<secret>
