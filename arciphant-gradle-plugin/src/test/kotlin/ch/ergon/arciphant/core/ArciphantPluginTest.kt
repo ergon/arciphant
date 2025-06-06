@@ -38,7 +38,7 @@ class ArciphantPluginTest {
             module("test") {
               basedOn(sampleStencil)
             }
-        """
+            """
         )
         val result = gradleRunner
             .withArguments("-q", "projects")
@@ -55,7 +55,7 @@ class ArciphantPluginTest {
             arciphant {
                 module("test")
             }
-        """
+            """
         )
 
         val error = assertThrows<UnexpectedBuildFailure> {
@@ -69,18 +69,14 @@ class ArciphantPluginTest {
 
     private fun settingsFileWithArciphant(arciphantConfiguration: String) = settingsFile.write(
         """
-        import ch.ergon.arciphant.core.ArciphantCorePlugin
-            
-            plugins {
-                id("ch.ergon.arciphant.dsl")
-            }
-            
-            arciphant {
-                $arciphantConfiguration
-            }
-            
-            apply<ArciphantCorePlugin>()
-    """
+                plugins {
+                    id("ch.ergon.arciphant")
+                }
+                
+                arciphant {
+                    $arciphantConfiguration
+                }
+                """
     )
 
     private fun File.write(content: String) = writeText(content.trimIndent())
