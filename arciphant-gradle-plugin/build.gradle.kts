@@ -5,6 +5,10 @@ plugins {
      * https://docs.gradle.org/current/userguide/kotlin_dsl.html#sec:kotlin-dsl_plugin
      */
     `kotlin-dsl`
+    /**
+     * Required to publish plugin to gradle plugin portal
+     */
+    id("com.gradle.plugin-publish") version "1.3.1"
 }
 
 dependencies {
@@ -15,11 +19,21 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0")
 }
 
+group = "ch.ergon.arciphant"
+version = "0.1.0"
+
 gradlePlugin {
+    website = "https://github.com/ergon/arciphant"
+    vcsUrl = "https://github.com/ergon/arciphant"
+
     plugins {
         create("arciphant-core-plugin") {
             id = "ch.ergon.arciphant"
             implementationClass = "ch.ergon.arciphant.core.ArciphantPlugin"
+
+            displayName = "Arciphant"
+            description = "Arciphant is a Gradle plugin that allows to specify the module structure of complex software project declaratively using a simple DSL."
+            tags = listOf("architecture", "clean-architecture", "dependencies", "dependency-management", "dependency-manager")
         }
     }
 }
