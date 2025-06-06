@@ -30,12 +30,14 @@ class ArciphantPluginTest {
     fun `test that project structure is created according to module configuration`() {
         settingsFileWithArciphant(
             """
-            allModules {
-                addComponent("api")
-                addComponent("domain")
+            val sampleStencil = stencil {
+              addComponent("api")
+              addComponent("domain")
             }
             
-            module("test")
+            module("test") {
+              basedOn(sampleStencil)
+            }
         """
         )
         val result = gradleRunner
@@ -49,7 +51,7 @@ class ArciphantPluginTest {
     @Test
     fun `test that module without components is not allowed`() {
         settingsFileWithArciphant(
-            """
+            """ 
             arciphant {
                 module("test")
             }
@@ -62,7 +64,7 @@ class ArciphantPluginTest {
                 .build()
         }
 
-        assertThat(error.message).contains("Module 'test' has no components.")
+        assertThat(error.message).contains("Module 'test' does not have any component.")
     }
 
     private fun settingsFileWithArciphant(arciphantConfiguration: String) = settingsFile.write(
