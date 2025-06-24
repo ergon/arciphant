@@ -15,6 +15,10 @@ This offers various advantages:
 
 Arciphant offers the greatest benefit for software projects that consist of many different modules, whereby these modules have the same or a similar technical structure (e.g. Clean Architecture, Hexagonal Architecture, Onion Architecture, Layered Architecture) as, for example, in a modulith architecture.
 
+## Documentation
+
+See [Documentation](DOCUMENTATION.md).
+
 ## Technologies
 
 The Arciphant Gradle Plugin is written in Kotlin.
@@ -28,8 +32,10 @@ Arciphant is released under the [MIT License](LICENSE).
 
 ![image](https://img.shields.io/badge/MIT-green?style=for-the-badge)
 
-Active Maintenance and further development by the publisher (Ergon Informatik AG) is *not* guaranteed.
-We only work on the plugin to the extent that we need it for our own projects.
+## Maintenance
+
+The publisher (Ergon Informatik AG) does *NOT* guarantee active maintenance and further development.
+We only work on the plugin to the extent that we need for our own projects.
 
 ## About the name
 
