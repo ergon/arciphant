@@ -1,0 +1,39 @@
+#DataSourceSettings#
+#LocalDataSource: arciphant-demo-project@localhost
+#BEGIN#
+<data-source source="LOCAL" name="arciphant-demo-project@localhost" uuid="f6f20809-599a-4bf6-b70c-6cee0f46110a">
+    <database-info product="PostgreSQL" version="17.2" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver"
+                   driver-version="42.7.3" dbms="POSTGRES" exact-version="17.2" exact-driver-version="42.7">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact"/>
+    <driver-ref>postgresql</driver-ref>
+    <synchronize>true</synchronize>
+    <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+    <jdbc-url>jdbc:postgresql://localhost:5432/arciphant-demo-project</jdbc-url>
+    <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.host.port"/>
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false"/>
+        <property name="com.intellij.clouds.kubernetes.db.resource.type" value="Deployment"/>
+        <property name="com.intellij.clouds.kubernetes.db.container.port"/>
+    </jdbc-additional-properties>
+    <secret-storage>master_key</secret-storage>
+    <user-name>arciphant</user-name>
+    <schema-mapping>
+        <introspection-scope>
+            <node negative="1">
+                <node kind="database" qname="@">
+                    <node kind="schema" qname="@"/>
+                </node>
+                <node kind="database" qname="arciphant-demo-project">
+                    <node kind="schema" qname="arc" negative="1"/>
+                </node>
+                <node kind="database" qname="arciphant-demo-project">
+                    <node kind="schema" negative="1"/>
+                </node>
+            </node>
+        </introspection-scope>
+    </schema-mapping>
+    <working-dir>$ProjectFileDir$</working-dir>
+</data-source>
+#END#
