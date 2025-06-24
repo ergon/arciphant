@@ -1,5 +1,5 @@
 plugins {
-    id("component")
+    id("base-component")
 }
 
 dependencies {

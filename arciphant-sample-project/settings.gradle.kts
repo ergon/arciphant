@@ -8,7 +8,7 @@ pluginManagement {
 }
 
 plugins {
-  id("component") apply false
+  id("base-component") apply false
   id("ch.ergon.arciphant")
 }
 
@@ -21,19 +21,19 @@ arciphant {
   val dbSchema = "db-schema"
 
   val libraryStencil = stencil {
-    defaultComponentPlugin("component")
+    defaultComponentPlugin("base-component")
 
     addComponent(api)
-    addComponent(domain).withPlugin("domain").dependsOnApi(api)
-    addComponent(webApi).withPlugin("web")
+    addComponent(domain).withPlugin("domain-component").dependsOnApi(api)
+    addComponent(webApi).withPlugin("web-component")
     addComponent(dbSchema)
-    addComponent(db).withPlugin("db").dependsOn(dbSchema, domain)
+    addComponent(db).withPlugin("db-component").dependsOn(dbSchema, domain)
   }
 
   val moduleStencil = stencil {
     basedOn(libraryStencil)
 
-    addComponent(web).withPlugin("web").dependsOn(webApi, domain)
+    addComponent(web).withPlugin("web-component").dependsOn(webApi, domain)
   }
 
   library("shared") {
@@ -50,7 +50,7 @@ arciphant {
     addComponent("external-api").dependsOn(domain)
   }
 
-  bundle().withPlugin("bundle")
+  bundle().withPlugin("bundle-module")
 }
 
 // components the production code may depend on (repositories or other gradle builds)
