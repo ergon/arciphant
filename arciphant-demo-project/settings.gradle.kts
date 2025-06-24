@@ -8,7 +8,7 @@ pluginManagement {
 }
 
 plugins {
-  id("base-component") apply false
+  id("base-component") apply false // solely used to ensure plugin resolution mechanism for prebuilt plugins in 'build-logic' is triggered.
   id("ch.ergon.arciphant")
 }
 
