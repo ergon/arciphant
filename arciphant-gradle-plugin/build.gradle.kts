@@ -27,7 +27,7 @@ gradlePlugin {
     vcsUrl = "https://github.com/ergon/arciphant"
 
     plugins {
-        create("arciphant-core-plugin") {
+        create("arciphant") {
             id = "ch.ergon.arciphant"
             implementationClass = "ch.ergon.arciphant.core.ArciphantPlugin"
 
