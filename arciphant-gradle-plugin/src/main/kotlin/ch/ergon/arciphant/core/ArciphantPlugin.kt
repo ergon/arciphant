@@ -3,6 +3,7 @@ package ch.ergon.arciphant.core
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.dsl.DslModuleRepository
 import ch.ergon.arciphant.model.*
+import ch.ergon.arciphant.util.beforeProjectAction
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
@@ -15,7 +16,8 @@ class ArciphantPlugin : Plugin<Settings> {
 
             gradle.settingsEvaluated {
                 val modules = DslModuleRepository(extension).load()
-                modules.toGradleProjectPaths().forEach { include(it.value) }
+                val projectConfigs = modules.toProjectConfigs()
+                projectConfigs.filter { !it.path.isRoot }.forEach { include(it.path.value) }
 
                 gradle.beforeProject {
                     modules.createComposers(gradle.rootProject).forEach { it.configure() }
@@ -26,7 +28,7 @@ class ArciphantPlugin : Plugin<Settings> {
     }
 }
 
-private fun List<Module>.toGradleProjectPaths() = flatMap { it.gradleProjectPaths() }.filter { !it.isRoot }
+private fun List<Module>.toProjectConfigs() = flatMap { it.toProjectConfigs() }
 
 private fun List<Module>.createComposers(rootProject: Project) = map {
     val project = it.reference.project(rootProject)
