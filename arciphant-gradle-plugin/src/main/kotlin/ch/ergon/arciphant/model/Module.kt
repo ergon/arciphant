@@ -17,10 +17,7 @@ internal data class DomainModule(
 internal data class LibraryModule(
     override val reference: LibraryModuleReference,
     override val components: Set<Component>,
-) : FunctionalModule {
-
-    fun hasComponent(component: ComponentReference) = components.map { it.reference }.contains(component)
-}
+) : FunctionalModule
 
 internal data class BundleModule(
     override val reference: BundleModuleReference,
