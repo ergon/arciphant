@@ -16,8 +16,10 @@ class ArciphantPlugin : Plugin<Settings> {
                 val modules = DslModuleRepository(extension).load()
                 val projectConfigs = modules.flatMap { it.toProjectConfigs() }
 
+                // create project structure (during gradle initialization phase)
                 projectConfigs.map { it.path }.filter { !it.isRoot }.forEach { include(it.value) }
 
+                // apply plugins and add dependencies (during gradle configuration phase)
                 val handler = GradleProjectConfigApplicator(projectConfigs)
                 gradle.beforeProjectAction { handler.applyConfig(it) }
             }
