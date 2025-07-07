@@ -12,11 +12,4 @@ class GradleProjectPathTest {
         GradleProjectPath("any", "nested", "project", "structure") to ":any:nested:project:structure",
     ) { it.value }
 
-    @TestFactory
-    fun testIsRoot() = dynamicTest(
-        GradleProjectPath() to true,
-        GradleProjectPath("module") to false,
-        GradleProjectPath("module", "component") to false,
-    ) { it.isRoot }
-
 }

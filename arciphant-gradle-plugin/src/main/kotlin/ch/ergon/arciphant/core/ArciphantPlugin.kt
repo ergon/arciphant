@@ -17,7 +17,7 @@ class ArciphantPlugin : Plugin<Settings> {
                 val projectConfigs = modules.flatMap { it.toProjectConfigs() }
 
                 // create project structure (during gradle initialization phase)
-                projectConfigs.map { it.path }.filter { !it.isRoot }.forEach { include(it.value) }
+                projectConfigs.map { it.path }.forEach { include(it.value) }
 
                 // apply plugins and add dependencies (during gradle configuration phase)
                 val handler = GradleProjectConfigApplicator(projectConfigs)
