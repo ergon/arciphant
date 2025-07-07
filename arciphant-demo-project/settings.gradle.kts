@@ -43,7 +43,9 @@ arciphant {
     getComponent(api).dependsOnApi(base)
     getComponent(webApi).dependsOnApi(base)
   }
-  module("customer") { basedOn(moduleStencil) }
+  module("customer") {
+    basedOn(moduleStencil)
+  }
   module("order") {
     basedOn(moduleStencil)
 
