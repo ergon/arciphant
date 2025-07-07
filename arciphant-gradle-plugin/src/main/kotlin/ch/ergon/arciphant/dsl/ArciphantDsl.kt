@@ -1,7 +1,6 @@
 package ch.ergon.arciphant.dsl
 
 import ch.ergon.arciphant.model.*
-import ch.ergon.arciphant.util.emptyToNull
 
 open class ArciphantDsl {
 
@@ -15,10 +14,12 @@ open class ArciphantDsl {
     }
 
     fun library(name: String, configure: FunctionalModuleInstanceDsl.() -> Unit = {}): LibraryModuleReference {
+        verifyName(name, "library module")
         return functionalModule(LibraryModuleReference(name), configure)
     }
 
     fun module(name: String, configure: FunctionalModuleInstanceDsl.() -> Unit = {}): DomainModuleReference {
+        verifyName(name, "domain module")
         return functionalModule(DomainModuleReference(name), configure)
     }
 
@@ -33,6 +34,7 @@ open class ArciphantDsl {
     }
 
     fun bundle(name: String, configure: BundleModuleDsl.() -> Unit = {}): BundleModuleReference {
+        verifyName(name, "bundle module")
         val reference = BundleModuleReference(name)
         val bundle = BundleModuleDsl(reference)
         bundle.configure()
@@ -41,3 +43,5 @@ open class ArciphantDsl {
     }
 
 }
+
+

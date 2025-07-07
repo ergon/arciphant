@@ -29,6 +29,7 @@ sealed class FunctionalModuleDsl {
     fun addComponent(componentName: String) = addComponent(ComponentReference(componentName))
 
     fun addComponent(component: ComponentReference): ComponentReference {
+        verifyName(component.name, "component")
         components.add(component)
         return component
     }
