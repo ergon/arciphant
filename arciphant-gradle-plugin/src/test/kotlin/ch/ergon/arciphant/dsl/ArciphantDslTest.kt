@@ -15,7 +15,8 @@ class ArciphantDslTest {
     private val customerModuleRef = DomainModuleReference("customer")
     private val orderModuleRef = DomainModuleReference("order")
     private val inventoryModuleRef = DomainModuleReference("inventory")
-    private val orderingModuleRef = ChildBundleModuleReference("ordering")
+    private val orderingModuleRef = BundleModuleReference("ordering")
+    private val appModuleRef = BundleModuleReference("app")
 
     private val baseComponentRef = ComponentReference("base")
     private val domainComponentRef = ComponentReference("domain")
@@ -58,7 +59,7 @@ class ArciphantDslTest {
                 addComponent("main")
             }
             bundle("ordering").include(customer, order)
-            bundle().withPlugin(bundlePlugin.id)
+            bundle("app").withPlugin(bundlePlugin.id)
         }
 
         val modules = repository.load()
@@ -134,7 +135,7 @@ class ArciphantDslTest {
                 includes = setOf(customerModuleRef, orderModuleRef)
             ),
             BundleModule(
-                reference = RootBundleModuleReference,
+                reference = appModuleRef,
                 plugin = bundlePlugin,
                 includes = setOf(sharedModuleRef, customerModuleRef, orderModuleRef, inventoryModuleRef),
             ),

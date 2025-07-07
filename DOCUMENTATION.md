@@ -213,10 +213,7 @@ bundle("my-app")
 ```
 
 This creates a module `my-app` that has a dependency to all components of all modules. The bundle module itself does not have any components.
-Bundle modules can also be configured without a name. In this case, the root project is treated as bundle module:
-```
-bundle()
-```
+
 It is also possible to declare explicit dependencies, e.g. if you need mulitple different bundles who should *not* automatically depend to all domain modules:
 ```
 bundle("bundleX").include(specificModuleX, coreModuleA, coreModuleB)

@@ -32,8 +32,8 @@ open class ArciphantDsl {
         return reference
     }
 
-    fun bundle(name: String? = null): BundleModuleDsl {
-        val bundle = BundleModuleDsl(name?.emptyToNull())
+    fun bundle(name: String): BundleModuleDsl {
+        val bundle = BundleModuleDsl(name)
         this.bundles.add(bundle)
         return bundle
     }

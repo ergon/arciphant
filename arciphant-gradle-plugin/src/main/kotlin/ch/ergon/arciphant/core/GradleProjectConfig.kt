@@ -23,10 +23,7 @@ internal fun Module.toProjectConfigs() = when (this) {
     is BundleModule -> listOf(GradleBundleModuleProjectConfig(path(), this))
 }
 
-private fun BundleModule.path() = when (reference) {
-    is ChildBundleModuleReference -> GradleProjectPath(reference.name)
-    is RootBundleModuleReference -> GradleProjectPath()
-}
+private fun BundleModule.path() = GradleProjectPath(reference.name)
 
 internal fun FunctionalModule.gradleProjectPath(component: Component) = gradleProjectPath(component.reference)
 
