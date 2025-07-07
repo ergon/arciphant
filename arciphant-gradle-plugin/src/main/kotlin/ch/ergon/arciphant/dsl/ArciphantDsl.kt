@@ -32,10 +32,12 @@ open class ArciphantDsl {
         return reference
     }
 
-    fun bundle(name: String): BundleModuleDsl {
-        val bundle = BundleModuleDsl(name)
-        this.bundles.add(bundle)
-        return bundle
+    fun bundle(name: String, configure: BundleModuleDsl.() -> Unit = {}): BundleModuleReference {
+        val reference = BundleModuleReference(name)
+        val bundle = BundleModuleDsl(reference)
+        bundle.configure()
+        bundles.add(bundle)
+        return reference
     }
 
 }

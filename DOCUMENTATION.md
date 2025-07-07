@@ -216,8 +216,8 @@ This creates a module `my-app` that has a dependency to all components of all mo
 
 It is also possible to declare explicit dependencies, e.g. if you need mulitple different bundles who should *not* automatically depend to all domain modules:
 ```
-bundle("bundleX").include(specificModuleX, coreModuleA, coreModuleB)
-bundle("bundleY").include(specificModuleY, coreModuleA, coreModuleB)
+bundle("bundleX") { include(specificModuleX, coreModuleA, coreModuleB) }
+bundle("bundleY") { include(specificModuleY, coreModuleA, coreModuleB) }
 ```
 
 ## Structurize test code

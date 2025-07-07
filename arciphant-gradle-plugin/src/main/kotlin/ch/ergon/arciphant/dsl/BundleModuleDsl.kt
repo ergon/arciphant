@@ -1,9 +1,10 @@
 package ch.ergon.arciphant.dsl
 
+import ch.ergon.arciphant.model.BundleModuleReference
 import ch.ergon.arciphant.model.ModuleReference
 import ch.ergon.arciphant.model.Plugin
 
-class BundleModuleDsl internal constructor(internal val name: String) {
+class BundleModuleDsl internal constructor(internal val reference: BundleModuleReference) {
 
     internal val includes = mutableListOf<ModuleReference>()
 

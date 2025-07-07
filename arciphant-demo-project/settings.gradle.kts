@@ -52,7 +52,9 @@ arciphant {
     addComponent("external-api").dependsOn(domain)
   }
 
-  bundle("app").withPlugin("bundle-module")
+  bundle("app") {
+    withPlugin("bundle-module")
+  }
 }
 
 // components the production code may depend on (repositories or other gradle builds)

@@ -58,8 +58,12 @@ class ArciphantDslTest {
             module("inventory") {
                 addComponent("main")
             }
-            bundle("ordering").include(customer, order)
-            bundle("app").withPlugin(bundlePlugin.id)
+            bundle("ordering") {
+                include(customer, order)
+            }
+            bundle("app") {
+                withPlugin(bundlePlugin.id)
+            }
         }
 
         val modules = repository.load()
