@@ -216,8 +216,15 @@ This creates a module `my-app` that has a dependency to all components of all mo
 
 It is also possible to declare explicit dependencies, e.g. if you need mulitple different bundles who should *not* automatically depend to all domain modules:
 ```
-bundle("bundleX") { includeModules(specificModuleX, coreModuleA, coreModuleB) }
-bundle("bundleY") { includeModules(specificModuleY, coreModuleA, coreModuleB) }
+bundle("bundleX") { includeModules(coreModuleA, coreModuleB, specificModuleX) }
+bundle("bundleY") { includeModules(coreModuleA, coreModuleB, specificModuleY) }
+```
+
+Bundles can also include other bundles. So above example could be configured as:
+```
+val coreBundle = bundle("core") { includeModules(coreModuleA, coreModuleB) }
+bundle("bundleX") { includeModules(coreBundle, specificModuleX) }
+bundle("bundleY") { includeModules(coreBundle, specificModuleY) }
 ```
 
 ## Structurize test code
