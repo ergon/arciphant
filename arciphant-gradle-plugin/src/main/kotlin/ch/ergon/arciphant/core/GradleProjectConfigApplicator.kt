@@ -53,16 +53,8 @@ internal class GradleProjectConfigApplicator(private val projectConfigs: List<Gr
 }
 
 private fun Project.addDependency(type: DependencyType, path: GradleProjectPath) {
-    addMainDependency(type, path)
-    addTestFixturesDependency(path)
-}
-
-private fun Project.addMainDependency(type: DependencyType, path: GradleProjectPath) {
     logger.info("Add ${type.configurationName} dependency: $path -> ${path.value}")
     dependencies { add(type.configurationName, project(path.value)) }
-}
-
-private fun Project.addTestFixturesDependency(path: GradleProjectPath) {
     pluginManager.withPlugin("java-test-fixtures") {
         dependencies { add("testFixturesApi", testFixtures(project(path.value))) }
     }
