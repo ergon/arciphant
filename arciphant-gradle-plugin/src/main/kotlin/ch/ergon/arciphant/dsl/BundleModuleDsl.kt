@@ -11,7 +11,7 @@ class BundleModuleDsl internal constructor(internal val reference: BundleModuleR
     internal var plugin: Plugin? = null
         private set
 
-    fun include(vararg modules: ModuleReference): BundleModuleDsl {
+    fun includeModules(vararg modules: ModuleReference): BundleModuleDsl {
         includes.addAll(modules)
         return this
     }

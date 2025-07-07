@@ -59,7 +59,7 @@ class ArciphantDslTest {
                 addComponent("main")
             }
             bundle("ordering") {
-                include(customer, order)
+                includeModules(customer, order)
             }
             bundle("app") {
                 withPlugin(bundlePlugin.id)
