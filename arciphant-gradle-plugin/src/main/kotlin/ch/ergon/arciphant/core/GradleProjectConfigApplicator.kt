@@ -28,7 +28,7 @@ internal class GradleProjectConfigApplicator(private val projectConfigs: List<Gr
         module.plugin?.applyTo(project)
 
         projectConfigs.filter { module.includes.contains(it.module.reference) }.forEach {
-            project.addMainDependency(IMPLEMENTATION, it.path)
+            project.addDependency(IMPLEMENTATION, it.path)
         }
     }
 
