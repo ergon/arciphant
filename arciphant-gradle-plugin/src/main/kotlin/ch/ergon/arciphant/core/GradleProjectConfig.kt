@@ -20,10 +20,10 @@ internal data class GradleComponentProjectConfig(
 
 internal fun Module.toProjectConfigs() = when (this) {
     is FunctionalModule -> components.map { GradleComponentProjectConfig(this.gradleProjectPath(it), this, it) }
-    is BundleModule -> listOf(GradleBundleModuleProjectConfig(path(), this))
+    is BundleModule -> listOf(GradleBundleModuleProjectConfig(gradleProjectPath(), this))
 }
 
-private fun BundleModule.path() = GradleProjectPath(reference.name)
+private fun BundleModule.gradleProjectPath() = GradleProjectPath(reference.name)
 
 internal fun FunctionalModule.gradleProjectPath(component: Component) = gradleProjectPath(component.reference)
 
