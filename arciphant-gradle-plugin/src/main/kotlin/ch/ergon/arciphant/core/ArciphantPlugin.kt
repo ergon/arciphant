@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core
 
+import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.dsl.DslModuleRepository
 import ch.ergon.arciphant.util.beforeProjectAction
@@ -23,6 +24,8 @@ class ArciphantPlugin : Plugin<Settings> {
                 val handler = GradleProjectConfigApplicator(projectConfigs)
                 gradle.beforeProjectAction { handler.applyConfig(it) }
             }
+
+            gradle.projectsLoaded { rootProject.registerProjectDependenciesTask() }
         }
 
     }
