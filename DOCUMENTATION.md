@@ -1,5 +1,28 @@
 # Arciphant Documentation
 
+## Prerequisites
+
+### Java or Kotlin Plugin
+
+In order to use Arciphant in your gradle build you have to apply either the *Java* or *Kotlin JVMm* plugin to all projects in the project hierarchy 
+(the reason is that Arciphant builds upon the configurations 'api' and 'implementation' registered by these plugins).
+
+This is can typically be done in the the root project, e.g. like the following:
+```
+plugins {
+  kotlin("jvm")
+}
+
+subprojects {
+  plugins.apply("org.jetbrains.kotlin.jvm")
+}
+```
+
+Of course you can also apply the *Java* or *Kotlin JVM* plugin inside a convention plugin and then apply this convention plugin to all projects.
+It is also possible to register such a convention plugin in Arciphant. See chapter *Using Plugins*.
+
+
+
 ## Using Arciphant
 
 Arciphant is a Gradle *settings* plugin. A settings plugin is different to normal plugins in that it is applied in the `settings.gradle.kts` file and *NOT* in `build.gradle.kts`. 
