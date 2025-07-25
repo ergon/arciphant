@@ -275,15 +275,15 @@ For example in the web component there might be the dependency to a web-framewor
 
 So assume you have the following convention plugins in your `buildSrc` folder specifying the dependencies/configurations for the respective component types:
 ```
-web-component.gradle.kts
-db-component.gradle.kts
+spring-web-component.gradle.kts
+jooq-component.gradle.kts
 ```
 
 You can register these plugins for the components in Arciphant and they will be applied:
 
 ```
-addComponent(web).withPlugin("web-component")
-addComponent(fb).withPlugin("db-component")
+addComponent(web).withPlugin("spring-web-component")
+addComponent(fb).withPlugin("jooq-component")
 ```
 
 #### Using `includeBuild` instead of `buildSrc` for convention plugins
