@@ -32,7 +32,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         groupBy(ComponentDependency::source) { Dependency(it.dependsOn, it.type) }
             .withDefault { emptyList() }
 
-    private fun BundleModuleDsl.createBundleModule(): BundleModule {
+    private fun BundleModule.createBundleModule(): BundleModule {
         return BundleModule(
             reference = reference,
             plugin = plugin,

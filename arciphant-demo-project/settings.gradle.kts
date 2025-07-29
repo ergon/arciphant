@@ -52,7 +52,5 @@ arciphant {
     getComponent(web).dependsOn(ppa)
   }
 
-  bundle("online-learning-platform") {
-    withPlugin("spring-boot-bundle-module")
-  }
+  bundle(name = "online-learning-platform", plugin = "spring-boot-bundle-module")
 }
