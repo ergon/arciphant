@@ -1,17 +1,8 @@
 plugins {
-    `kotlin-dsl` // this is a gradle core plugin to write plugins in the Kotlin DSL
+    `kotlin-dsl`
 }
 
 dependencies {
     // required since Kotlin plugin is applied from within the component-plugin
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0")
-
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.3")
-    testImplementation("org.assertj:assertj-core:3.27.0")
-}
-
-tasks.withType<Test> {
-    systemProperty("pluginUnderTestClasspath", sourceSets.main.get().runtimeClasspath.asPath)
-    useJUnitPlatform()
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
 }

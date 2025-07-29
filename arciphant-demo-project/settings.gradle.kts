@@ -1,65 +1,59 @@
-// plugins that extend the gradle build (gradle plugin portal, other binary repositories or local plugins from other builds)
 pluginManagement {
   repositories {
     gradlePluginPortal()
   }
-  includeBuild("../arciphant-gradle-plugin")
   includeBuild("./build-logic")
 }
 
+dependencyResolutionManagement {
+  repositories {
+    mavenCentral()
+  }
+}
+
 plugins {
-  id("base-component") apply false // solely used to ensure plugin resolution mechanism for prebuilt plugins in 'build-logic' is triggered.
-  id("ch.ergon.arciphant")
+  id("ch.ergon.arciphant") version "0.1.1"
+  id("spring-component") apply false // solely used to ensure plugin resolution mechanism for prebuilt plugins in 'build-logic' is triggered.
 }
 
 arciphant {
   val api = "api"
   val domain = "domain"
-  val webApi = "web-api"
   val web = "web"
+  val webApi = "web-api"
   val db = "db"
-  val dbSchema = "db-schema"
-
-  val basicLibraryStructure = stencil {
-    defaultComponentPlugin("base-component")
-
-    addComponent(api)
-    addComponent(domain).withPlugin("domain-component").dependsOnApi(api)
-    addComponent(webApi).withPlugin("web-component")
-    addComponent(dbSchema)
-    addComponent(db).withPlugin("db-component").dependsOn(dbSchema, domain)
-  }
+  val filestore = "filestore"
 
   val commonModuleStructure = stencil {
-    basedOn(basicLibraryStructure)
+    defaultComponentPlugin("spring-component")
 
-    addComponent(web).withPlugin("web-component").dependsOn(webApi, domain)
+    addComponent(api)
+    addComponent(domain).dependsOnApi(api)
+    addComponent(db).withPlugin("jooq-component").dependsOn(domain)
+    addComponent(webApi).withPlugin("spring-web-component")
+    addComponent(web).withPlugin("spring-web-component").dependsOn(webApi, domain)
   }
 
-  library("shared") {
-    basedOn(basicLibraryStructure)
-
-    val base = addComponent("base")
-    getComponent(api).dependsOnApi(base)
-    getComponent(webApi).dependsOnApi(base)
-  }
-  module("customer") {
+  val commonModuleWithFilestoreStructure = stencil {
     basedOn(commonModuleStructure)
-  }
-  module("order") {
-    basedOn(commonModuleStructure)
-
-    addComponent("external-api").dependsOn(domain)
+    addComponent(filestore).withPlugin("minio-component").dependsOn(domain)
   }
 
-  bundle("app") {
-    withPlugin("bundle-module")
-  }
-}
+  library("shared") { basedOn(commonModuleWithFilestoreStructure) }
 
-// components the production code may depend on (repositories or other gradle builds)
-dependencyResolutionManagement {
-  repositories {
-    mavenCentral()
+  module("course") { basedOn(commonModuleStructure) }
+  module("exam") { basedOn(commonModuleStructure) }
+  module("certificate") {
+    basedOn(commonModuleWithFilestoreStructure)
+    addComponent("certificate-authority-adapter").dependsOn(domain)
+  }
+  module("accounting") {
+    basedOn(commonModuleWithFilestoreStructure)
+    val ppa = addComponent("payment-provider-adapter").dependsOn(domain)
+    getComponent(web).dependsOn(ppa)
+  }
+
+  bundle("online-learning-platform") {
+    withPlugin("spring-boot-bundle-module")
   }
 }
