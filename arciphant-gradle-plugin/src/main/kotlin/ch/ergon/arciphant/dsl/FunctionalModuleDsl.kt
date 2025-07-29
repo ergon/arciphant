@@ -8,7 +8,6 @@ import ch.ergon.arciphant.util.merge
 
 sealed class FunctionalModuleDsl {
     private var baseStencils = mutableListOf<Stencil>()
-    private var defaultComponentPlugin: Plugin? = null
 
     private val components = mutableListOf<ComponentReference>()
     private val dependencies = mutableListOf<ComponentDependency>()
@@ -16,10 +15,6 @@ sealed class FunctionalModuleDsl {
 
     fun basedOn(vararg stencils: Stencil) {
         this.baseStencils.addAll(stencils)
-    }
-
-    fun defaultComponentPlugin(pluginId: String) {
-        defaultComponentPlugin = Plugin(pluginId)
     }
 
     fun getComponent(componentName: String): ComponentReference {
@@ -71,7 +66,6 @@ sealed class FunctionalModuleDsl {
         components = baseStencils.flatMap { it.components } + components,
         dependencies = baseStencils.flatMap { it.dependencies } + dependencies,
         componentPlugins = baseStencils.map { it.componentPlugins }.merge() + componentPlugins,
-        defaultComponentPlugin = defaultComponentPlugin ?: baseStencils.map { it.defaultComponentPlugin }.lastOrNull(),
     )
 }
 

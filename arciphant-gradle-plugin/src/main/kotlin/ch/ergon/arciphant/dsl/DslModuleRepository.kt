@@ -17,7 +17,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
             val components = components.map {
                 Component(
                     reference = it,
-                    plugin = componentPlugins[it] ?: defaultComponentPlugin,
+                    plugin = componentPlugins[it],
                     dependsOn = dependenciesByComponent.getValue(it)
                 )
             }

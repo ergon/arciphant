@@ -239,48 +239,11 @@ class FunctionalModuleInstanceDslTest {
         }
     }
 
-    @Nested
-    inner class DefaultComponentPluginTest {
-        private val plugin1 = Plugin("plugin1")
-        private val plugin2 = Plugin("plugin2")
-        private val plugin3 = Plugin("plugin3")
-
-        @Test
-        fun `it should override plugins of base stencils`() {
-            val stencil1 = stencil(defaultComponentPlugin = plugin1)
-            val stencil2 = stencil(defaultComponentPlugin = plugin2)
-            val dsl = FunctionalModuleStencilDsl().apply {
-                basedOn(stencil1)
-                basedOn(stencil2)
-                defaultComponentPlugin(plugin3.id)
-            }
-
-            val stencil = dsl.build()
-
-            assertThat(stencil).isEqualTo(stencil(defaultComponentPlugin = plugin3))
-        }
-
-        @Test
-        fun `it should fallback to plugin of latest base stencil`() {
-            val stencil1 = stencil(defaultComponentPlugin = plugin1)
-            val stencil2 = stencil(defaultComponentPlugin = plugin2)
-            val dsl = FunctionalModuleStencilDsl().apply {
-                basedOn(stencil1)
-                basedOn(stencil2)
-            }
-
-            val stencil = dsl.build()
-
-            assertThat(stencil).isEqualTo(stencil(defaultComponentPlugin = plugin2))
-        }
-    }
-
     private fun stencil(
         components: List<ComponentReference> = emptyList(),
         dependencies: List<ComponentDependency> = emptyList(),
         componentPlugins: Map<ComponentReference, Plugin> = emptyMap(),
-        defaultComponentPlugin: Plugin? = null,
-    ) = Stencil(components, dependencies, componentPlugins, defaultComponentPlugin)
+    ) = Stencil(components, dependencies, componentPlugins)
 
     private fun componentDependency(source: String, dependsOn: String) =
         ComponentDependency(ComponentReference(source), DependencyType.IMPLEMENTATION, ComponentReference(dependsOn))

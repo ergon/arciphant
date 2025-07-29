@@ -7,5 +7,4 @@ data class Stencil internal constructor(
     internal val components: List<ComponentReference>,
     internal val dependencies: List<ComponentDependency>,
     internal val componentPlugins: Map<ComponentReference, Plugin>,
-    internal val defaultComponentPlugin: Plugin?,
 )
