@@ -1,2 +1,0 @@
-# @name get all customers
-GET {{base-url}}/customers
