@@ -3,6 +3,7 @@ pluginManagement {
     gradlePluginPortal()
   }
   includeBuild("./build-logic")
+  includeBuild("../arciphant-gradle-plugin")
 }
 
 dependencyResolutionManagement {
@@ -12,7 +13,7 @@ dependencyResolutionManagement {
 }
 
 plugins {
-  id("ch.ergon.arciphant") version "0.1.1"
+  id("ch.ergon.arciphant")
   id("spring-component") apply false // solely used to ensure plugin resolution mechanism for prebuilt plugins in 'build-logic' is triggered.
 }
 
