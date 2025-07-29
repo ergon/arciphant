@@ -25,10 +25,8 @@ arciphant {
   val filestore = "filestore"
 
   val commonModuleStructure = stencil {
-    defaultComponentPlugin("spring-component")
-
-    addComponent(api)
-    addComponent(domain).dependsOnApi(api)
+    addComponent(api).withPlugin("spring-component")
+    addComponent(domain).withPlugin("spring-component").dependsOnApi(api)
     addComponent(db).withPlugin("jooq-component").dependsOn(domain)
     addComponent(webApi).withPlugin("spring-web-component")
     addComponent(web).withPlugin("spring-web-component").dependsOn(webApi, domain)
@@ -45,11 +43,11 @@ arciphant {
   module("exam") { basedOn(commonModuleStructure) }
   module("certificate") {
     basedOn(commonModuleWithFilestoreStructure)
-    addComponent("certificate-authority-adapter").dependsOn(domain)
+    addComponent("certificate-authority-adapter").withPlugin("spring-component").dependsOn(domain)
   }
   module("accounting") {
     basedOn(commonModuleWithFilestoreStructure)
-    val ppa = addComponent("payment-provider-adapter").dependsOn(domain)
+    val ppa = addComponent("payment-provider-adapter").withPlugin("spring-component").dependsOn(domain)
     getComponent(web).dependsOn(ppa)
   }
 
