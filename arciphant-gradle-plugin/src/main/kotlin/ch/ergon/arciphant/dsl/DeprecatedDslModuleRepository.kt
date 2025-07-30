@@ -2,7 +2,7 @@ package ch.ergon.arciphant.dsl
 
 import ch.ergon.arciphant.model.*
 
-internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleRepository {
+internal class DeprecatedDslModuleRepository(private val dsl: DeprecatedArciphantDsl) : ModuleRepository {
 
     override fun load() = dsl.modules.map { it.createFunctionalModule() } + dsl.bundles.map { it.createBundleModule() }
 

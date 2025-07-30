@@ -2,7 +2,7 @@ package ch.ergon.arciphant.dsl
 
 import ch.ergon.arciphant.model.*
 
-open class ArciphantDsl {
+open class DeprecatedArciphantDsl {
 
     internal val modules = mutableSetOf<FunctionalModuleInstanceDsl>()
     internal val bundles = mutableSetOf<BundleModule>()

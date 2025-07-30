@@ -6,10 +6,10 @@ import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ArciphantDslTest {
+class DeprecatedArciphantDslTest {
 
-    private val dsl = ArciphantDsl()
-    private val repository = DslModuleRepository(dsl)
+    private val dsl = DeprecatedArciphantDsl()
+    private val repository = DeprecatedDslModuleRepository(dsl)
 
     private val sharedModuleRef = LibraryModuleReference("shared")
     private val customerModuleRef = DomainModuleReference("customer")
