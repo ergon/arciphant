@@ -1,0 +1,231 @@
+package ch.ergon.arciphant.dsl
+
+import ch.ergon.arciphant.model.*
+import ch.ergon.arciphant.model.DependencyType.API
+import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+
+class ArciphantDslTest {
+
+    private val dsl = ArciphantDsl()
+    private val repository = DslModuleRepository(dsl)
+
+    @Nested
+    inner class ComponentsTest {
+
+        private val component1a = ComponentReference("component1a")
+        private val component1b = ComponentReference("component1b")
+        private val component2a = ComponentReference("component2a")
+        private val component2b = ComponentReference("component2b")
+        private val component3a = ComponentReference("component3a")
+        private val component3b = ComponentReference("component3b")
+
+        @Test
+        fun `it should merge components of structures and module itself`() {
+            with(dsl) {
+                val structure1 = componentStructure()
+                    .createComponent(component1a.name)
+                    .createComponent(component1b.name)
+                val structure2 = componentStructure()
+                    .createComponent(component2a.name)
+                    .createComponent(component2b.name)
+                module(name = "module", structures = listOf(structure1, structure2))
+                    .createComponent(component3a.name)
+                    .createComponent(component3b.name)
+            }
+
+            val module = repository.loadSingleModule()
+
+            assertThat(module.components.map { it.reference }).containsExactlyInAnyOrder(
+                component1a, component1b, component2a, component2b, component3a, component3b
+            )
+        }
+    }
+
+    @Nested
+    inner class DependenciesTest {
+        private val sourceComponent = "sourceComponent"
+        private val targetComponent1a = "targetComponent1a"
+        private val targetComponent1b = "targetComponent1b"
+        private val targetComponent2 = "targetComponent2"
+        private val targetComponent3a = "targetComponent3a"
+        private val targetComponent3b = "targetComponent3b"
+
+        @Test
+        fun `it should apply dependency type`() {
+            with(dsl) {
+                module(name = "module")
+                    .createComponent(
+                        name = sourceComponent,
+                        dependsOnApi = listOf(targetComponent3a),
+                        dependsOn = listOf(targetComponent3b)
+                    )
+            }
+
+            val component = repository.loadSingleComponent()
+
+            assertThat(component.dependsOn).containsExactlyInAnyOrder(
+                Dependency(component = ComponentReference(targetComponent3a), type = API),
+                Dependency(component = ComponentReference(targetComponent3b), type = IMPLEMENTATION),
+            )
+
+        }
+
+        @Test
+        fun `it should merge dependencies`() {
+            with(dsl) {
+                val structure1 = componentStructure()
+                    .createComponent(name = sourceComponent, dependsOn = listOf(targetComponent1a, targetComponent1b))
+                val structure2 = componentStructure(basedOn = structure1)
+                    .extendComponent(name = sourceComponent, dependsOn = listOf(targetComponent2))
+                module(name = "module", structures = listOf(structure2))
+                    .extendComponent(name = sourceComponent, dependsOn = listOf(targetComponent3a, targetComponent3b))
+            }
+
+            val component = repository.loadSingleComponent()
+
+            assertThat(component.dependsOn.map { it.component.name }).containsExactlyInAnyOrder(
+                targetComponent1a, targetComponent1b, targetComponent2, targetComponent3a, targetComponent3b,
+            )
+        }
+    }
+
+    @Nested
+    inner class CompleteExampleTest {
+
+        private val sharedModuleRef = LibraryModuleReference("shared")
+        private val customerModuleRef = DomainModuleReference("customer")
+        private val orderModuleRef = DomainModuleReference("order")
+        private val inventoryModuleRef = DomainModuleReference("inventory")
+        private val orderingModuleRef = BundleModuleReference("ordering")
+        private val appModuleRef = BundleModuleReference("app")
+
+        private val baseComponentRef = ComponentReference("base")
+        private val domainComponentRef = ComponentReference("domain")
+        private val dbComponentRef = ComponentReference("db")
+        private val webApiComponentRef = ComponentReference("web-api")
+        private val webComponentRef = ComponentReference("web")
+        private val externalApiComponentRef = ComponentReference("external-api")
+
+        private val domainPlugin = Plugin("domain-plugin")
+        private val dbPlugin = Plugin("db-plugin")
+        private val bundlePlugin = Plugin("bundle-plugin")
+
+        @Test
+        fun testDsl() {
+            with(dsl) {
+                val common = componentStructure()
+                    .createComponent(name = "domain", plugin = domainPlugin.id)
+                    .createComponent(name = "db", plugin = dbPlugin.id, dependsOn = listOf("domain"))
+                val web = componentStructure()
+                    .createComponent(name = "web-api")
+                    .createComponent(name = "web", dependsOnApi = listOf("web-api"))
+                library(name = "shared", structure = common)
+                    .createComponent("base")
+                    .extendComponent("domain", dependsOn = listOf("base"))
+                    .extendComponent("db", dependsOn = listOf("base"))
+
+                val customer = module(name = "customer", structures = listOf(common, web))
+                val order = module(name = "order", structures = listOf(common, web))
+                    .createComponent(name = "external-api")
+                module(name = "inventory")
+                    .createComponent(name = "main")
+                bundle("ordering", includes = setOf(customer, order))
+                bundle("app", plugin = bundlePlugin.id)
+            }
+
+            val modules = repository.load()
+
+            val domainComponent = Component(
+                reference = domainComponentRef,
+                plugin = domainPlugin,
+                dependsOn = emptyList(),
+            )
+            val dbComponent = Component(
+                reference = dbComponentRef,
+                plugin = dbPlugin,
+                dependsOn = listOf(Dependency(component = domainComponentRef, type = IMPLEMENTATION)),
+            )
+            val webApiComponent = Component(
+                reference = webApiComponentRef,
+                plugin = null,
+                dependsOn = emptyList(),
+            )
+            val webComponent = Component(
+                reference = webComponentRef,
+                plugin = null,
+                dependsOn = listOf(Dependency(component = webApiComponentRef, type = API)),
+            )
+            val externalApiComponent = Component(
+                reference = externalApiComponentRef,
+                plugin = null,
+                dependsOn = emptyList(),
+            )
+
+            assertThat(modules).containsExactlyInAnyOrder(
+                LibraryModule(
+                    reference = sharedModuleRef,
+                    components = setOf(
+                        domainComponent.copy(
+                            dependsOn = listOf(Dependency(component = baseComponentRef, type = IMPLEMENTATION))
+                        ),
+                        dbComponent.copy(
+                            dependsOn =
+                                listOf(
+                                    Dependency(component = domainComponentRef, type = IMPLEMENTATION),
+                                    Dependency(component = baseComponentRef, type = IMPLEMENTATION),
+                                )
+                        ),
+                        Component(
+                            reference = baseComponentRef,
+                            plugin = null,
+                            dependsOn = emptyList(),
+                        ),
+                    ),
+                ),
+                DomainModule(
+                    reference = customerModuleRef,
+                    components = setOf(domainComponent, dbComponent, webApiComponent, webComponent),
+                ),
+                DomainModule(
+                    reference = orderModuleRef,
+                    components = setOf(
+                        domainComponent,
+                        dbComponent,
+                        webApiComponent,
+                        webComponent,
+                        externalApiComponent
+                    ),
+                ),
+                DomainModule(
+                    reference = inventoryModuleRef,
+                    components = setOf(
+                        Component(
+                            reference = ComponentReference("main"),
+                            plugin = null,
+                            dependsOn = emptyList(),
+                        )
+                    ),
+                ),
+                BundleModule(
+                    reference = orderingModuleRef,
+                    plugin = null,
+                    includes = setOf(customerModuleRef, orderModuleRef)
+                ),
+                BundleModule(
+                    reference = appModuleRef,
+                    plugin = bundlePlugin,
+                    includes = setOf(sharedModuleRef, customerModuleRef, orderModuleRef, inventoryModuleRef),
+                ),
+            )
+        }
+
+    }
+
+}
+
+private fun DslModuleRepository.loadSingleComponent() = loadSingleModule().components.single()
+
+private fun DslModuleRepository.loadSingleModule() = load().single() as DomainModule
