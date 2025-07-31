@@ -10,16 +10,15 @@ class BundleModuleBuilder internal constructor(
     internal val includes: Set<ModuleBuilder>
 ) : ModuleBuilder
 
-class DomainModuleBuilder internal constructor(name: String, templates: Set<ModuleTemplateBuilder>) :
-    FunctionalModuleBuilder<DomainModuleBuilder>(name, templates)
-
-class LibraryModuleBuilder internal constructor(name: String, templates: Set<ModuleTemplateBuilder>) :
-    FunctionalModuleBuilder<LibraryModuleBuilder>(name, templates)
-
-sealed class FunctionalModuleBuilder<B : FunctionalModuleBuilder<B>>(
+class FunctionalModuleBuilder internal constructor(
     internal val name: String,
-    internal val templates: Set<ModuleTemplateBuilder>
-) : ModuleBuilder, ComponentContainerBuilder<B>()
+    internal val templates: Set<ModuleTemplateBuilder>,
+    internal val moduleType: FunctionalModuleType,
+) : ModuleBuilder, ComponentContainerBuilder<FunctionalModuleBuilder>()
+
+enum class FunctionalModuleType {
+    LIBRARY, DOMAIN
+}
 
 sealed interface ModuleBuilder
 
@@ -73,7 +72,6 @@ sealed class ComponentContainerBuilder<B : ComponentContainerBuilder<B>> {
 
 internal val ModuleBuilder.reference
     get() = when (this) {
-        is LibraryModuleBuilder -> ModuleReference(name)
-        is DomainModuleBuilder -> ModuleReference(name)
+        is FunctionalModuleBuilder -> ModuleReference(name)
         is BundleModuleBuilder -> ModuleReference(name)
     }

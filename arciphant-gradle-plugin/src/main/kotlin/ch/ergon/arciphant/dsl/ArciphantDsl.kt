@@ -2,7 +2,7 @@ package ch.ergon.arciphant.dsl
 
 open class ArciphantDsl internal constructor() {
 
-    internal val functionalModules = mutableListOf<FunctionalModuleBuilder<*>>()
+    internal val functionalModules = mutableListOf<FunctionalModuleBuilder>()
     internal val bundleModules = mutableSetOf<BundleModuleBuilder>()
 
     fun template(): ModuleTemplateBuilder {
@@ -11,16 +11,16 @@ open class ArciphantDsl internal constructor() {
 
     fun library(name: String, template: ModuleTemplateBuilder) = library(name, setOf(template))
 
-    fun library(name: String, templates: Set<ModuleTemplateBuilder> = emptySet()): LibraryModuleBuilder {
+    fun library(name: String, templates: Set<ModuleTemplateBuilder> = emptySet()): FunctionalModuleBuilder {
         verifyName(name, "library")
-        return LibraryModuleBuilder(name, templates).also { functionalModules.add(it) }
+        return FunctionalModuleBuilder(name, templates, FunctionalModuleType.LIBRARY).also { functionalModules.add(it) }
     }
 
     fun module(name: String, template: ModuleTemplateBuilder) = module(name, setOf(template))
 
-    fun module(name: String, templates: Set<ModuleTemplateBuilder> = emptySet()): DomainModuleBuilder {
+    fun module(name: String, templates: Set<ModuleTemplateBuilder> = emptySet()): FunctionalModuleBuilder {
         verifyName(name, "module")
-        return DomainModuleBuilder(name, templates).also { functionalModules.add(it) }
+        return FunctionalModuleBuilder(name, templates, FunctionalModuleType.DOMAIN).also { functionalModules.add(it) }
     }
 
     fun bundle(

@@ -1,20 +1,22 @@
 package ch.ergon.arciphant.dsl
 
+import ch.ergon.arciphant.dsl.FunctionalModuleType.DOMAIN
+import ch.ergon.arciphant.dsl.FunctionalModuleType.LIBRARY
 import ch.ergon.arciphant.model.*
 
 internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleRepository {
 
     override fun load() = dsl.functionalModules.map { it.create() } + dsl.bundleModules.map { it.createBundleModule() }
 
-    private fun FunctionalModuleBuilder<*>.create(): FunctionalModule {
+    private fun FunctionalModuleBuilder.create(): FunctionalModule {
         val components = build().toSet()
-        return when (this) {
-            is LibraryModuleBuilder -> LibraryModule(this.reference, components)
-            is DomainModuleBuilder -> DomainModule(this.reference, components)
+        return when (moduleType) {
+            LIBRARY -> LibraryModule(this.reference, components)
+            DOMAIN -> DomainModule(this.reference, components)
         }
     }
 
-    private fun FunctionalModuleBuilder<*>.build(): List<Component> {
+    private fun FunctionalModuleBuilder.build(): List<Component> {
         return build(inheritedComponents = templates.flatMap { it.build() })
     }
 
