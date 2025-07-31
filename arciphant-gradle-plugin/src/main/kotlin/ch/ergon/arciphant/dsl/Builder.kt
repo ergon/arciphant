@@ -22,7 +22,7 @@ sealed class FunctionalModuleBuilder(
 sealed interface ModuleBuilder
 
 class ModuleTemplateBuilder internal constructor(
-    internal val basedOn: ModuleTemplateBuilder? = null
+    internal val extends: ModuleTemplateBuilder? = null
 ) : ComponentContainerBuilder()
 
 sealed class ComponentContainerBuilder {

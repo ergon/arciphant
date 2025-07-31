@@ -25,7 +25,7 @@ arciphant {
         .createComponent(name = "web-api", plugin = "spring-web-component")
         .createComponent(name = "web", plugin = "spring-web-component", dependsOn = setOf("web-api", "domain"))
 
-    val moduleWithFilestoreTemplate = template(basedOn = commonModuleTemplate)
+    val moduleWithFilestoreTemplate = template(extends = commonModuleTemplate)
         .createComponent(name = "filestore", plugin = "minio-component", dependsOn = setOf("domain"))
 
     library(name = "shared", template = moduleWithFilestoreTemplate)

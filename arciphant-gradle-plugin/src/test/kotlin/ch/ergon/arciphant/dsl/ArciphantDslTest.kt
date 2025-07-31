@@ -84,7 +84,7 @@ class ArciphantDslTest {
             with(dsl) {
                 val baseTemplate = template()
                     .createComponent(component)
-                val template = template(basedOn = baseTemplate)
+                val structure = template(extends = baseTemplate)
                     .createComponent(component)
                 module(name = "module", templates = setOf(template))
             }
@@ -239,7 +239,7 @@ class ArciphantDslTest {
             with(dsl) {
                 val template1 = template()
                     .createComponent(name = sourceComponent, dependsOn = setOf(targetComponent1a, targetComponent1b))
-                val template2 = template(basedOn = template1)
+                val template2 = template(extends = template1)
                     .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent2))
                 module(name = "module", templates = setOf(template2))
                     .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent3a, targetComponent3b))
