@@ -27,6 +27,25 @@ class ArciphantPluginTest {
     }
 
     @Test
+    fun `test that library is created according to configuration`() {
+        settingsFileWithArciphant(
+            """
+            val sampleTemplate = template()
+                .createComponent("api")
+                .createComponent("domain")
+            
+            library("test", sampleTemplate)
+            """
+        )
+        val result = gradleRunner
+            .withArguments("-q", "projects")
+            .build()
+
+        assertThat(result.output).contains("Project ':test:api'")
+        assertThat(result.output).contains("Project ':test:domain'")
+    }
+
+    @Test
     fun `test that module is created according to configuration`() {
         settingsFileWithArciphant(
             """
