@@ -15,10 +15,10 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
     }
 
     private fun FunctionalModuleBuilder.build(): List<Component> {
-        return build(inheritedComponents = structures.flatMap { it.build() })
+        return build(inheritedComponents = templates.flatMap { it.build() })
     }
 
-    private fun ComponentStructureBuilder.build(): List<Component> {
+    private fun ModuleTemplateBuilder.build(): List<Component> {
         return build(inheritedComponents = basedOn?.build() ?: emptyList())
 
     }

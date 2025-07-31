@@ -9,22 +9,22 @@ open class ArciphantDsl internal constructor() {
     internal val functionalModules = mutableListOf<FunctionalModuleBuilder>()
     internal val bundleModules = mutableSetOf<BundleModuleBuilder>()
 
-    fun componentStructure(basedOn: ComponentStructureBuilder? = null): ComponentStructureBuilder {
-        return ComponentStructureBuilder(basedOn)
+    fun template(basedOn: ModuleTemplateBuilder? = null): ModuleTemplateBuilder {
+        return ModuleTemplateBuilder(basedOn)
     }
 
-    fun library(name: String, structure: ComponentStructureBuilder) = library(name, setOf(structure))
+    fun library(name: String, template: ModuleTemplateBuilder) = library(name, setOf(template))
 
-    fun library(name: String, structures: Set<ComponentStructureBuilder> = emptySet()): LibraryModuleBuilder {
+    fun library(name: String, templates: Set<ModuleTemplateBuilder> = emptySet()): LibraryModuleBuilder {
         verifyName(name, "library")
-        return LibraryModuleBuilder(name, structures).also { functionalModules.add(it) }
+        return LibraryModuleBuilder(name, templates).also { functionalModules.add(it) }
     }
 
-    fun module(name: String, structure: ComponentStructureBuilder) = module(name, setOf(structure))
+    fun module(name: String, template: ModuleTemplateBuilder) = module(name, setOf(template))
 
-    fun module(name: String, structures: Set<ComponentStructureBuilder> = emptySet()): DomainModuleBuilder {
+    fun module(name: String, templates: Set<ModuleTemplateBuilder> = emptySet()): DomainModuleBuilder {
         verifyName(name, "module")
-        return DomainModuleBuilder(name, structures).also { functionalModules.add(it) }
+        return DomainModuleBuilder(name, templates).also { functionalModules.add(it) }
     }
 
     fun <B : ComponentContainerBuilder> B.createComponent(

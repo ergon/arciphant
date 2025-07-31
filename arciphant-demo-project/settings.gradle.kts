@@ -18,23 +18,23 @@ plugins {
 }
 
 arciphant {
-    val commonStructure = componentStructure()
+    val commonModuleTemplate = template()
         .createComponent(name = "api", plugin = "spring-component")
         .createComponent(name = "domain", plugin = "spring-component", dependsOnApi = setOf("api"))
         .createComponent(name = "db", plugin = "jooq-component", dependsOn = setOf("domain"))
         .createComponent(name = "web-api", plugin = "spring-web-component")
         .createComponent(name = "web", plugin = "spring-web-component", dependsOn = setOf("web-api", "domain"))
 
-    val commonStructureWithFilestore = componentStructure(basedOn = commonStructure)
+    val moduleWithFilestoreTemplate = template(basedOn = commonModuleTemplate)
         .createComponent(name = "filestore", plugin = "minio-component", dependsOn = setOf("domain"))
 
-    library(name = "shared", structure = commonStructureWithFilestore)
+    library(name = "shared", template = moduleWithFilestoreTemplate)
 
-    module(name = "course", structure = commonStructure)
-    module(name = "exam", structure = commonStructure)
-    module(name = "certificate", structure = commonStructureWithFilestore)
+    module(name = "course", template = commonModuleTemplate)
+    module(name = "exam", template = commonModuleTemplate)
+    module(name = "certificate", template = moduleWithFilestoreTemplate)
         .createComponent(name = "certificate-authority-adapter", plugin = "spring-component", dependsOn = setOf("domain"))
-    module(name = "accounting", structure = commonStructureWithFilestore)
+    module(name = "accounting", template = moduleWithFilestoreTemplate)
         .createComponent(name = "payment-provider-adapter", plugin = "spring-component", dependsOn = setOf("domain"))
         .extendComponent(name = "web", dependsOn = setOf("payment-provider-adapter"))
 

@@ -10,19 +10,19 @@ class BundleModuleBuilder internal constructor(
     internal val includes: Set<FunctionalModuleBuilder>
 ) : ModuleBuilder
 
-class DomainModuleBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) : FunctionalModuleBuilder(name, structures)
+class DomainModuleBuilder internal constructor(name: String, templates: Set<ModuleTemplateBuilder>) : FunctionalModuleBuilder(name, templates)
 
-class LibraryModuleBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) : FunctionalModuleBuilder(name, structures)
+class LibraryModuleBuilder internal constructor(name: String, templates: Set<ModuleTemplateBuilder>) : FunctionalModuleBuilder(name, templates)
 
 sealed class FunctionalModuleBuilder(
     internal val name: String,
-    internal val structures: Set<ComponentStructureBuilder>
+    internal val templates: Set<ModuleTemplateBuilder>
 ) : ModuleBuilder, ComponentContainerBuilder()
 
 sealed interface ModuleBuilder
 
-class ComponentStructureBuilder internal constructor(
-    internal val basedOn: ComponentStructureBuilder? = null
+class ModuleTemplateBuilder internal constructor(
+    internal val basedOn: ModuleTemplateBuilder? = null
 ) : ComponentContainerBuilder()
 
 sealed class ComponentContainerBuilder {

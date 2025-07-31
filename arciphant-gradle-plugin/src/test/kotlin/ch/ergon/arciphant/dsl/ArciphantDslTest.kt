@@ -28,15 +28,15 @@ class ArciphantDslTest {
         private val component3b = ComponentReference("component3b")
 
         @Test
-        fun `it should merge components of structures and module itself`() {
+        fun `it should merge components of templates and module itself`() {
             with(dsl) {
-                val structure1 = componentStructure()
+                val template1 = template()
                     .createComponent(component1a.name)
                     .createComponent(component1b.name)
-                val structure2 = componentStructure()
+                val template2 = template()
                     .createComponent(component2a.name)
                     .createComponent(component2b.name)
-                module(name = "module", structures = setOf(structure1, structure2))
+                module(name = "module", templates = setOf(template1, template2))
                     .createComponent(component3a.name)
                     .createComponent(component3b.name)
             }
@@ -64,11 +64,11 @@ class ArciphantDslTest {
         }
 
         @Test
-        fun `it should not allow component name that is already present in structure`() {
+        fun `it should not allow component name that is already present in template`() {
             with(dsl) {
-                val baseStructure = componentStructure()
+                val baseTemplate = template()
                     .createComponent(component)
-                module(name = "module", structure = baseStructure)
+                module(name = "module", template = baseTemplate)
                     .createComponent(component)
             }
 
@@ -80,13 +80,13 @@ class ArciphantDslTest {
         }
 
         @Test
-        fun `it should not allow component name that is already present in inherited structure`() {
+        fun `it should not allow component name that is already present in extended template`() {
             with(dsl) {
-                val baseStructure = componentStructure()
+                val baseTemplate = template()
                     .createComponent(component)
-                val structure = componentStructure(basedOn = baseStructure)
+                val template = template(basedOn = baseTemplate)
                     .createComponent(component)
-                module(name = "module", structures = setOf(structure))
+                module(name = "module", templates = setOf(template))
             }
 
             val exception = assertThrows<IllegalArgumentException> {
@@ -100,11 +100,11 @@ class ArciphantDslTest {
         fun `it should not allow multiple component extension in same module`() {
             with(dsl) {
 
-                val structure = componentStructure()
+                val template = template()
                     .createComponent(component)
 
                 val exception = assertThrows<IllegalArgumentException> {
-                    module(name = "module", structure = structure)
+                    module(name = "module", template = template)
                         .extendComponent(component)
                         .extendComponent(component)
                 }
@@ -135,7 +135,7 @@ class ArciphantDslTest {
             with(dsl) {
 
                 val exception = assertThrows<IllegalArgumentException> {
-                    componentStructure()
+                    template()
                         .createComponent("my component")
                 }
 
@@ -148,7 +148,7 @@ class ArciphantDslTest {
             with(dsl) {
 
                 val exception = assertThrows<IllegalArgumentException> {
-                    componentStructure()
+                    template()
                         .createComponent("")
                 }
 
@@ -237,11 +237,11 @@ class ArciphantDslTest {
         @Test
         fun `it should merge dependencies`() {
             with(dsl) {
-                val structure1 = componentStructure()
+                val template1 = template()
                     .createComponent(name = sourceComponent, dependsOn = setOf(targetComponent1a, targetComponent1b))
-                val structure2 = componentStructure(basedOn = structure1)
+                val template2 = template(basedOn = template1)
                     .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent2))
-                module(name = "module", structures = setOf(structure2))
+                module(name = "module", templates = setOf(template2))
                     .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent3a, targetComponent3b))
             }
 
@@ -277,19 +277,19 @@ class ArciphantDslTest {
         @Test
         fun testDsl() {
             with(dsl) {
-                val common = componentStructure()
+                val common = template()
                     .createComponent(name = "domain", plugin = domainPlugin.id)
                     .createComponent(name = "db", plugin = dbPlugin.id, dependsOn = setOf("domain"))
-                val web = componentStructure()
+                val web = template()
                     .createComponent(name = "web-api")
                     .createComponent(name = "web", dependsOnApi = setOf("web-api"))
-                library(name = "shared", structure = common)
+                library(name = "shared", template = common)
                     .createComponent("base")
                     .extendComponent("domain", dependsOn = setOf("base"))
                     .extendComponent("db", dependsOn = setOf("base"))
 
-                val customer = module(name = "customer", structures = setOf(common, web))
-                val order = module(name = "order", structures = setOf(common, web))
+                val customer = module(name = "customer", templates = setOf(common, web))
+                val order = module(name = "order", templates = setOf(common, web))
                     .createComponent(name = "external-api")
                 module(name = "inventory")
                     .createComponent(name = "main")

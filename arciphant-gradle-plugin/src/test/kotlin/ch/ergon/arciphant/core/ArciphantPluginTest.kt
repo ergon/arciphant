@@ -27,7 +27,7 @@ class ArciphantPluginTest {
     }
 
     @Test
-    fun `test that project structure is created according to module configuration`() {
+    fun `test that module is created according to configuration`() {
         settingsFileWithArciphant(
             """
             val sampleStencil = stencil {
