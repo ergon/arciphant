@@ -295,3 +295,6 @@ plugins {
 This seems to trigger the required plugin resolution strategy and arciphant is able to apply all plugins from the included build 
 (even if only one plugin is referenced in `settings.gradle.kts`).
 
+## Complete demo project
+
+You can find a complete [Demo Project](./demo-project.md) in `./arciphant-demo-project`
