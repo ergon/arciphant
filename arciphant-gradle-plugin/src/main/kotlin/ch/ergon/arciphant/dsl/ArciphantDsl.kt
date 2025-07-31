@@ -7,7 +7,7 @@ import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
 open class ArciphantDsl internal constructor() {
 
     internal val functionalModules = mutableListOf<FunctionalModuleBuilder>()
-    internal val bundleModules = mutableSetOf<BundleModule>()
+    internal val bundleModules = mutableSetOf<BundleModuleBuilder>()
 
     fun componentStructure(basedOn: ComponentStructureBuilder? = null): ComponentStructureBuilder {
         return ComponentStructureBuilder(basedOn)
@@ -55,15 +55,12 @@ open class ArciphantDsl internal constructor() {
         name: String,
         plugin: String? = null,
         includes: Set<FunctionalModuleBuilder> = emptySet()
-    ): BundleModuleReference {
-        bundleModules.add(
-            BundleModule(
-                reference = BundleModuleReference(name),
-                plugin = plugin?.let { Plugin(it) },
-                includes = includes.map { it.reference }.toSet()
-            )
-        )
-        return BundleModuleReference(name)
+    ): BundleModuleBuilder {
+        return BundleModuleBuilder(
+            name = name,
+            plugin = plugin,
+            includes = includes
+        ).also { bundleModules.add(it) }
     }
 
 }
