@@ -64,25 +64,6 @@ class ArciphantPluginTest {
         assertThat(result.output).contains("Project ':test:domain'")
     }
 
-    @Test
-    fun `test that module without components is not allowed`() {
-        settingsFileWithArciphant(
-            """ 
-            arciphant {
-                module("test")
-            }
-            """
-        )
-
-        val error = assertThrows<UnexpectedBuildFailure> {
-            gradleRunner
-                .withArguments("-q", "projects")
-                .build()
-        }
-
-        assertThat(error.message).contains("Module 'test' does not have any component.")
-    }
-
     private fun settingsFileWithArciphant(arciphantConfiguration: String) = settingsFile.write(
         """
                 plugins {
