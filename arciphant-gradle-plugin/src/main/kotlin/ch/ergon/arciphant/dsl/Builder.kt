@@ -1,8 +1,8 @@
 package ch.ergon.arciphant.dsl
 
-import ch.ergon.arciphant.model.*
 import ch.ergon.arciphant.model.Component
 import ch.ergon.arciphant.model.Dependency
+import ch.ergon.arciphant.model.ModuleReference
 
 class BundleModuleBuilder internal constructor(
     internal val name: String,
@@ -21,9 +21,16 @@ sealed class FunctionalModuleBuilder(
 
 sealed interface ModuleBuilder
 
-class ModuleTemplateBuilder internal constructor(
-    internal val extends: ModuleTemplateBuilder? = null
-) : ComponentContainerBuilder()
+class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder() {
+
+    internal val extends = mutableListOf<ModuleTemplateBuilder>()
+
+    fun extends(template: ModuleTemplateBuilder): ModuleTemplateBuilder {
+        extends.add(template)
+        return this
+    }
+
+}
 
 sealed class ComponentContainerBuilder {
     internal val components = mutableListOf<Component>()

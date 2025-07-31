@@ -19,7 +19,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
     }
 
     private fun ModuleTemplateBuilder.build(): List<Component> {
-        return build(inheritedComponents = extends?.build() ?: emptyList())
+        return build(inheritedComponents = extends.flatMap { it.build() })
 
     }
 

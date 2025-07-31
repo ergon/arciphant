@@ -49,6 +49,30 @@ class ArciphantDslTest {
         }
 
         @Test
+        fun `it should support multiple extends`() {
+            with(dsl) {
+                val template1 = template()
+                    .createComponent(component1a.name)
+                    .createComponent(component1b.name)
+                val template2 = template()
+                    .createComponent(component2a.name)
+                    .createComponent(component2b.name)
+                val template = template()
+                    .extends(template1)
+                    .extends(template2)
+                    .createComponent(component3a.name)
+                    .createComponent(component3b.name)
+                module(name = "module", templates = setOf(template))
+            }
+
+            val module = repository.loadSingleModule()
+
+            assertThat(module.components.map { it.reference }).containsExactlyInAnyOrder(
+                component1a, component1b, component2a, component2b, component3a, component3b
+            )
+        }
+
+        @Test
         fun `it should not allow duplicate component names in same module`() {
             with(dsl) {
                 module(name = "module")
@@ -84,7 +108,8 @@ class ArciphantDslTest {
             with(dsl) {
                 val baseTemplate = template()
                     .createComponent(component)
-                val structure = template(extends = baseTemplate)
+                val template = template()
+                    .extends(baseTemplate)
                     .createComponent(component)
                 module(name = "module", templates = setOf(template))
             }
@@ -239,7 +264,8 @@ class ArciphantDslTest {
             with(dsl) {
                 val template1 = template()
                     .createComponent(name = sourceComponent, dependsOn = setOf(targetComponent1a, targetComponent1b))
-                val template2 = template(extends = template1)
+                val template2 = template()
+                    .extends(template1)
                     .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent2))
                 module(name = "module", templates = setOf(template2))
                     .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent3a, targetComponent3b))

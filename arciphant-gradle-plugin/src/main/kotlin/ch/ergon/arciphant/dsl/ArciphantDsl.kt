@@ -9,8 +9,8 @@ open class ArciphantDsl internal constructor() {
     internal val functionalModules = mutableListOf<FunctionalModuleBuilder>()
     internal val bundleModules = mutableSetOf<BundleModuleBuilder>()
 
-    fun template(extends: ModuleTemplateBuilder? = null): ModuleTemplateBuilder {
-        return ModuleTemplateBuilder(extends)
+    fun template(): ModuleTemplateBuilder {
+        return ModuleTemplateBuilder()
     }
 
     fun library(name: String, template: ModuleTemplateBuilder) = library(name, setOf(template))
