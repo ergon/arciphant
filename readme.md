@@ -17,7 +17,7 @@ Arciphant offers the greatest benefit for software projects that consist of many
 
 ## Documentation
 
-See [Documentation](DOCUMENTATION.md) for a user guide and [Demo Project](./demo-project.md) for a complete demo project.
+See [Documentation](documentation.md) for a user guide and [Demo Project](./demo-project.md) for a complete demo project.
 
 ## Technologies
 
