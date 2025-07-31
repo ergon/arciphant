@@ -27,7 +27,7 @@ open class ArciphantDsl internal constructor() {
         return ModuleBuilder(name, structures).also { functionalModules.add(it) }
     }
 
-    fun <B : ComponentsBuilder> B.createComponent(
+    fun <B : ComponentContainerBuilder> B.createComponent(
         name: String,
         plugin: String? = null,
         dependsOnApi: Set<String> = emptySet(),
@@ -39,7 +39,7 @@ open class ArciphantDsl internal constructor() {
         return this
     }
 
-    fun <B : ComponentsBuilder> B.extendComponent(
+    fun <B : ComponentContainerBuilder> B.extendComponent(
         name: String,
         dependsOnApi: Set<String> = emptySet(),
         dependsOn: Set<String> = emptySet(),
@@ -72,11 +72,11 @@ class ModuleBuilder internal constructor(name: String, structures: Set<Component
 
 class LibraryBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) : FunctionalModuleBuilder(name, structures)
 
-sealed class FunctionalModuleBuilder(internal val name: String, internal val structures: Set<ComponentStructureBuilder>) : ComponentsBuilder()
+sealed class FunctionalModuleBuilder(internal val name: String, internal val structures: Set<ComponentStructureBuilder>) : ComponentContainerBuilder()
 
-class ComponentStructureBuilder internal constructor(internal val basedOn: ComponentStructureBuilder? = null) : ComponentsBuilder()
+class ComponentStructureBuilder internal constructor(internal val basedOn: ComponentStructureBuilder? = null) : ComponentContainerBuilder()
 
-sealed class ComponentsBuilder {
+sealed class ComponentContainerBuilder {
     internal val components = mutableListOf<Component>()
     internal val componentDependencyOverrides = mutableMapOf<String, Set<Dependency>>()
 }

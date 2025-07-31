@@ -23,7 +23,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
 
     }
 
-    private fun ComponentsBuilder.build(inheritedComponents: List<Component>): List<Component> {
+    private fun ComponentContainerBuilder.build(inheritedComponents: List<Component>): List<Component> {
         val componentsByName = (inheritedComponents + components).toDistinctMap()
         componentDependencyOverrides.forEach { (componentName, dependencies) ->
             val existingComponent = componentsByName.getOrThrow(componentName)
