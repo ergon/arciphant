@@ -54,7 +54,7 @@ open class ArciphantDsl internal constructor() {
     fun bundle(
         name: String,
         plugin: String? = null,
-        includes: Set<FunctionalModuleBuilder> = emptySet()
+        includes: Set<ModuleBuilder> = emptySet()
     ): BundleModuleBuilder {
         return BundleModuleBuilder(
             name = name,

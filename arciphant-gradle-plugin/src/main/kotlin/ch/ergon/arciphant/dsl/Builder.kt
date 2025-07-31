@@ -7,7 +7,7 @@ import ch.ergon.arciphant.model.ModuleReference
 class BundleModuleBuilder internal constructor(
     internal val name: String,
     internal val plugin: String?,
-    internal val includes: Set<FunctionalModuleBuilder>
+    internal val includes: Set<ModuleBuilder>
 ) : ModuleBuilder
 
 class DomainModuleBuilder internal constructor(name: String, templates: Set<ModuleTemplateBuilder>) : FunctionalModuleBuilder(name, templates)
