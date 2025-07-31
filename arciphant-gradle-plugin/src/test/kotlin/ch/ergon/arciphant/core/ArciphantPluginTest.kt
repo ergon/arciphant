@@ -30,14 +30,11 @@ class ArciphantPluginTest {
     fun `test that module is created according to configuration`() {
         settingsFileWithArciphant(
             """
-            val sampleStencil = stencil {
-              addComponent("api")
-              addComponent("domain")
-            }
+            val sampleTemplate = template()
+                .createComponent("api")
+                .createComponent("domain")
             
-            module("test") {
-              basedOn(sampleStencil)
-            }
+            module("test", sampleTemplate)
             """
         )
         val result = gradleRunner
