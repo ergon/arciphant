@@ -1,8 +1,8 @@
 package ch.ergon.arciphant.dsl
 
-import ch.ergon.arciphant.model.Component
-import ch.ergon.arciphant.model.Dependency
-import ch.ergon.arciphant.model.ModuleReference
+import ch.ergon.arciphant.model.*
+import ch.ergon.arciphant.model.DependencyType.API
+import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
 
 class BundleModuleBuilder internal constructor(
     internal val name: String,
@@ -10,18 +10,20 @@ class BundleModuleBuilder internal constructor(
     internal val includes: Set<ModuleBuilder>
 ) : ModuleBuilder
 
-class DomainModuleBuilder internal constructor(name: String, templates: Set<ModuleTemplateBuilder>) : FunctionalModuleBuilder(name, templates)
+class DomainModuleBuilder internal constructor(name: String, templates: Set<ModuleTemplateBuilder>) :
+    FunctionalModuleBuilder<DomainModuleBuilder>(name, templates)
 
-class LibraryModuleBuilder internal constructor(name: String, templates: Set<ModuleTemplateBuilder>) : FunctionalModuleBuilder(name, templates)
+class LibraryModuleBuilder internal constructor(name: String, templates: Set<ModuleTemplateBuilder>) :
+    FunctionalModuleBuilder<LibraryModuleBuilder>(name, templates)
 
-sealed class FunctionalModuleBuilder(
+sealed class FunctionalModuleBuilder<B : FunctionalModuleBuilder<B>>(
     internal val name: String,
     internal val templates: Set<ModuleTemplateBuilder>
-) : ModuleBuilder, ComponentContainerBuilder()
+) : ModuleBuilder, ComponentContainerBuilder<B>()
 
 sealed interface ModuleBuilder
 
-class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder() {
+class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder<ModuleTemplateBuilder>() {
 
     internal val extends = mutableListOf<ModuleTemplateBuilder>()
 
@@ -32,9 +34,41 @@ class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder()
 
 }
 
-sealed class ComponentContainerBuilder {
+sealed class ComponentContainerBuilder<B : ComponentContainerBuilder<B>> {
     internal val components = mutableListOf<Component>()
     internal val componentDependencyOverrides = mutableMapOf<String, Set<Dependency>>()
+
+    fun createComponent(
+        name: String,
+        plugin: String? = null,
+        dependsOnApi: Set<String> = emptySet(),
+        dependsOn: Set<String> = emptySet(),
+    ): B {
+        verifyName(name, "component")
+        val dependencies = mapDependencies(dependsOnApi, dependsOn)
+        components.add(Component(ComponentReference(name), plugin?.let { Plugin(it) }, dependencies))
+        return castedThis()
+    }
+
+    fun extendComponent(
+        name: String,
+        dependsOnApi: Set<String> = emptySet(),
+        dependsOn: Set<String> = emptySet(),
+    ): B {
+        val dependencies = mapDependencies(dependsOnApi, dependsOn)
+        verify(componentDependencyOverrides.putIfAbsent(name, dependencies) == null) {
+            "Component '$name' has already been extended in the current context."
+        }
+        return castedThis()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun castedThis() = this as B
+
+    private fun mapDependencies(apiDependencies: Set<String>, implementationDependencies: Set<String>) =
+        apiDependencies.toDependencies(API) + implementationDependencies.toDependencies(IMPLEMENTATION)
+
+    private fun Set<String>.toDependencies(type: DependencyType) = map { Dependency(ComponentReference(it), type) }.toSet()
 }
 
 internal val ModuleBuilder.reference

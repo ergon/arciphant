@@ -1,12 +1,8 @@
 package ch.ergon.arciphant.dsl
 
-import ch.ergon.arciphant.model.*
-import ch.ergon.arciphant.model.DependencyType.API
-import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
-
 open class ArciphantDsl internal constructor() {
 
-    internal val functionalModules = mutableListOf<FunctionalModuleBuilder>()
+    internal val functionalModules = mutableListOf<FunctionalModuleBuilder<*>>()
     internal val bundleModules = mutableSetOf<BundleModuleBuilder>()
 
     fun template(): ModuleTemplateBuilder {
@@ -27,30 +23,6 @@ open class ArciphantDsl internal constructor() {
         return DomainModuleBuilder(name, templates).also { functionalModules.add(it) }
     }
 
-    fun <B : ComponentContainerBuilder> B.createComponent(
-        name: String,
-        plugin: String? = null,
-        dependsOnApi: Set<String> = emptySet(),
-        dependsOn: Set<String> = emptySet(),
-    ): B {
-        verifyName(name, "component")
-        val dependencies = mapDependencies(dependsOnApi, dependsOn)
-        components.add(Component(ComponentReference(name), plugin?.let { Plugin(it) }, dependencies))
-        return this
-    }
-
-    fun <B : ComponentContainerBuilder> B.extendComponent(
-        name: String,
-        dependsOnApi: Set<String> = emptySet(),
-        dependsOn: Set<String> = emptySet(),
-    ): B {
-        val dependencies = mapDependencies(dependsOnApi, dependsOn)
-        verify(componentDependencyOverrides.putIfAbsent(name, dependencies) == null) {
-            "Component '$name' has already been extended in the current context."
-        }
-        return this
-    }
-
     fun bundle(
         name: String,
         plugin: String? = null,
@@ -64,8 +36,3 @@ open class ArciphantDsl internal constructor() {
     }
 
 }
-
-private fun mapDependencies(apiDependencies: Set<String>, implementationDependencies: Set<String>) =
-    apiDependencies.toDependencies(API) + implementationDependencies.toDependencies(IMPLEMENTATION)
-
-private fun Set<String>.toDependencies(type: DependencyType) = map { Dependency(ComponentReference(it), type) }.toSet()

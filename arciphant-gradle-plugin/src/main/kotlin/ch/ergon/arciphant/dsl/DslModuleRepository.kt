@@ -6,7 +6,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
 
     override fun load() = dsl.functionalModules.map { it.create() } + dsl.bundleModules.map { it.createBundleModule() }
 
-    private fun FunctionalModuleBuilder.create(): FunctionalModule {
+    private fun FunctionalModuleBuilder<*>.create(): FunctionalModule {
         val components = build().toSet()
         return when (this) {
             is LibraryModuleBuilder -> LibraryModule(this.reference, components)
@@ -14,7 +14,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         }
     }
 
-    private fun FunctionalModuleBuilder.build(): List<Component> {
+    private fun FunctionalModuleBuilder<*>.build(): List<Component> {
         return build(inheritedComponents = templates.flatMap { it.build() })
     }
 
@@ -23,7 +23,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
 
     }
 
-    private fun ComponentContainerBuilder.build(inheritedComponents: List<Component>): List<Component> {
+    private fun ComponentContainerBuilder<*>.build(inheritedComponents: List<Component>): List<Component> {
         val componentsByName = (inheritedComponents + components).toDistinctMap()
         componentDependencyOverrides.forEach { (componentName, dependencies) ->
             val existingComponent = componentsByName.getOrThrow(componentName)
