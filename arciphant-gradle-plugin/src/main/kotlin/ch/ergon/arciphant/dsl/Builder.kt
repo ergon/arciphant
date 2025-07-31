@@ -10,17 +10,15 @@ class BundleModuleBuilder internal constructor(
     internal val includes: Set<ModuleBuilder>
 ) : ModuleBuilder
 
+internal enum class FunctionalModuleType {
+    LIBRARY, DOMAIN
+}
+
 class FunctionalModuleBuilder internal constructor(
     internal val name: String,
     internal val templates: Set<ModuleTemplateBuilder>,
     internal val moduleType: FunctionalModuleType,
 ) : ModuleBuilder, ComponentContainerBuilder<FunctionalModuleBuilder>()
-
-enum class FunctionalModuleType {
-    LIBRARY, DOMAIN
-}
-
-sealed interface ModuleBuilder
 
 class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder<ModuleTemplateBuilder>() {
 
@@ -30,7 +28,6 @@ class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder<M
         extends.add(template)
         return this
     }
-
 }
 
 sealed class ComponentContainerBuilder<B : ComponentContainerBuilder<B>> {
@@ -69,6 +66,8 @@ sealed class ComponentContainerBuilder<B : ComponentContainerBuilder<B>> {
 
     private fun Set<String>.toDependencies(type: DependencyType) = map { Dependency(ComponentReference(it), type) }.toSet()
 }
+
+sealed interface ModuleBuilder
 
 internal val ModuleBuilder.reference
     get() = when (this) {
