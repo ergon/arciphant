@@ -18,39 +18,25 @@ plugins {
 }
 
 arciphant {
-  val api = "api"
-  val domain = "domain"
-  val web = "web"
-  val webApi = "web-api"
-  val db = "db"
-  val filestore = "filestore"
+  val commonStructure = componentStructure()
+    .createComponent(name = "api", plugin = "spring-component")
+    .createComponent(name = "domain", plugin = "spring-component", dependsOnApi = listOf("api"))
+    .createComponent(name = "db", plugin = "jooq-component", dependsOn = listOf("domain"))
+    .createComponent(name = "web-api", plugin = "spring-web-component")
+    .createComponent(name = "web", plugin = "spring-web-component", dependsOn = listOf("web-api", "domain"))
 
-  val commonModuleStructure = stencil {
-    addComponent(api).withPlugin("spring-component")
-    addComponent(domain).withPlugin("spring-component").dependsOnApi(api)
-    addComponent(db).withPlugin("jooq-component").dependsOn(domain)
-    addComponent(webApi).withPlugin("spring-web-component")
-    addComponent(web).withPlugin("spring-web-component").dependsOn(webApi, domain)
-  }
+  val commonStructureWithFilestore = componentStructure(basedOn = commonStructure)
+    .createComponent(name = "filestore", plugin = "minio-component", dependsOn = listOf("domain"))
 
-  val commonModuleWithFilestoreStructure = stencil {
-    basedOn(commonModuleStructure)
-    addComponent(filestore).withPlugin("minio-component").dependsOn(domain)
-  }
+  library(name = "shared", structure = commonStructureWithFilestore)
 
-  library("shared") { basedOn(commonModuleWithFilestoreStructure) }
-
-  module("course") { basedOn(commonModuleStructure) }
-  module("exam") { basedOn(commonModuleStructure) }
-  module("certificate") {
-    basedOn(commonModuleWithFilestoreStructure)
-    addComponent("certificate-authority-adapter").withPlugin("spring-component").dependsOn(domain)
-  }
-  module("accounting") {
-    basedOn(commonModuleWithFilestoreStructure)
-    val ppa = addComponent("payment-provider-adapter").withPlugin("spring-component").dependsOn(domain)
-    getComponent(web).dependsOn(ppa)
-  }
+  module(name = "course", structure = commonStructure)
+  module(name = "exam", structure = commonStructure)
+  module(name = "certificate", structure = commonStructureWithFilestore)
+    .createComponent(name = "certificate-authority-adapter", plugin = "spring-component", dependsOn = listOf("domain"))
+  module(name = "accounting", structure = commonStructureWithFilestore)
+    .createComponent(name = "payment-provider-adapter", plugin = "spring-component", dependsOn = listOf("domain"))
+    .extendComponent(name = "web", dependsOn = listOf("payment-provider-adapter"))
 
   bundle(name = "online-learning-platform", plugin = "spring-boot-bundle-module")
 }

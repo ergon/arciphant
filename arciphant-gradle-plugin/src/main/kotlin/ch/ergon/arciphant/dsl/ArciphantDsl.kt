@@ -4,7 +4,7 @@ import ch.ergon.arciphant.model.*
 import ch.ergon.arciphant.model.DependencyType.API
 import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
 
-class ArciphantDsl internal constructor() {
+open class ArciphantDsl internal constructor() {
 
     internal val functionalModules = mutableListOf<FunctionalModuleBuilder>()
     internal val bundleModules = mutableSetOf<BundleModule>()
