@@ -25,8 +25,10 @@ class CertificateServiceTest {
 
         certificateService.issueAndPersistCertificate(ExamResultIdFixtures.any)
 
-        verify(certificateFileStoreMock).persistCertificateDocument(CertificateFixtures.anyCertificate.id, CertificateFixtures.anyCertificate.document)
-        verify(certificateRepositoryMock).addCertificate(CertificateFixtures.anyCertificate)
+        verify(certificateFileStoreMock)
+            .persistCertificateDocument(CertificateFixtures.anyCertificate.id, CertificateFixtures.anyCertificate.document)
+        verify(certificateRepositoryMock)
+            .addCertificate(CertificateFixtures.anyCertificate)
 
     }
 

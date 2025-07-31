@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.io.File
 
-abstract class AbstractFileStoreTest<F: FileStore, ID: Id>(
+abstract class AbstractFileStoreTest<F : FileStore, ID : Id>(
     private val fileStore: F,
     private val addFileFn: F.(ID, File) -> Unit,
     private val getFileFn: F.(ID) -> File,

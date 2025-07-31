@@ -10,6 +10,8 @@ import org.gradle.api.invocation.Gradle
  */
 fun Gradle.beforeProjectAction(action: (project: Project) -> Unit) {
     gradle.beforeProject(object : Action<Project> {
-        override fun execute(project: Project) { action(project) }
+        override fun execute(project: Project) {
+            action(project)
+        }
     })
 }

@@ -40,11 +40,13 @@ class ExamControllerImplTest {
             .andExpect { status { isOk() } }
             .responseBodyAsString().deserializeList(ExamDto::class)
 
-        assertThat(exams).containsExactlyInAnyOrder(ExamDto(
-            id = exam.id.value,
-            discipline = discipline.toApi(),
-            title = exam.title,
-        ))
+        assertThat(exams).containsExactlyInAnyOrder(
+            ExamDto(
+                id = exam.id.value,
+                discipline = discipline.toApi(),
+                title = exam.title,
+            )
+        )
     }
 
 }

@@ -32,7 +32,8 @@ gradlePlugin {
             implementationClass = "ch.ergon.arciphant.core.ArciphantPlugin"
 
             displayName = "Arciphant"
-            description = "Arciphant is a Gradle plugin that allows to specify the module structure of complex software project declaratively using a simple DSL."
+            description =
+                "Arciphant is a Gradle plugin that allows to specify the module structure of complex software project declaratively using a simple DSL."
             tags = listOf("architecture", "clean-architecture", "dependencies", "dependency-management", "dependency-manager")
         }
     }

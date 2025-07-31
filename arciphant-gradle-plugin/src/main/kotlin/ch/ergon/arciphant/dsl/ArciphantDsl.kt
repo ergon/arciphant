@@ -68,23 +68,15 @@ open class ArciphantDsl internal constructor() {
 
 }
 
-class ModuleBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) :
-    FunctionalModuleBuilder(name, structures)
+class ModuleBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) : FunctionalModuleBuilder(name, structures)
 
-class LibraryBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) :
-    FunctionalModuleBuilder(name, structures)
+class LibraryBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) : FunctionalModuleBuilder(name, structures)
 
-sealed class FunctionalModuleBuilder(
-    internal val name: String,
-    internal val structures: Set<ComponentStructureBuilder>
-) :
-    ComponentsBuilder()
+sealed class FunctionalModuleBuilder(internal val name: String, internal val structures: Set<ComponentStructureBuilder>) : ComponentsBuilder()
 
-class ComponentStructureBuilder internal constructor(internal val basedOn: ComponentStructureBuilder? = null) :
-    ComponentsBuilder()
+class ComponentStructureBuilder internal constructor(internal val basedOn: ComponentStructureBuilder? = null) : ComponentsBuilder()
 
 sealed class ComponentsBuilder {
-
     internal val components = mutableListOf<Component>()
     internal val componentDependencyOverrides = mutableMapOf<String, Set<Dependency>>()
 }
@@ -95,7 +87,8 @@ private fun mapDependencies(apiDependencies: Set<String>, implementationDependen
 private fun Set<String>.toDependencies(type: DependencyType) = map { Dependency(ComponentReference(it), type) }.toSet()
 
 
-internal val FunctionalModuleBuilder.reference get() = when(this) {
-    is LibraryBuilder -> LibraryModuleReference(name)
-    is ModuleBuilder -> DomainModuleReference(name)
-}
+internal val FunctionalModuleBuilder.reference
+    get() = when (this) {
+        is LibraryBuilder -> LibraryModuleReference(name)
+        is ModuleBuilder -> DomainModuleReference(name)
+    }

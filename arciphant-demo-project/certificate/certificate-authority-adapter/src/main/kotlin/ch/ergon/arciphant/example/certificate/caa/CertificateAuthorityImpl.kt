@@ -14,7 +14,7 @@ class CertificateAuthorityImpl : CertificateAuthority {
     override fun issueCertificate(examResultId: ExamResultId): Certificate {
         return Certificate(
             id = CertificateId(UUID.randomUUID()),
-            document = File.createTempFile("certificate",".pdf"),
+            document = File.createTempFile("certificate", ".pdf"),
         )
     }
 }

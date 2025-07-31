@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 class CourseControllerImpl(
     private val courseService: CourseService,
     private val disciplineRepository: DisciplineRepository,
-): CourseController {
+) : CourseController {
 
     override fun getCourses(): List<CourseDto> {
         return courseService.getCourses().map { it.toApi() }

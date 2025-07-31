@@ -15,7 +15,7 @@ class ExamControllerImpl(
 ) : ExamController {
 
     override fun getExams(): List<ExamDto> {
-        return  examService.getExams().map { it.toApi() }
+        return examService.getExams().map { it.toApi() }
     }
 
     private fun Exam.toApi() = ExamDto(

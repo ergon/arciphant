@@ -17,7 +17,8 @@ class ArciphantDslTest {
     inner class ComponentsTest {
 
         private val component = "my-component"
-        private val duplicateComponentNameMessage = "Arciphant configuration error: Component with name '$component' has already been declared. Use 'extendComponent' instead of 'createComponent' to extend an existing component."
+        private val duplicateComponentNameMessage =
+            "Arciphant configuration error: Component with name '$component' has already been declared. Use 'extendComponent' instead of 'createComponent' to extend an existing component."
 
         private val component1a = ComponentReference("component1a")
         private val component1b = ComponentReference("component1b")

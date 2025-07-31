@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.util.*
 
-abstract class AbstractIdTest<ID: Id>(private val idFixtures: AbstractIdFixtures<ID>) {
+abstract class AbstractIdTest<ID : Id>(private val idFixtures: AbstractIdFixtures<ID>) {
 
     @Test
     fun `ID should have proper string representation`() {

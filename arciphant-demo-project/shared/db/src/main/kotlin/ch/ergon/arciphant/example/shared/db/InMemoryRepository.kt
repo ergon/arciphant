@@ -2,7 +2,7 @@ package ch.ergon.arciphant.example.shared.db
 
 import ch.ergon.arciphant.example.shared.api.Id
 
-abstract class InMemoryRepository<R, ID: Id> {
+abstract class InMemoryRepository<R, ID : Id> {
 
     private val recordsById = mutableMapOf<ID, R>()
 
