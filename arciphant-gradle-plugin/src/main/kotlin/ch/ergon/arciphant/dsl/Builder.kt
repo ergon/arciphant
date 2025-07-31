@@ -18,7 +18,28 @@ class FunctionalModuleBuilder internal constructor(
     internal val name: String,
     internal val templates: Set<ModuleTemplateBuilder>,
     internal val moduleType: FunctionalModuleType,
-) : ModuleBuilder, ComponentContainerBuilder<FunctionalModuleBuilder>()
+) : ModuleBuilder, ComponentContainerBuilder<FunctionalModuleBuilder>() {
+
+    fun createComponent(
+        name: String,
+        plugin: String? = null,
+        dependsOnApi: Set<String> = emptySet(),
+        dependsOn: Set<String> = emptySet(),
+    ): FunctionalModuleBuilder {
+        doCreateComponent(name = name, plugin = plugin, dependsOnApi = dependsOnApi, dependsOn = dependsOn)
+        return this
+    }
+
+    fun extendComponent(
+        name: String,
+        dependsOnApi: Set<String> = emptySet(),
+        dependsOn: Set<String> = emptySet(),
+    ): FunctionalModuleBuilder {
+        doExtendComponent(name = name, dependsOnApi = dependsOnApi, dependsOn = dependsOn)
+        return this
+    }
+
+}
 
 class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder<ModuleTemplateBuilder>() {
 
@@ -28,34 +49,42 @@ class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder<M
         extends.add(template)
         return this
     }
-}
-
-sealed class ComponentContainerBuilder<B : ComponentContainerBuilder<B>> {
-    internal val components = mutableListOf<Component>()
-    internal val componentDependencyOverrides = mutableMapOf<String, Set<Dependency>>()
 
     fun createComponent(
         name: String,
         plugin: String? = null,
         dependsOnApi: Set<String> = emptySet(),
         dependsOn: Set<String> = emptySet(),
-    ): B {
-        verifyName(name, "component")
-        val dependencies = mapDependencies(dependsOnApi, dependsOn)
-        components.add(Component(ComponentReference(name), plugin?.let { Plugin(it) }, dependencies))
-        return castedThis()
+    ): ModuleTemplateBuilder {
+        doCreateComponent(name = name, plugin = plugin, dependsOnApi = dependsOnApi, dependsOn = dependsOn)
+        return this
     }
 
     fun extendComponent(
         name: String,
         dependsOnApi: Set<String> = emptySet(),
         dependsOn: Set<String> = emptySet(),
-    ): B {
+    ): ModuleTemplateBuilder {
+        doExtendComponent(name = name, dependsOnApi = dependsOnApi, dependsOn = dependsOn)
+        return this
+    }
+}
+
+sealed class ComponentContainerBuilder<B : ComponentContainerBuilder<B>> {
+    internal val components = mutableListOf<Component>()
+    internal val componentDependencyOverrides = mutableMapOf<String, Set<Dependency>>()
+
+    protected fun doCreateComponent(name: String, plugin: String?, dependsOnApi: Set<String>, dependsOn: Set<String>) {
+        verifyName(name, "component")
+        val dependencies = mapDependencies(dependsOnApi, dependsOn)
+        components.add(Component(ComponentReference(name), plugin?.let { Plugin(it) }, dependencies))
+    }
+
+    protected fun doExtendComponent(name: String, dependsOnApi: Set<String>, dependsOn: Set<String>) {
         val dependencies = mapDependencies(dependsOnApi, dependsOn)
         verify(componentDependencyOverrides.putIfAbsent(name, dependencies) == null) {
             "Component '$name' has already been extended in the current context."
         }
-        return castedThis()
     }
 
     @Suppress("UNCHECKED_CAST")
