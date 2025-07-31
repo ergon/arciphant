@@ -5,9 +5,9 @@ import ch.ergon.arciphant.model.Dependency
 import ch.ergon.arciphant.model.DomainModuleReference
 import ch.ergon.arciphant.model.LibraryModuleReference
 
-class ModuleBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) : FunctionalModuleBuilder(name, structures)
+class DomainModuleBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) : FunctionalModuleBuilder(name, structures)
 
-class LibraryBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) : FunctionalModuleBuilder(name, structures)
+class LibraryModuleBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) : FunctionalModuleBuilder(name, structures)
 
 sealed class FunctionalModuleBuilder(internal val name: String, internal val structures: Set<ComponentStructureBuilder>) : ComponentContainerBuilder()
 
@@ -20,6 +20,6 @@ sealed class ComponentContainerBuilder {
 
 internal val FunctionalModuleBuilder.reference
     get() = when (this) {
-        is LibraryBuilder -> LibraryModuleReference(name)
-        is ModuleBuilder -> DomainModuleReference(name)
+        is LibraryModuleBuilder -> LibraryModuleReference(name)
+        is DomainModuleBuilder -> DomainModuleReference(name)
     }

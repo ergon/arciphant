@@ -9,8 +9,8 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
     private fun FunctionalModuleBuilder.create(): FunctionalModule {
         val components = build().toSet()
         return when (this) {
-            is LibraryBuilder -> LibraryModule(LibraryModuleReference(name), components)
-            is ModuleBuilder -> DomainModule(DomainModuleReference(name), components)
+            is LibraryModuleBuilder -> LibraryModule(LibraryModuleReference(name), components)
+            is DomainModuleBuilder -> DomainModule(DomainModuleReference(name), components)
         }
     }
 

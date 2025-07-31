@@ -15,16 +15,16 @@ open class ArciphantDsl internal constructor() {
 
     fun library(name: String, structure: ComponentStructureBuilder) = library(name, setOf(structure))
 
-    fun library(name: String, structures: Set<ComponentStructureBuilder> = emptySet()): LibraryBuilder {
+    fun library(name: String, structures: Set<ComponentStructureBuilder> = emptySet()): LibraryModuleBuilder {
         verifyName(name, "library")
-        return LibraryBuilder(name, structures).also { functionalModules.add(it) }
+        return LibraryModuleBuilder(name, structures).also { functionalModules.add(it) }
     }
 
     fun module(name: String, structure: ComponentStructureBuilder) = module(name, setOf(structure))
 
-    fun module(name: String, structures: Set<ComponentStructureBuilder> = emptySet()): ModuleBuilder {
+    fun module(name: String, structures: Set<ComponentStructureBuilder> = emptySet()): DomainModuleBuilder {
         verifyName(name, "module")
-        return ModuleBuilder(name, structures).also { functionalModules.add(it) }
+        return DomainModuleBuilder(name, structures).also { functionalModules.add(it) }
     }
 
     fun <B : ComponentContainerBuilder> B.createComponent(
