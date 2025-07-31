@@ -28,7 +28,7 @@ internal data class BundleModule(
 internal data class Component(
     val reference: ComponentReference,
     val plugin: Plugin?,
-    val dependsOn: Collection<Dependency>,
+    val dependsOn: Set<Dependency>,
 )
 
 internal data class Dependency(val component: ComponentReference, val type: DependencyType)

@@ -13,16 +13,16 @@ open class ArciphantDsl internal constructor() {
         return ComponentStructureBuilder(basedOn)
     }
 
-    fun library(name: String, structure: ComponentStructureBuilder) = library(name, listOf(structure))
+    fun library(name: String, structure: ComponentStructureBuilder) = library(name, setOf(structure))
 
-    fun library(name: String, structures: List<ComponentStructureBuilder> = emptyList()): LibraryBuilder {
+    fun library(name: String, structures: Set<ComponentStructureBuilder> = emptySet()): LibraryBuilder {
         verifyName(name, "library")
         return LibraryBuilder(name, structures).also { functionalModules.add(it) }
     }
 
-    fun module(name: String, structure: ComponentStructureBuilder) = module(name, listOf(structure))
+    fun module(name: String, structure: ComponentStructureBuilder) = module(name, setOf(structure))
 
-    fun module(name: String, structures: List<ComponentStructureBuilder> = emptyList()): ModuleBuilder {
+    fun module(name: String, structures: Set<ComponentStructureBuilder> = emptySet()): ModuleBuilder {
         verifyName(name, "module")
         return ModuleBuilder(name, structures).also { functionalModules.add(it) }
     }
@@ -30,21 +30,21 @@ open class ArciphantDsl internal constructor() {
     fun <B : ComponentsBuilder> B.createComponent(
         name: String,
         plugin: String? = null,
-        dependsOnApi: List<String> = emptyList(),
-        dependsOn: List<String> = emptyList(),
+        dependsOnApi: Set<String> = emptySet(),
+        dependsOn: Set<String> = emptySet(),
     ): B {
         verifyName(name, "component")
-        val dependencies = mergeDependencies(dependsOnApi, dependsOn)
+        val dependencies = mapDependencies(dependsOnApi, dependsOn)
         components.add(Component(ComponentReference(name), plugin?.let { Plugin(it) }, dependencies))
         return this
     }
 
     fun <B : ComponentsBuilder> B.extendComponent(
         name: String,
-        dependsOnApi: List<String> = emptyList(),
-        dependsOn: List<String> = emptyList(),
+        dependsOnApi: Set<String> = emptySet(),
+        dependsOn: Set<String> = emptySet(),
     ): B {
-        val dependencies = mergeDependencies(dependsOnApi, dependsOn)
+        val dependencies = mapDependencies(dependsOnApi, dependsOn)
         verify(componentDependencyOverrides.putIfAbsent(name, dependencies) == null) {
             "Component '$name' has already been extended in the current context."
         }
@@ -68,15 +68,15 @@ open class ArciphantDsl internal constructor() {
 
 }
 
-class ModuleBuilder internal constructor(name: String, structures: List<ComponentStructureBuilder>) :
+class ModuleBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) :
     FunctionalModuleBuilder(name, structures)
 
-class LibraryBuilder internal constructor(name: String, structures: List<ComponentStructureBuilder>) :
+class LibraryBuilder internal constructor(name: String, structures: Set<ComponentStructureBuilder>) :
     FunctionalModuleBuilder(name, structures)
 
 sealed class FunctionalModuleBuilder(
     internal val name: String,
-    internal val structures: List<ComponentStructureBuilder>
+    internal val structures: Set<ComponentStructureBuilder>
 ) :
     ComponentsBuilder()
 
@@ -86,12 +86,13 @@ class ComponentStructureBuilder internal constructor(internal val basedOn: Compo
 sealed class ComponentsBuilder {
 
     internal val components = mutableListOf<Component>()
-    internal val componentDependencyOverrides = mutableMapOf<String, List<Dependency>>()
+    internal val componentDependencyOverrides = mutableMapOf<String, Set<Dependency>>()
 }
 
-private fun mergeDependencies(apiDependencies: List<String>, implementationDependencies: List<String>) =
-    apiDependencies.map { Dependency(ComponentReference(it), API) } +
-            implementationDependencies.map { Dependency(ComponentReference(it), IMPLEMENTATION) }
+private fun mapDependencies(apiDependencies: Set<String>, implementationDependencies: Set<String>) =
+    apiDependencies.toDependencies(API) + implementationDependencies.toDependencies(IMPLEMENTATION)
+
+private fun Set<String>.toDependencies(type: DependencyType) = map { Dependency(ComponentReference(it), type) }.toSet()
 
 
 internal val FunctionalModuleBuilder.reference get() = when(this) {

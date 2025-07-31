@@ -35,7 +35,7 @@ class ArciphantDslTest {
                 val structure2 = componentStructure()
                     .createComponent(component2a.name)
                     .createComponent(component2b.name)
-                module(name = "module", structures = listOf(structure1, structure2))
+                module(name = "module", structures = setOf(structure1, structure2))
                     .createComponent(component3a.name)
                     .createComponent(component3b.name)
             }
@@ -85,7 +85,7 @@ class ArciphantDslTest {
                     .createComponent(component)
                 val structure = componentStructure(basedOn = baseStructure)
                     .createComponent(component)
-                module(name = "module", structures = listOf(structure))
+                module(name = "module", structures = setOf(structure))
             }
 
             val exception = assertThrows<IllegalArgumentException> {
@@ -219,8 +219,8 @@ class ArciphantDslTest {
                 module(name = "module")
                     .createComponent(
                         name = sourceComponent,
-                        dependsOnApi = listOf(targetComponent3a),
-                        dependsOn = listOf(targetComponent3b)
+                        dependsOnApi = setOf(targetComponent3a),
+                        dependsOn = setOf(targetComponent3b)
                     )
             }
 
@@ -237,11 +237,11 @@ class ArciphantDslTest {
         fun `it should merge dependencies`() {
             with(dsl) {
                 val structure1 = componentStructure()
-                    .createComponent(name = sourceComponent, dependsOn = listOf(targetComponent1a, targetComponent1b))
+                    .createComponent(name = sourceComponent, dependsOn = setOf(targetComponent1a, targetComponent1b))
                 val structure2 = componentStructure(basedOn = structure1)
-                    .extendComponent(name = sourceComponent, dependsOn = listOf(targetComponent2))
-                module(name = "module", structures = listOf(structure2))
-                    .extendComponent(name = sourceComponent, dependsOn = listOf(targetComponent3a, targetComponent3b))
+                    .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent2))
+                module(name = "module", structures = setOf(structure2))
+                    .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent3a, targetComponent3b))
             }
 
             val component = repository.loadSingleComponent()
@@ -278,17 +278,17 @@ class ArciphantDslTest {
             with(dsl) {
                 val common = componentStructure()
                     .createComponent(name = "domain", plugin = domainPlugin.id)
-                    .createComponent(name = "db", plugin = dbPlugin.id, dependsOn = listOf("domain"))
+                    .createComponent(name = "db", plugin = dbPlugin.id, dependsOn = setOf("domain"))
                 val web = componentStructure()
                     .createComponent(name = "web-api")
-                    .createComponent(name = "web", dependsOnApi = listOf("web-api"))
+                    .createComponent(name = "web", dependsOnApi = setOf("web-api"))
                 library(name = "shared", structure = common)
                     .createComponent("base")
-                    .extendComponent("domain", dependsOn = listOf("base"))
-                    .extendComponent("db", dependsOn = listOf("base"))
+                    .extendComponent("domain", dependsOn = setOf("base"))
+                    .extendComponent("db", dependsOn = setOf("base"))
 
-                val customer = module(name = "customer", structures = listOf(common, web))
-                val order = module(name = "order", structures = listOf(common, web))
+                val customer = module(name = "customer", structures = setOf(common, web))
+                val order = module(name = "order", structures = setOf(common, web))
                     .createComponent(name = "external-api")
                 module(name = "inventory")
                     .createComponent(name = "main")
@@ -301,27 +301,27 @@ class ArciphantDslTest {
             val domainComponent = Component(
                 reference = domainComponentRef,
                 plugin = domainPlugin,
-                dependsOn = emptyList(),
+                dependsOn = emptySet(),
             )
             val dbComponent = Component(
                 reference = dbComponentRef,
                 plugin = dbPlugin,
-                dependsOn = listOf(Dependency(component = domainComponentRef, type = IMPLEMENTATION)),
+                dependsOn = setOf(Dependency(component = domainComponentRef, type = IMPLEMENTATION)),
             )
             val webApiComponent = Component(
                 reference = webApiComponentRef,
                 plugin = null,
-                dependsOn = emptyList(),
+                dependsOn = emptySet(),
             )
             val webComponent = Component(
                 reference = webComponentRef,
                 plugin = null,
-                dependsOn = listOf(Dependency(component = webApiComponentRef, type = API)),
+                dependsOn = setOf(Dependency(component = webApiComponentRef, type = API)),
             )
             val externalApiComponent = Component(
                 reference = externalApiComponentRef,
                 plugin = null,
-                dependsOn = emptyList(),
+                dependsOn = emptySet(),
             )
 
             assertThat(modules).containsExactlyInAnyOrder(
@@ -329,11 +329,11 @@ class ArciphantDslTest {
                     reference = sharedModuleRef,
                     components = setOf(
                         domainComponent.copy(
-                            dependsOn = listOf(Dependency(component = baseComponentRef, type = IMPLEMENTATION))
+                            dependsOn = setOf(Dependency(component = baseComponentRef, type = IMPLEMENTATION))
                         ),
                         dbComponent.copy(
                             dependsOn =
-                                listOf(
+                                setOf(
                                     Dependency(component = domainComponentRef, type = IMPLEMENTATION),
                                     Dependency(component = baseComponentRef, type = IMPLEMENTATION),
                                 )
@@ -341,7 +341,7 @@ class ArciphantDslTest {
                         Component(
                             reference = baseComponentRef,
                             plugin = null,
-                            dependsOn = emptyList(),
+                            dependsOn = emptySet(),
                         ),
                     ),
                 ),
@@ -365,7 +365,7 @@ class ArciphantDslTest {
                         Component(
                             reference = ComponentReference("main"),
                             plugin = null,
-                            dependsOn = emptyList(),
+                            dependsOn = emptySet(),
                         )
                     ),
                 ),

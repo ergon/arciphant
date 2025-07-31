@@ -50,7 +50,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
         return existingComponent
     }
 
-    private fun Component.addDependencies(additionalDependencies: List<Dependency>) = Component(
+    private fun Component.addDependencies(additionalDependencies: Set<Dependency>) = Component(
         reference = reference,
         plugin = plugin,
         dependsOn = dependsOn + additionalDependencies
