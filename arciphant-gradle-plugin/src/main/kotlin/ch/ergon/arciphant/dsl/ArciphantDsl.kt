@@ -16,12 +16,14 @@ open class ArciphantDsl internal constructor() {
     fun library(name: String, structure: ComponentStructureBuilder) = library(name, listOf(structure))
 
     fun library(name: String, structures: List<ComponentStructureBuilder> = emptyList()): LibraryBuilder {
+        verifyName(name, "library")
         return LibraryBuilder(name, structures).also { functionalModules.add(it) }
     }
 
     fun module(name: String, structure: ComponentStructureBuilder) = module(name, listOf(structure))
 
     fun module(name: String, structures: List<ComponentStructureBuilder> = emptyList()): ModuleBuilder {
+        verifyName(name, "module")
         return ModuleBuilder(name, structures).also { functionalModules.add(it) }
     }
 
@@ -31,6 +33,7 @@ open class ArciphantDsl internal constructor() {
         dependsOnApi: List<String> = emptyList(),
         dependsOn: List<String> = emptyList(),
     ): B {
+        verifyName(name, "component")
         val dependencies = mergeDependencies(dependsOnApi, dependsOn)
         components.add(Component(ComponentReference(name), plugin?.let { Plugin(it) }, dependencies))
         return this

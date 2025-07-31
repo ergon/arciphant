@@ -6,6 +6,7 @@ import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class ArciphantDslTest {
 
@@ -41,6 +42,83 @@ class ArciphantDslTest {
             assertThat(module.components.map { it.reference }).containsExactlyInAnyOrder(
                 component1a, component1b, component2a, component2b, component3a, component3b
             )
+        }
+    }
+
+    @Nested
+    inner class NameVerificationTest {
+        @Test
+        fun `it should prevent component name with whitespaces`() {
+            with(dsl) {
+
+                val exception = assertThrows<IllegalArgumentException> {
+                    componentStructure()
+                        .createComponent("my component")
+                }
+
+                assertThat(exception.message).isEqualTo("Arciphant configuration error: component name must not contain whitespaces")
+            }
+        }
+
+        @Test
+        fun `it should prevent empty component name`() {
+            with(dsl) {
+
+                val exception = assertThrows<IllegalArgumentException> {
+                    componentStructure()
+                        .createComponent("")
+                }
+
+                assertThat(exception.message).isEqualTo("Arciphant configuration error: component name must not be empty")
+            }
+        }
+
+        @Test
+        fun `it should prevent library name with whitespaces`() {
+            with(dsl) {
+
+                val exception = assertThrows<IllegalArgumentException> {
+                    library("my library")
+                }
+
+                assertThat(exception.message).isEqualTo("Arciphant configuration error: library name must not contain whitespaces")
+            }
+        }
+
+        @Test
+        fun `it should prevent empty library name`() {
+            with(dsl) {
+
+                val exception = assertThrows<IllegalArgumentException> {
+                    library("")
+                }
+
+                assertThat(exception.message).isEqualTo("Arciphant configuration error: library name must not be empty")
+            }
+        }
+
+        @Test
+        fun `it should prevent module name with whitespaces`() {
+            with(dsl) {
+
+                val exception = assertThrows<IllegalArgumentException> {
+                    module("my module")
+                }
+
+                assertThat(exception.message).isEqualTo("Arciphant configuration error: module name must not contain whitespaces")
+            }
+        }
+
+        @Test
+        fun `it should prevent empty module name`() {
+            with(dsl) {
+
+                val exception = assertThrows<IllegalArgumentException> {
+                    module("")
+                }
+
+                assertThat(exception.message).isEqualTo("Arciphant configuration error: module name must not be empty")
+            }
         }
     }
 
