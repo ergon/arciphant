@@ -16,6 +16,9 @@ class ArciphantDslTest {
     @Nested
     inner class ComponentsTest {
 
+        private val component = "my-component"
+        private val duplicateComponentNameMessage = "Arciphant configuration error: Component with name '$component' has already been declared. Use 'extendComponent' instead of 'createComponent' to extend an existing component."
+
         private val component1a = ComponentReference("component1a")
         private val component1b = ComponentReference("component1b")
         private val component2a = ComponentReference("component2a")
@@ -42,6 +45,85 @@ class ArciphantDslTest {
             assertThat(module.components.map { it.reference }).containsExactlyInAnyOrder(
                 component1a, component1b, component2a, component2b, component3a, component3b
             )
+        }
+
+        @Test
+        fun `it should not allow duplicate component names in same module`() {
+            with(dsl) {
+                module(name = "module")
+                    .createComponent(component)
+                    .createComponent(component)
+            }
+
+            val exception = assertThrows<IllegalArgumentException> {
+                repository.load()
+            }
+
+            assertThat(exception.message).isEqualTo(duplicateComponentNameMessage)
+        }
+
+        @Test
+        fun `it should not allow component name that is already present in structure`() {
+            with(dsl) {
+                val baseStructure = componentStructure()
+                    .createComponent(component)
+                module(name = "module", structure = baseStructure)
+                    .createComponent(component)
+            }
+
+            val exception = assertThrows<IllegalArgumentException> {
+                repository.load()
+            }
+
+            assertThat(exception.message).isEqualTo(duplicateComponentNameMessage)
+        }
+
+        @Test
+        fun `it should not allow component name that is already present in inherited structure`() {
+            with(dsl) {
+                val baseStructure = componentStructure()
+                    .createComponent(component)
+                val structure = componentStructure(basedOn = baseStructure)
+                    .createComponent(component)
+                module(name = "module", structures = listOf(structure))
+            }
+
+            val exception = assertThrows<IllegalArgumentException> {
+                repository.load()
+            }
+
+            assertThat(exception.message).isEqualTo(duplicateComponentNameMessage)
+        }
+
+        @Test
+        fun `it should not allow multiple component extension in same module`() {
+            with(dsl) {
+
+                val structure = componentStructure()
+                    .createComponent(component)
+
+                val exception = assertThrows<IllegalArgumentException> {
+                    module(name = "module", structure = structure)
+                        .extendComponent(component)
+                        .extendComponent(component)
+                }
+
+                assertThat(exception.message).isEqualTo("Arciphant configuration error: Component '$component' has already been extended in the current context.")
+            }
+        }
+
+        @Test
+        fun `it should not allow extending a component that does not exist`() {
+            with(dsl) {
+                module(name = "module")
+                    .extendComponent(component)
+            }
+
+            val exception = assertThrows<IllegalArgumentException> {
+                repository.load()
+            }
+
+            assertThat(exception.message).isEqualTo("Arciphant configuration error: Component with name '$component' does not exist. Use 'createComponent' instead of 'extendComponent' to create a new component.")
         }
     }
 
