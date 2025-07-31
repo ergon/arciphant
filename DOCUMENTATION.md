@@ -48,21 +48,20 @@ Assume you have a modulithic application with 4 domain modules. In each module, 
 ![Logo](assets/documentation/01_modules.png)
 
 Normally, if you want to build this structure with nested gradle project, you have a lot of duplicated build-setup.
-With arciphant you can configure a stencil that defines the structure of the components (rings) of a module and then use this stencil to create (instantiate) the 4 modules:
+With arciphant you can configure a template that defines the structure of the components (rings) of a module and then use this template to create (instantiate) the 4 modules:
 
 ```
 arciphant {
-  val basicModuleStructure = stencil {
-    val domain = addComponent("domain")
-    val application = addComponent("application").dependsOnApi(domain)
-    addComponent("web").dependsOn(application)
-    addComponent("db").dependsOn(application)
-  }
-  
-  module("module-a") { basedOn(basicModuleStructure) }
-  module("module-b") { basedOn(basicModuleStructure) }
-  module("module-c") { basedOn(basicModuleStructure) }
-  module("module-d") { basedOn(basicModuleStructure) }
+    val moduleTemplate = template()
+        .createComponent(name = "domain")
+        .createComponent(name = "application", dependsOnApi = setOf("domain"))
+        .createComponent(name = "web", dependsOn = setOf("application"))
+        .createComponent(name = "db", dependsOn = setOf("application"))
+
+    module(name = "module-a", template = moduleTemplate)
+    module(name = "module-b", template = moduleTemplate)
+    module(name = "module-c", template = moduleTemplate)
+    module(name = "module-d", template = moduleTemplate)
 }
 ```
 Above configuration creates the following nested gradle project structure and sets up the dependencies between the components (domain, applicatoin, web, db) in each module:
@@ -92,10 +91,9 @@ root-project
 
 #### Dependency-Types
 
-You probably noticed the different methods to setup dependency between components: `dependsOn` vs, `dependsOnApi`.
-Those method let you specify different kind of dependencies:
-* `A.dependsOn(B)`: Creates a *implementation* dependency from component *A* to component *B* 
-* `A.dependsOnApi(B`: Creates an *api* dependency from component *A* to component *B*, meaning that every component depending on *A* gets access to *B*
+You probably noticed the different attributes to setup dependency between components:
+* `dependsOn`: Creates a *implementation* dependency from component *A* to component *B* 
+* `dependsOnApi`: Creates an *api* dependency from component *A* to component *B*, meaning that every component depending on *A* gets access to *B*
 
 In above example this means that *web* and *db* can access *domain* thanks to the API dependency to *applicatoin*.
 
@@ -114,7 +112,7 @@ What you normally have to do is manage all the dependencies manually, which is e
 
 Instead of having to manage all these dependencies manually, Arciphant provides an out-of-the-box mechanism. You can specify a library module:
 ```
-library("shared") { basedOn(basicModuleStructure) }
+library(name = "shared", template = moduleTemplate)
 ```
 Each component of each library module will automatically get e dependency to the respective component in the library module.
 
@@ -122,19 +120,18 @@ The complete sample now looks like the following:
 
 ```
 arciphant {
-  val basicModuleStructure = stencil {
-    val domain = addComponent("domain")
-    val application = addComponent("application").dependsOnApi(domain)
-    addComponent("web").dependsOn(application)
-    addComponent("db").dependsOn(application)
-  }
-  
-  library("shared") { basedOn(basicModuleStructure) }
-  
-  module("module-a") { basedOn(basicModuleStructure) }
-  module("module-b") { basedOn(basicModuleStructure) }
-  module("module-c") { basedOn(basicModuleStructure) }
-  module("module-d") { basedOn(basicModuleStructure) }
+    val moduleTemplate = template()
+        .createComponent(name = "domain")
+        .createComponent(name = "application", dependsOnApi = setOf("domain"))
+        .createComponent(name = "web", dependsOn = setOf("application"))
+        .createComponent(name = "db", dependsOn = setOf("application"))
+
+    library(name = "shared", template = moduleTemplate)
+
+    module(name = "module-a", template = moduleTemplate)
+    module(name = "module-b", template = moduleTemplate)
+    module(name = "module-c", template = moduleTemplate)
+    module(name = "module-d", template = moduleTemplate)
 }
 ```
 
@@ -147,38 +144,33 @@ Now assume that some modules (e.g. Module C and Module D) need access to a file 
 
 ![Logo](./assets/documentation/03_different-shapes.png)
 
-You can solve this problem by creating another stencil, inheriting from the existing stencil:
+You can solve this problem by creating another template, extending from the existing template:
 ```
-val moduleWithFsStructure = stencil {
-    basedOn(basicStructure)
-    
-    addComponent("fs").dependsOn("application")
-}
+val moduleWithFsTemplate = template()
+    .extends(moduleTemplate)
+    .createComponent(name = "fs", dependsOn = setOf("application"))
 ```
 
 The complete example now looks like the following:
 
 ```
 arciphant {
-  val basicModuleStructure = stencil {
-    val domain = addComponent("domain")
-    val application = addComponent("application").dependsOnApi(domain)
-    addComponent("web").dependsOn(application)
-    addComponent("db").dependsOn(application)
-  }
-  
-  val moduleWithFsStructure = stencil {
-    basedOn(basicModuleStructure)
-    
-    addComponent("fs").dependsOn("application")
-  }
-  
-  library("shared") { basedOn(moduleWithFsStructure) }
-  
-  module("module-a") { basedOn(basicModuleStructure) }
-  module("module-b") { basedOn(basicModuleStructure) }
-  module("module-c") { basedOn(moduleWithFsStructure) }
-  module("module-d") { basedOn(moduleWithFsStructure) }
+    val moduleTemplate = template()
+        .createComponent(name = "domain")
+        .createComponent(name = "application", dependsOnApi = setOf("domain"))
+        .createComponent(name = "web", dependsOn = setOf("application"))
+        .createComponent(name = "db", dependsOn = setOf("application"))
+
+    val moduleWithFsTemplate = template()
+        .extends(moduleTemplate)
+        .createComponent(name = "fs", dependsOn = setOf("application"))
+
+    library(name = "shared", template = moduleTemplate)
+
+    module(name = "module-a", template = moduleTemplate)
+    module(name = "module-b", template = moduleTemplate)
+    module(name = "module-c", template = moduleWithFsTemplate)
+    module(name = "module-d", template = moduleWithFsTemplate)
 }
 ```
 
@@ -190,38 +182,31 @@ Of course it is also possible to declare individual components in particular mod
 
 To do so, you can create a component for the specific module:
 ```
-module("module-d") { 
-  basedOn(moduleWithFsStructure) 
-  addComponent(web).dependsOn("application")
-}
+module(name = "module-d", template = moduleWithFsTemplate)
+    .createComponent(name = "ext-api", dependsOn = setOf("application"))
 ```
 
 The complete example now looks like the following:
 
 ```
 arciphant {
-  val basicModuleStructure = stencil {
-    val domain = addComponent("domain")
-    val application = addComponent("application").dependsOnApi(domain)
-    addComponent("web").dependsOn(application)
-    addComponent("db").dependsOn(application)
-  }
-  
-  val moduleWithFsStructure = stencil {
-    basedOn(basicModuleStructure)
-    
-    addComponent("fs").dependsOn("application")
-  }
-  
-  library("shared") { basedOn(moduleWithFsStructure) }
-  
-  module("module-a") { basedOn(basicModuleStructure) }
-  module("module-b") { basedOn(basicModuleStructure) }
-  module("module-c") { basedOn(moduleWithFsStructure) }
-  module("module-d") { 
-    basedOn(moduleWithFsStructure) 
-    addComponent(web).dependsOn("application")
-  }
+    val moduleTemplate = template()
+        .createComponent(name = "domain")
+        .createComponent(name = "application", dependsOnApi = setOf("domain"))
+        .createComponent(name = "web", dependsOn = setOf("application"))
+        .createComponent(name = "db", dependsOn = setOf("application"))
+
+    val moduleWithFsTemplate = template()
+        .extends(moduleTemplate)
+        .createComponent(name = "fs", dependsOn = setOf("application"))
+
+    library(name = "shared", template = moduleTemplate)
+
+    module(name = "module-a", template = moduleTemplate)
+    module(name = "module-b", template = moduleTemplate)
+    module(name = "module-c", template = moduleWithFsTemplate)
+    module(name = "module-d", template = moduleWithFsTemplate)
+        .createComponent(name = "ext-api", dependsOn = setOf("application"))
 }
 ```
 
@@ -232,7 +217,7 @@ However, to package an application we need some kind of bundle module that bring
 In Arciphant, it is possible to define bundle modules:
 
 ```
-bundle("my-app")
+bundle(name = "my-app")
 ```
 
 This creates a module `my-app` that has a dependency to all components of all modules. The bundle module itself does not have any components.
@@ -282,8 +267,9 @@ jooq-component.gradle.kts
 You can register these plugins for the components in Arciphant and they will be applied:
 
 ```
-addComponent(web).withPlugin("spring-web-component")
-addComponent(fb).withPlugin("jooq-component")
+template()
+    .createComponent(name = "web", plugin = "spring-web-component")
+    .createComponent(name = "db", plugin = "jooq-component")
 ```
 
 #### Using `includeBuild` instead of `buildSrc` for convention plugins
