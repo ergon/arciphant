@@ -256,12 +256,12 @@ class ArciphantDslTest {
     @Nested
     inner class CompleteExampleTest {
 
-        private val sharedModuleRef = LibraryModuleReference("shared")
-        private val customerModuleRef = DomainModuleReference("customer")
-        private val orderModuleRef = DomainModuleReference("order")
-        private val inventoryModuleRef = DomainModuleReference("inventory")
-        private val orderingModuleRef = BundleModuleReference("ordering")
-        private val appModuleRef = BundleModuleReference("app")
+        private val sharedModuleRef = ModuleReference("shared")
+        private val customerModuleRef = ModuleReference("customer")
+        private val orderModuleRef = ModuleReference("order")
+        private val inventoryModuleRef = ModuleReference("inventory")
+        private val orderingModuleRef = ModuleReference("ordering")
+        private val appModuleRef = ModuleReference("app")
 
         private val baseComponentRef = ComponentReference("base")
         private val domainComponentRef = ComponentReference("domain")

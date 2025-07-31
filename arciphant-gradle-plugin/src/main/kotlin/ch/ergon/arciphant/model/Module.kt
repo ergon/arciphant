@@ -5,22 +5,21 @@ internal sealed interface Module {
 }
 
 internal sealed interface FunctionalModule : Module {
-    override val reference: FunctionalModuleReference
     val components: Set<Component>
 }
 
 internal data class DomainModule(
-    override val reference: DomainModuleReference,
+    override val reference: ModuleReference,
     override val components: Set<Component>,
 ) : FunctionalModule
 
 internal data class LibraryModule(
-    override val reference: LibraryModuleReference,
+    override val reference: ModuleReference,
     override val components: Set<Component>,
 ) : FunctionalModule
 
 internal data class BundleModule(
-    override val reference: BundleModuleReference,
+    override val reference: ModuleReference,
     val plugin: Plugin?,
     val includes: Set<ModuleReference>,
 ) : Module

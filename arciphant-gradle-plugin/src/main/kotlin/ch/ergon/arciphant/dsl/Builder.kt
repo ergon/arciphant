@@ -32,7 +32,7 @@ sealed class ComponentContainerBuilder {
 
 internal val ModuleBuilder.reference
     get() = when (this) {
-        is LibraryModuleBuilder -> LibraryModuleReference(name)
-        is DomainModuleBuilder -> DomainModuleReference(name)
-        is BundleModuleBuilder -> BundleModuleReference(name)
+        is LibraryModuleBuilder -> ModuleReference(name)
+        is DomainModuleBuilder -> ModuleReference(name)
+        is BundleModuleBuilder -> ModuleReference(name)
     }

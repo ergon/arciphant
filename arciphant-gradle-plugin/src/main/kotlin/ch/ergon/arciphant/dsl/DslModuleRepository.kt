@@ -9,8 +9,8 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
     private fun FunctionalModuleBuilder.create(): FunctionalModule {
         val components = build().toSet()
         return when (this) {
-            is LibraryModuleBuilder -> LibraryModule(LibraryModuleReference(name), components)
-            is DomainModuleBuilder -> DomainModule(DomainModuleReference(name), components)
+            is LibraryModuleBuilder -> LibraryModule(this.reference, components)
+            is DomainModuleBuilder -> DomainModule(this.reference, components)
         }
     }
 
@@ -58,7 +58,7 @@ internal class DslModuleRepository(private val dsl: ArciphantDsl) : ModuleReposi
 
     private fun BundleModuleBuilder.createBundleModule(): BundleModule {
         return BundleModule(
-            reference = BundleModuleReference(name),
+            reference = ModuleReference(name),
             plugin = plugin?.let { Plugin(it) },
             includes = includes.ifEmpty { dsl.functionalModules }.map { it.reference }.toSet()
         )
