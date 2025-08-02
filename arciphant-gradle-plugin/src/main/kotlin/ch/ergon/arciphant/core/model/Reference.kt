@@ -1,4 +1,4 @@
-package ch.ergon.arciphant.model
+package ch.ergon.arciphant.core.model
 
 data class ModuleReference(val name: String)
 

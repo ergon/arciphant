@@ -1,6 +1,10 @@
 package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.model.*
+import ch.ergon.arciphant.core.model.*
+import ch.ergon.arciphant.core.model.BundleModule
+import ch.ergon.arciphant.core.model.Component
+import ch.ergon.arciphant.core.model.FunctionalModule
+import ch.ergon.arciphant.core.model.Module
 
 internal sealed interface GradleProjectConfig {
     val path: GradleProjectPath

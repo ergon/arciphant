@@ -1,4 +1,4 @@
-package ch.ergon.arciphant.core
+package ch.ergon.arciphant.util
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DynamicTest.dynamicTest

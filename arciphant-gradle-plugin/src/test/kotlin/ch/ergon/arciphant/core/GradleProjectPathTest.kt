@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core
 
+import ch.ergon.arciphant.util.dynamicTest
 import org.junit.jupiter.api.TestFactory
 
 class GradleProjectPathTest {

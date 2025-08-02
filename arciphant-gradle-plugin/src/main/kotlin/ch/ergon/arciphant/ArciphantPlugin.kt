@@ -1,8 +1,10 @@
-package ch.ergon.arciphant.core
+package ch.ergon.arciphant
 
 import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
+import ch.ergon.arciphant.core.GradleProjectConfigApplicator
+import ch.ergon.arciphant.core.ModuleRepository
+import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
-import ch.ergon.arciphant.dsl.ModuleRepository
 import ch.ergon.arciphant.util.beforeProjectAction
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings

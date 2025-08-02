@@ -1,8 +1,12 @@
 package ch.ergon.arciphant.dsl
 
-import ch.ergon.arciphant.model.*
-import ch.ergon.arciphant.model.DependencyType.API
-import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.core.model.*
+import ch.ergon.arciphant.core.model.Component
+import ch.ergon.arciphant.core.model.Dependency
+import ch.ergon.arciphant.core.model.DependencyType
+import ch.ergon.arciphant.core.model.DependencyType.API
+import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.core.model.Plugin
 import ch.ergon.arciphant.util.verify
 import ch.ergon.arciphant.util.verifyName
 

@@ -1,8 +1,16 @@
-package ch.ergon.arciphant.dsl
+package ch.ergon.arciphant.core
 
+import ch.ergon.arciphant.core.model.*
+import ch.ergon.arciphant.core.model.BundleModule
+import ch.ergon.arciphant.core.model.Component
+import ch.ergon.arciphant.core.model.Dependency
+import ch.ergon.arciphant.core.model.DomainModule
+import ch.ergon.arciphant.core.model.FunctionalModule
+import ch.ergon.arciphant.core.model.LibraryModule
+import ch.ergon.arciphant.core.model.Plugin
+import ch.ergon.arciphant.dsl.*
 import ch.ergon.arciphant.dsl.FunctionalModuleType.DOMAIN
 import ch.ergon.arciphant.dsl.FunctionalModuleType.LIBRARY
-import ch.ergon.arciphant.model.*
 import ch.ergon.arciphant.util.verify
 
 internal class ModuleRepository(private val dsl: ArciphantDsl) {

@@ -29,7 +29,7 @@ gradlePlugin {
     plugins {
         create("arciphant") {
             id = "ch.ergon.arciphant"
-            implementationClass = "ch.ergon.arciphant.core.ArciphantPlugin"
+            implementationClass = "ch.ergon.arciphant.ArciphantPlugin"
 
             displayName = "Arciphant"
             description =

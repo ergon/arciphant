@@ -1,11 +1,11 @@
 package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.model.DependencyType
-import ch.ergon.arciphant.model.DependencyType.API
-import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
-import ch.ergon.arciphant.model.DomainModule
-import ch.ergon.arciphant.model.LibraryModule
-import ch.ergon.arciphant.model.Plugin
+import ch.ergon.arciphant.core.model.DependencyType
+import ch.ergon.arciphant.core.model.DependencyType.API
+import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.core.model.DomainModule
+import ch.ergon.arciphant.core.model.LibraryModule
+import ch.ergon.arciphant.core.model.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.kotlin.dsl.apply

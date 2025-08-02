@@ -1,8 +1,15 @@
 package ch.ergon.arciphant.dsl
 
-import ch.ergon.arciphant.model.*
-import ch.ergon.arciphant.model.DependencyType.API
-import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.core.ModuleRepository
+import ch.ergon.arciphant.core.model.*
+import ch.ergon.arciphant.core.model.BundleModule
+import ch.ergon.arciphant.core.model.Component
+import ch.ergon.arciphant.core.model.Dependency
+import ch.ergon.arciphant.core.model.DependencyType.API
+import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.core.model.DomainModule
+import ch.ergon.arciphant.core.model.LibraryModule
+import ch.ergon.arciphant.core.model.Plugin
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
