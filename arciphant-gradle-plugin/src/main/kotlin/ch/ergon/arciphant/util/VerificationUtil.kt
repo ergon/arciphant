@@ -1,4 +1,4 @@
-package ch.ergon.arciphant.dsl
+package ch.ergon.arciphant.util
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract

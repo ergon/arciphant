@@ -3,6 +3,7 @@ package ch.ergon.arciphant.dsl
 import ch.ergon.arciphant.dsl.FunctionalModuleType.DOMAIN
 import ch.ergon.arciphant.dsl.FunctionalModuleType.LIBRARY
 import ch.ergon.arciphant.model.*
+import ch.ergon.arciphant.util.verify
 
 internal class ModuleRepository(private val dsl: ArciphantDsl) {
 

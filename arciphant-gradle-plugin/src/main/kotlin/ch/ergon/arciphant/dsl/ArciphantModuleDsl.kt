@@ -3,6 +3,8 @@ package ch.ergon.arciphant.dsl
 import ch.ergon.arciphant.model.*
 import ch.ergon.arciphant.model.DependencyType.API
 import ch.ergon.arciphant.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.util.verify
+import ch.ergon.arciphant.util.verifyName
 
 class BundleModuleBuilder internal constructor(
     internal val name: String,
