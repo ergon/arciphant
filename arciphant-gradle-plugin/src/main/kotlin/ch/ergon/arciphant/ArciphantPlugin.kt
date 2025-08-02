@@ -5,6 +5,10 @@ import ch.ergon.arciphant.core.GradleProjectConfigApplicator
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
+import ch.ergon.arciphant.dsl.PackageStructureValidationBuilder
+import ch.ergon.arciphant.sca.PackageStructureValidationConfig
+import ch.ergon.arciphant.sca.PackageStructureValidator
+import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
 import ch.ergon.arciphant.util.beforeProjectAction
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
@@ -27,7 +31,11 @@ class ArciphantPlugin : Plugin<Settings> {
                 gradle.beforeProjectAction { handler.applyConfig(it) }
             }
 
-            gradle.projectsLoaded { rootProject.registerProjectDependenciesTask() }
+            gradle.projectsLoaded {
+                val packageStructureValidator = PackageStructureValidator(extension.packageStructureValidation.build())
+                rootProject.registerValidatePackageStructureTask(packageStructureValidator)
+                rootProject.registerProjectDependenciesTask()
+            }
         }
 
     }

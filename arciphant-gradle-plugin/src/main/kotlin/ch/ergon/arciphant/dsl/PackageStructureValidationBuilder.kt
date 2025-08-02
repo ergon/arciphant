@@ -1,18 +1,20 @@
 package ch.ergon.arciphant.dsl
 
+import ch.ergon.arciphant.sca.PackageStructureValidationConfig
+
 internal class PackageStructureValidationBuilder : PackageStructureValidationDsl {
 
-    var basePackageName: String = ""
-    var useLowerCase: Boolean = true
-    var removeUnderscore: Boolean = true
-    var removeHyphen: Boolean = true
+    private var basePackageName: String = ""
+    private var useLowerCase: Boolean = true
+    private var removeUnderscore: Boolean = true
+    private var removeHyphen: Boolean = true
 
-    val relativePackagesByProjectName = mutableMapOf<String, String>()
-    val absolutePackagesByProjectPath = mutableMapOf<String, String>()
-    val excludedProjectPaths = mutableSetOf<String>()
+    private val relativePackagesByProjectName = mutableMapOf<String, String>()
+    private val absolutePackagesByProjectPath = mutableMapOf<String, String>()
+    private val excludedProjectPaths = mutableSetOf<String>()
 
-    var excludeResourcesFolder: Boolean = false
-    val excludedSrcFolders = mutableSetOf<String>()
+    private var excludeResourcesFolder: Boolean = false
+    private val excludedSrcFolders = mutableSetOf<String>()
 
     override fun basePackageName(basePackageName: String) {
         this.basePackageName = basePackageName
@@ -49,5 +51,22 @@ internal class PackageStructureValidationBuilder : PackageStructureValidationDsl
     override fun excludeSrcFolders(folderName: String) {
         this.excludedSrcFolders.add(folderName)
     }
+
+    fun build(): PackageStructureValidationConfig {
+        return PackageStructureValidationConfig(
+            basePackagePath = basePackageName.packageToFolderPath(),
+            useLowerCase = useLowerCase,
+            removedSpecialCharacters = setOfNotNull(
+                if (removeUnderscore) "_" else null,
+                if (removeHyphen) "-" else null,
+            ),
+            relativePackagePathsByProjectName = relativePackagesByProjectName.mapValues { it.value.packageToFolderPath() },
+            absolutePackagePathsByProjectPath = absolutePackagesByProjectPath.mapValues { it.value.packageToFolderPath() },
+            excludedProjectPaths = excludedProjectPaths,
+            excludedSourceFolders = excludedSrcFolders + listOfNotNull(if(excludeResourcesFolder) "*/resources" else null)
+        )
+    }
+
+    private fun String.packageToFolderPath() = replace(".", "/")
 
 }
