@@ -11,7 +11,7 @@ import org.junit.jupiter.api.assertThrows
 class ArciphantDslTest {
 
     private val dsl = ArciphantDsl()
-    private val repository = DslModuleRepository(dsl)
+    private val moduleRepository = ModuleRepository(dsl)
 
     @Nested
     inner class ComponentsTest {
@@ -41,7 +41,7 @@ class ArciphantDslTest {
                     .createComponent(component3b.name)
             }
 
-            val module = repository.loadSingleModule()
+            val module = moduleRepository.loadSingleModule()
 
             assertThat(module.components.map { it.reference }).containsExactlyInAnyOrder(
                 component1a, component1b, component2a, component2b, component3a, component3b
@@ -65,7 +65,7 @@ class ArciphantDslTest {
                 module(name = "module", templates = setOf(template))
             }
 
-            val module = repository.loadSingleModule()
+            val module = moduleRepository.loadSingleModule()
 
             assertThat(module.components.map { it.reference }).containsExactlyInAnyOrder(
                 component1a, component1b, component2a, component2b, component3a, component3b
@@ -81,7 +81,7 @@ class ArciphantDslTest {
             }
 
             val exception = assertThrows<IllegalArgumentException> {
-                repository.load()
+                moduleRepository.load()
             }
 
             assertThat(exception.message).isEqualTo(duplicateComponentNameMessage)
@@ -97,7 +97,7 @@ class ArciphantDslTest {
             }
 
             val exception = assertThrows<IllegalArgumentException> {
-                repository.load()
+                moduleRepository.load()
             }
 
             assertThat(exception.message).isEqualTo(duplicateComponentNameMessage)
@@ -115,7 +115,7 @@ class ArciphantDslTest {
             }
 
             val exception = assertThrows<IllegalArgumentException> {
-                repository.load()
+                moduleRepository.load()
             }
 
             assertThat(exception.message).isEqualTo(duplicateComponentNameMessage)
@@ -146,7 +146,7 @@ class ArciphantDslTest {
             }
 
             val exception = assertThrows<IllegalArgumentException> {
-                repository.load()
+                moduleRepository.load()
             }
 
             assertThat(exception.message).isEqualTo("Arciphant configuration error: Component with name '$component' does not exist. Use 'createComponent' instead of 'extendComponent' to create a new component.")
@@ -250,7 +250,7 @@ class ArciphantDslTest {
                     )
             }
 
-            val component = repository.loadSingleComponent()
+            val component = moduleRepository.loadSingleComponent()
 
             assertThat(component.dependsOn).containsExactlyInAnyOrder(
                 Dependency(component = ComponentReference(targetComponent3a), type = API),
@@ -271,7 +271,7 @@ class ArciphantDslTest {
                     .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent3a, targetComponent3b))
             }
 
-            val component = repository.loadSingleComponent()
+            val component = moduleRepository.loadSingleComponent()
 
             assertThat(component.dependsOn.map { it.component.name }).containsExactlyInAnyOrder(
                 targetComponent1a, targetComponent1b, targetComponent2, targetComponent3a, targetComponent3b,
@@ -323,7 +323,7 @@ class ArciphantDslTest {
                 bundle("app", plugin = bundlePlugin.id)
             }
 
-            val modules = repository.load()
+            val modules = moduleRepository.load()
 
             val domainComponent = Component(
                 reference = domainComponentRef,
@@ -413,6 +413,6 @@ class ArciphantDslTest {
 
 }
 
-private fun DslModuleRepository.loadSingleComponent() = loadSingleModule().components.single()
+private fun ModuleRepository.loadSingleComponent() = loadSingleModule().components.single()
 
-private fun DslModuleRepository.loadSingleModule() = load().single() as DomainModule
+private fun ModuleRepository.loadSingleModule() = load().single() as DomainModule

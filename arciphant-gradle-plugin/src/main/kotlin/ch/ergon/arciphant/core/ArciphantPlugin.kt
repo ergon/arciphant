@@ -2,7 +2,7 @@ package ch.ergon.arciphant.core
 
 import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
 import ch.ergon.arciphant.dsl.ArciphantDsl
-import ch.ergon.arciphant.dsl.DslModuleRepository
+import ch.ergon.arciphant.dsl.ModuleRepository
 import ch.ergon.arciphant.util.beforeProjectAction
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
@@ -14,7 +14,7 @@ class ArciphantPlugin : Plugin<Settings> {
             val extension = extensions.create("arciphant", ArciphantDsl::class.java)
 
             gradle.settingsEvaluated {
-                val modules = DslModuleRepository(extension).load()
+                val modules = ModuleRepository(extension).load()
                 val projectConfigs = modules.flatMap { it.toProjectConfigs() }
 
                 // create project structure (during gradle initialization phase)
