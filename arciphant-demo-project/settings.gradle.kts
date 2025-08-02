@@ -40,4 +40,10 @@ arciphant {
         .extendComponent(name = "web", dependsOn = setOf("payment-provider-adapter"))
 
     bundle(name = "online-learning-platform", plugin = "spring-boot-bundle-module")
+
+    packageStructureValidation {
+        val basePackage = "ch.ergon.arciphant.example"
+        basePackageName(basePackage)
+        mapProjectNamesToPackageFragments("online-learning-platform" to basePackage)
+    }
 }
