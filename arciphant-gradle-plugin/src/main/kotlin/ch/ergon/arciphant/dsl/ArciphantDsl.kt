@@ -7,6 +7,8 @@ open class ArciphantDsl internal constructor() {
     internal val functionalModules = mutableListOf<FunctionalModuleBuilder>()
     internal val bundleModules = mutableSetOf<BundleModuleBuilder>()
 
+    internal val packageStructureValidation = PackageStructureValidationBuilder()
+
     fun template(): ModuleTemplateBuilder {
         return ModuleTemplateBuilder()
     }
@@ -35,6 +37,10 @@ open class ArciphantDsl internal constructor() {
             plugin = plugin,
             includes = includes
         ).also { bundleModules.add(it) }
+    }
+
+    fun packageStructureValidation(block: PackageStructureValidationDsl.() -> Unit) {
+        packageStructureValidation.block()
     }
 
 }
