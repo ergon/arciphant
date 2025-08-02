@@ -5,8 +5,6 @@ import ch.ergon.arciphant.core.GradleProjectConfigApplicator
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
-import ch.ergon.arciphant.dsl.PackageStructureValidationBuilder
-import ch.ergon.arciphant.sca.PackageStructureValidationConfig
 import ch.ergon.arciphant.sca.PackageStructureValidator
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
 import ch.ergon.arciphant.util.beforeProjectAction
@@ -17,10 +15,10 @@ class ArciphantPlugin : Plugin<Settings> {
 
     override fun apply(settings: Settings) {
         with(settings) {
-            val extension = extensions.create("arciphant", ArciphantDsl::class.java)
+            val dsl = extensions.create("arciphant", ArciphantDsl::class.java)
 
             gradle.settingsEvaluated {
-                val modules = ModuleRepository(extension).load()
+                val modules = ModuleRepository(dsl).load()
                 val projectConfigs = modules.flatMap { it.toProjectConfigs() }
 
                 // create project structure (during gradle initialization phase)
@@ -32,7 +30,7 @@ class ArciphantPlugin : Plugin<Settings> {
             }
 
             gradle.projectsLoaded {
-                val packageStructureValidator = PackageStructureValidator(extension.packageStructureValidation.build())
+                val packageStructureValidator = PackageStructureValidator(dsl.packageStructureValidation.build())
                 rootProject.registerValidatePackageStructureTask(packageStructureValidator)
                 rootProject.registerProjectDependenciesTask()
             }
