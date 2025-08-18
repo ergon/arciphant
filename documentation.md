@@ -4,7 +4,7 @@
 
 ### Java or Kotlin Plugin
 
-In order to use Arciphant in your gradle build you have to apply either the *Java* or *Kotlin JVMm* plugin to all projects in the project hierarchy 
+In order to use Arciphant in your gradle build you have to apply either the *Java* or *Kotlin JVM* plugin to all projects in the project hierarchy 
 (the reason is that Arciphant builds upon the configurations 'api' and 'implementation' registered by these plugins).
 
 This is can typically be done in the the root project, e.g. like the following:
