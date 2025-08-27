@@ -300,6 +300,26 @@ plugins {
 This seems to trigger the required plugin resolution strategy and arciphant is able to apply all plugins from the included build 
 (even if only one plugin is referenced in `settings.gradle.kts`).
 
+## Verify Project structure
+
+Typically in a multi-project setup, you want to have different packages for the different projects. 
+Arciphant provides a task to verify correct package structure: `validatePackageStructure`. 
+The task is only available in the root project, but scans all the subprojects, too.
+
+To configure the task, add a `packageStructureValidation` block to the *arciphant* configuration in `settings.gradle.kts`. Example
+```
+packageStructureValidation {
+    basePackageName("ch.ergon.arciphant.example")
+    
+    mapProjectNamesToPackageFragments("module-a" to "aaa")
+    
+    mapProjectPathsToAbsolutePackages(":any:special:project-name" to "ch.ergon.arciphant.example.special")
+}
+```
+
+If no configuration is provided, default values are applied. 
+See `PackageStructureValidationDsl` for available configurations and their default values.
+
 ## Complete demo project
 
 You can find a complete [Demo Project](./demo-project.md) in `./arciphant-demo-project`
