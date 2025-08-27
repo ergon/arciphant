@@ -1,6 +1,7 @@
+package ch.ergon.arciphant.example.exam.db
+
 import ch.ergon.arciphant.example.exam.api.ExamId
 import ch.ergon.arciphant.example.exam.api.ExamIdFixtures
-import ch.ergon.arciphant.example.exam.db.ExamRepositoryImpl
 import ch.ergon.arciphant.example.exam.domain.Exam
 import ch.ergon.arciphant.example.exam.domain.ExamFixtures
 import ch.ergon.arciphant.example.shared.api.DisciplineIdFixtures
