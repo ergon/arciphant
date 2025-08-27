@@ -5,6 +5,7 @@ import org.gradle.api.Project
 
 internal fun Project.registerValidatePackageStructureTask(validator: PackageStructureValidator) {
     tasks.register("validatePackageStructure") {
+        group = "verification"
         doLast {
             validatePackageStructure(validator)
         }
