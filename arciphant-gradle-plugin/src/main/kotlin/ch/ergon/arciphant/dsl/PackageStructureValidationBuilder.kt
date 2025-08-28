@@ -1,6 +1,7 @@
 package ch.ergon.arciphant.dsl
 
 import ch.ergon.arciphant.sca.PackageStructureValidationConfig
+import ch.ergon.arciphant.util.verifyName
 
 internal class PackageStructureValidationBuilder : PackageStructureValidationDsl {
 
@@ -53,6 +54,8 @@ internal class PackageStructureValidationBuilder : PackageStructureValidationDsl
     }
 
     fun build(): PackageStructureValidationConfig {
+        verifyName(basePackageName, "base package name")
+        excludedSrcFolders.forEach { verifyName(it, "source folder name") }
         return PackageStructureValidationConfig(
             basePackagePath = basePackageName.packageToFolderPath(),
             useLowerCase = useLowerCase,
