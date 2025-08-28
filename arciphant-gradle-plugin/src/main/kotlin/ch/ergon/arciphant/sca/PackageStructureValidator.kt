@@ -45,12 +45,13 @@ internal class PackageStructureValidator(private val config: PackageStructureVal
 
     private fun Project.projectPathToPackageFragments(): String {
         return project.path.replaceFirst(":", "").split(":")
-            .joinToString("/") { it.projectNameToPackageFragment() }
+            .mapNotNull { it.projectNameToPackageFragment() }
+            .joinToString("/")
     }
 
-    private fun String.projectNameToPackageFragment(): String {
+    private fun String.projectNameToPackageFragment(): String? {
         val configuredPackageFragment = config.relativePackagePathsByProjectName[this]
-        if (configuredPackageFragment != null) return configuredPackageFragment
+        if (configuredPackageFragment != null) return if(configuredPackageFragment != "") configuredPackageFragment else null
 
         val packageFragment = if (config.useLowerCase) this.lowercase() else this
         return config.removedSpecialCharacters.fold(packageFragment) { fragment, character ->
