@@ -5,7 +5,7 @@ import ch.ergon.arciphant.util.verifyName
 
 internal class PackageStructureValidationBuilder : PackageStructureValidationDsl {
 
-    private var basePackageName: String = ""
+    private var basePackageName: String? = null
     private var useLowerCase: Boolean = true
     private var removeUnderscore: Boolean = true
     private var removeHyphen: Boolean = true
@@ -54,10 +54,10 @@ internal class PackageStructureValidationBuilder : PackageStructureValidationDsl
     }
 
     fun build(): PackageStructureValidationConfig {
-        verifyName(basePackageName, "base package name")
+        basePackageName?.let { verifyName(it, "base package name") }
         excludedSrcFolders.forEach { verifyName(it, "source folder name") }
         return PackageStructureValidationConfig(
-            basePackagePath = basePackageName.packageToFolderPath(),
+            basePackagePath = basePackageName?.packageToFolderPath(),
             useLowerCase = useLowerCase,
             removedSpecialCharacters = setOfNotNull(
                 if (removeUnderscore) "_" else null,

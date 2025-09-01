@@ -40,7 +40,11 @@ internal class PackageStructureValidator(private val config: PackageStructureVal
 
     private fun Project.toPackagePath(): String {
         val configuredAbsolutePath = config.absolutePackagePathsByProjectPath[path]
-        return configuredAbsolutePath ?: "${config.basePackagePath}/${projectPathToPackageFragments()}"
+        return configuredAbsolutePath ?: projectPathToPackageFragments().withBasePackage()
+    }
+
+    private fun String.withBasePackage(): String {
+        return if(config.basePackagePath != null) "${config.basePackagePath}/$this" else this
     }
 
     private fun Project.projectPathToPackageFragments(): String {
