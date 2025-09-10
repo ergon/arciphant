@@ -1,10 +1,6 @@
 package ch.ergon.arciphant.core
 
 import ch.ergon.arciphant.core.model.*
-import ch.ergon.arciphant.core.model.BundleModule
-import ch.ergon.arciphant.core.model.Component
-import ch.ergon.arciphant.core.model.FunctionalModule
-import ch.ergon.arciphant.core.model.Module
 
 internal sealed interface GradleProjectConfig {
     val path: GradleProjectPath
@@ -32,4 +28,4 @@ private fun BundleModule.gradleProjectPath() = GradleProjectPath(reference.name)
 internal fun FunctionalModule.gradleProjectPath(component: Component) = gradleProjectPath(component.reference)
 
 internal fun FunctionalModule.gradleProjectPath(component: ComponentReference) =
-    GradleProjectPath(reference.name, component.name)
+    if (component.hasName()) GradleProjectPath(reference.name, component.name) else GradleProjectPath(reference.name)

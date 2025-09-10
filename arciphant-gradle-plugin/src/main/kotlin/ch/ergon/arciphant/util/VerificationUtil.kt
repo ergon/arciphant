@@ -3,9 +3,9 @@ package ch.ergon.arciphant.util
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-fun verifyName(name: String, type: String) {
+fun verifyName(name: String, type: String, allowEmpty: Boolean = false) {
     verify(!name.contains(" ")) { "$type name must not contain whitespaces" }
-    verify(name.isNotEmpty()) { "$type name must not be empty" }
+    verify(allowEmpty || name.isNotEmpty()) { "$type name must not be empty" }
 }
 
 @OptIn(ExperimentalContracts::class)

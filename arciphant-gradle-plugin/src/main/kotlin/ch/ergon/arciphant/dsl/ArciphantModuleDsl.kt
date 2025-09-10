@@ -81,7 +81,7 @@ sealed class ComponentContainerBuilder<B : ComponentContainerBuilder<B>> {
     internal val componentDependencyOverrides = mutableMapOf<String, Set<Dependency>>()
 
     protected fun doCreateComponent(name: String, plugin: String?, dependsOnApi: Set<String>, dependsOn: Set<String>) {
-        verifyName(name, "component")
+        verifyName(name, "component", allowEmpty = true)
         val dependencies = mapDependencies(dependsOnApi, dependsOn)
         components.add(Component(ComponentReference(name), plugin?.let { Plugin(it) }, dependencies))
     }
