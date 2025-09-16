@@ -27,5 +27,4 @@ private fun BundleModule.gradleProjectPath() = GradleProjectPath(reference.name)
 
 internal fun FunctionalModule.gradleProjectPath(component: Component) = gradleProjectPath(component.reference)
 
-internal fun FunctionalModule.gradleProjectPath(component: ComponentReference) =
-    if (component.hasName()) GradleProjectPath(reference.name, component.name) else GradleProjectPath(reference.name)
+internal fun FunctionalModule.gradleProjectPath(component: ComponentReference) = GradleProjectPath(reference.name, component.name)
