@@ -54,8 +54,8 @@ internal class PackageStructureValidationBuilder : PackageStructureValidationDsl
     }
 
     fun build(): PackageStructureValidationConfig {
-        basePackageName?.let { verifyName(it, "base package name") }
-        excludedSrcFolders.forEach { verifyName(it, "source folder name") }
+        basePackageName?.let { verifyName(it, "base package name", forbidEmpty = true) }
+        excludedSrcFolders.forEach { verifyName(it, "source folder name", forbidEmpty = true) }
         return PackageStructureValidationConfig(
             basePackagePath = basePackageName?.packageToFolderPath(),
             useLowerCase = useLowerCase,
