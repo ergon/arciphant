@@ -15,8 +15,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.3")
     testImplementation("org.assertj:assertj-core:3.27.0")
-    // required for testing purposes only. In a real project, this plugin should be provided by the project itself
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0")
 }
 
 group = "ch.ergon.arciphant"
