@@ -12,3 +12,4 @@ modules.xml
 modules
 compiler.xml
 kotlinc.xml
+AndroidProjectSystem.xml
