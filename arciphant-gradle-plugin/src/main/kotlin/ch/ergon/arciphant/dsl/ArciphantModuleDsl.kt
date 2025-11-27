@@ -14,7 +14,7 @@ class BundleModuleBuilder internal constructor(
     internal val name: String,
     internal val plugin: String?,
     internal val includes: Set<ModuleBuilder>
-) : ModuleBuilder
+) : ModuleBuilder()
 
 internal enum class FunctionalModuleType {
     LIBRARY, DOMAIN
@@ -24,7 +24,7 @@ class FunctionalModuleBuilder internal constructor(
     internal val name: String,
     internal val templates: Set<ModuleTemplateBuilder>,
     internal val moduleType: FunctionalModuleType,
-) : ModuleBuilder {
+) : ModuleBuilder() {
     internal val componentsBuilder = ComponentsBuilder()
 
     fun createComponent(
@@ -101,13 +101,10 @@ internal class ComponentsBuilder {
     private fun Set<String>.toDependencies(type: DependencyType) = map { Dependency(ComponentReference(it), type) }.toSet()
 }
 
-sealed interface ModuleBuilder
-
-/**
- * This is only necessary since 'reference' should be internal, and we cannot use internal values on [ModuleBuilder], since it is an internface.
- */
-internal val ModuleBuilder.reference
-    get() = when (this) {
-        is FunctionalModuleBuilder -> ModuleReference(name)
-        is BundleModuleBuilder -> ModuleReference(name)
-    }
+sealed class ModuleBuilder {
+    internal val reference
+        get() = when (this) {
+            is FunctionalModuleBuilder -> ModuleReference(name)
+            is BundleModuleBuilder -> ModuleReference(name)
+        }
+}
