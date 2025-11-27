@@ -103,5 +103,5 @@ internal class ComponentsBuilder {
 
 sealed class ModuleBuilder(internal val name: String) {
 
-    internal val reference get() = ModuleReference(name)
+    internal val reference by lazy { ModuleReference(name) }
 }
