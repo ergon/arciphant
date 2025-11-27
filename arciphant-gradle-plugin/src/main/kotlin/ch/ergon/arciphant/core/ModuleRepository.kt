@@ -69,7 +69,7 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
 
     private fun BundleModuleBuilder.createBundleModule(): BundleModule {
         return BundleModule(
-            reference = ModuleReference(name),
+            reference = reference,
             plugin = plugin?.let { Plugin(it) },
             includes = includes.ifEmpty { dsl.functionalModules }.map { it.reference }.toSet()
         )
