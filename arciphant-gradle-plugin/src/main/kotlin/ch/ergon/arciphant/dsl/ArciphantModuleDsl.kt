@@ -104,6 +104,9 @@ sealed class ComponentContainerBuilder<B : ComponentContainerBuilder<B>> {
 
 sealed interface ModuleBuilder
 
+/**
+ * This is only necessary since 'reference' should be internal, and we cannot use internal values on [ModuleBuilder], since it is an internface.
+ */
 internal val ModuleBuilder.reference
     get() = when (this) {
         is FunctionalModuleBuilder -> ModuleReference(name)
