@@ -25,11 +25,11 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
     }
 
     private fun FunctionalModuleBuilder.build(): List<Component> {
-        return build(inheritedComponents = templates.flatMap { it.build() })
+        return componentContainerBuilder.build(inheritedComponents = templates.flatMap { it.build() })
     }
 
     private fun ModuleTemplateBuilder.build(): List<Component> {
-        return build(inheritedComponents = extends.flatMap { it.build() })
+        return componentContainerBuilder.build(inheritedComponents = extends.flatMap { it.build() })
 
     }
 
