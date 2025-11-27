@@ -25,15 +25,15 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
     }
 
     private fun FunctionalModuleBuilder.build(): List<Component> {
-        return componentContainerBuilder.build(inheritedComponents = templates.flatMap { it.build() })
+        return componentsBuilder.build(inheritedComponents = templates.flatMap { it.build() })
     }
 
     private fun ModuleTemplateBuilder.build(): List<Component> {
-        return componentContainerBuilder.build(inheritedComponents = extends.flatMap { it.build() })
+        return componentsBuilder.build(inheritedComponents = extends.flatMap { it.build() })
 
     }
 
-    private fun ComponentContainerBuilder.build(inheritedComponents: List<Component>): List<Component> {
+    private fun ComponentsBuilder.build(inheritedComponents: List<Component>): List<Component> {
         val componentsByName = (inheritedComponents + components).toDistinctMap()
         componentDependencyOverrides.forEach { (componentName, dependencies) ->
             val existingComponent = componentsByName.getOrThrow(componentName)
