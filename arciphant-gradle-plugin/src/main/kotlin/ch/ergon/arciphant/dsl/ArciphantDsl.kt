@@ -4,10 +4,15 @@ import ch.ergon.arciphant.util.verifyName
 
 open class ArciphantDsl internal constructor() {
 
+    internal var globalBasePath: String? = null
     internal val functionalModules = mutableListOf<FunctionalModuleBuilder>()
     internal val bundleModules = mutableSetOf<BundleModuleBuilder>()
 
     internal val packageStructureValidation = PackageStructureValidationBuilder()
+
+    fun basePath(basePath: String) {
+        globalBasePath = basePath
+    }
 
     fun template(): ModuleTemplateBuilder {
         return ModuleTemplateBuilder()
