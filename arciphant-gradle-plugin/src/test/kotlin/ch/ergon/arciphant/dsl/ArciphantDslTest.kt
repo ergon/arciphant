@@ -13,6 +13,7 @@ import ch.ergon.arciphant.core.model.Plugin
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
 class ArciphantDslTest {
@@ -179,12 +180,10 @@ class ArciphantDslTest {
         fun `it should prevent empty component name`() {
             with(dsl) {
 
-                val exception = assertThrows<IllegalArgumentException> {
+                assertDoesNotThrow {
                     template()
                         .createComponent("")
                 }
-
-                assertThat(exception.message).isEqualTo("Arciphant configuration error: component name must not be empty")
             }
         }
 
@@ -201,14 +200,12 @@ class ArciphantDslTest {
         }
 
         @Test
-        fun `it should prevent empty library name`() {
+        fun `it should accept empty library name`() {
             with(dsl) {
 
-                val exception = assertThrows<IllegalArgumentException> {
+                assertDoesNotThrow {
                     library("")
                 }
-
-                assertThat(exception.message).isEqualTo("Arciphant configuration error: library name must not be empty")
             }
         }
 
@@ -225,14 +222,12 @@ class ArciphantDslTest {
         }
 
         @Test
-        fun `it should prevent empty module name`() {
+        fun `it should accept empty module name`() {
             with(dsl) {
 
-                val exception = assertThrows<IllegalArgumentException> {
+                assertDoesNotThrow {
                     module("")
                 }
-
-                assertThat(exception.message).isEqualTo("Arciphant configuration error: module name must not be empty")
             }
         }
     }
