@@ -93,9 +93,6 @@ sealed class ComponentContainerBuilder<B : ComponentContainerBuilder<B>> {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun castedThis() = this as B
-
     private fun mapDependencies(apiDependencies: Set<String>, implementationDependencies: Set<String>) =
         apiDependencies.toDependencies(API) + implementationDependencies.toDependencies(IMPLEMENTATION)
 
