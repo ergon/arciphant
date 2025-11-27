@@ -1,20 +1,17 @@
 package ch.ergon.arciphant.dsl
 
 import ch.ergon.arciphant.core.model.*
-import ch.ergon.arciphant.core.model.Component
-import ch.ergon.arciphant.core.model.Dependency
-import ch.ergon.arciphant.core.model.DependencyType
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
-import ch.ergon.arciphant.core.model.Plugin
 import ch.ergon.arciphant.util.verify
 import ch.ergon.arciphant.util.verifyName
 
 class BundleModuleBuilder internal constructor(
     name: String,
+    basePath: String?,
     internal val plugin: String?,
     internal val includes: Set<ModuleBuilder>
-) : ModuleBuilder(name)
+) : ModuleBuilder(name, basePath)
 
 internal enum class FunctionalModuleType {
     LIBRARY, DOMAIN
@@ -22,9 +19,10 @@ internal enum class FunctionalModuleType {
 
 class FunctionalModuleBuilder internal constructor(
     name: String,
+    basePath: String?,
     internal val templates: Set<ModuleTemplateBuilder>,
     internal val moduleType: FunctionalModuleType,
-) : ModuleBuilder(name) {
+) : ModuleBuilder(name, basePath) {
     internal val componentsBuilder = ComponentsBuilder()
 
     fun createComponent(
@@ -101,4 +99,4 @@ internal class ComponentsBuilder {
     private fun Set<String>.toDependencies(type: DependencyType) = map { Dependency(ComponentReference(it), type) }.toSet()
 }
 
-sealed class ModuleBuilder(internal val name: String)
+sealed class ModuleBuilder(internal val name: String, internal val basePath: String?)
