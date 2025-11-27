@@ -101,7 +101,4 @@ internal class ComponentsBuilder {
     private fun Set<String>.toDependencies(type: DependencyType) = map { Dependency(ComponentReference(it), type) }.toSet()
 }
 
-sealed class ModuleBuilder(internal val name: String) {
-
-    internal val reference by lazy { ModuleReference(name) }
-}
+sealed class ModuleBuilder(internal val name: String)

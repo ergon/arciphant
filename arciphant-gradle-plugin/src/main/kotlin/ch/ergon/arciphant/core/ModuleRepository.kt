@@ -6,6 +6,7 @@ import ch.ergon.arciphant.core.model.Dependency
 import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.FunctionalModule
 import ch.ergon.arciphant.core.model.LibraryModule
+import ch.ergon.arciphant.core.model.ModuleReference
 import ch.ergon.arciphant.core.model.Plugin
 import ch.ergon.arciphant.dsl.*
 import ch.ergon.arciphant.dsl.FunctionalModuleType.DOMAIN
@@ -19,8 +20,8 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
     private fun FunctionalModuleBuilder.create(): FunctionalModule {
         val components = build().toSet()
         return when (moduleType) {
-            LIBRARY -> LibraryModule(this.reference, components)
-            DOMAIN -> DomainModule(this.reference, components)
+            LIBRARY -> LibraryModule(this.reference(), components)
+            DOMAIN -> DomainModule(this.reference(), components)
         }
     }
 
@@ -68,10 +69,12 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
 
     private fun BundleModuleBuilder.createBundleModule(): BundleModule {
         return BundleModule(
-            reference = reference,
+            reference = reference(),
             plugin = plugin?.let { Plugin(it) },
-            includes = includes.ifEmpty { dsl.functionalModules }.map { it.reference }.toSet()
+            includes = includes.ifEmpty { dsl.functionalModules }.map { it.reference() }.toSet()
         )
     }
+
+    private fun ModuleBuilder.reference() = ModuleReference(name = name)
 
 }
