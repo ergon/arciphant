@@ -9,17 +9,19 @@ class GradleProjectPathTest {
 
     @TestFactory
     fun testValue() = dynamicTest(
-        GradleProjectPath() to ":",
-        GradleProjectPath("module") to ":module",
-        GradleProjectPath("module", "component") to ":module:component",
-        GradleProjectPath("any", "nested", "project", "structure") to ":any:nested:project:structure",
+        GradleProjectPath.of() to ":",
+        GradleProjectPath.of("module") to ":module",
+        GradleProjectPath.of("module", "component") to ":module:component",
+        GradleProjectPath.of("any", "nested", "project", "structure") to ":any:nested:project:structure",
     ) { it.value }
 
     @Test
-    fun `it should filter out empty segments`() {
-        val projectPath = GradleProjectPath("a", "", "b")
+    fun `factory method should filter out empty project names`() {
+        val projectPath = GradleProjectPath.of("a", "", "b")
 
         assertThat(projectPath.value).isEqualTo(":a:b")
     }
+
+    private fun GradleProjectPath.Companion.of(vararg projectNames: String) = GradleProjectPath.of(projectNames.toList())
 
 }
