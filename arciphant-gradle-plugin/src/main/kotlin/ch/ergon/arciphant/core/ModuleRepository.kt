@@ -75,6 +75,6 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
         )
     }
 
-    private fun ModuleBuilder.reference() = ModuleReference(name = name)
+    private fun ModuleBuilder.reference() = ModuleReference(parentProjectPath = emptyList(), name = name)
 
 }

@@ -23,8 +23,8 @@ internal fun Module.toProjectConfigs() = when (this) {
     is BundleModule -> listOf(GradleBundleModuleProjectConfig(gradleProjectPath(), this))
 }
 
-private fun BundleModule.gradleProjectPath() = GradleProjectPath.of(listOf(reference.name))
+private fun BundleModule.gradleProjectPath() = GradleProjectPath.of(reference.path)
 
 internal fun FunctionalModule.gradleProjectPath(component: Component) = gradleProjectPath(component.reference)
 
-internal fun FunctionalModule.gradleProjectPath(component: ComponentReference) = GradleProjectPath.of(listOf(reference.name, component.name))
+internal fun FunctionalModule.gradleProjectPath(component: ComponentReference) = GradleProjectPath.of(reference.path + component.name)

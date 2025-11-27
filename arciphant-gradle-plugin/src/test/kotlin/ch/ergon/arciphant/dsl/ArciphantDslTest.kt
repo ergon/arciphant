@@ -283,13 +283,14 @@ class ArciphantDslTest {
 
     @Nested
     inner class CompleteExampleTest {
+        private val path = emptyList<String>()
 
-        private val sharedModuleRef = ModuleReference("shared")
-        private val customerModuleRef = ModuleReference("customer")
-        private val orderModuleRef = ModuleReference("order")
-        private val inventoryModuleRef = ModuleReference("inventory")
-        private val orderingModuleRef = ModuleReference("ordering")
-        private val appModuleRef = ModuleReference("app")
+        private val sharedModuleRef = ModuleReference(name =  "shared")
+        private val customerModuleRef = ModuleReference(name = "customer")
+        private val orderModuleRef = ModuleReference(name = "order")
+        private val inventoryModuleRef = ModuleReference(name = "inventory")
+        private val orderingModuleRef = ModuleReference(name = "ordering")
+        private val appModuleRef = ModuleReference(name = "app")
 
         private val baseComponentRef = ComponentReference("base")
         private val domainComponentRef = ComponentReference("domain")
