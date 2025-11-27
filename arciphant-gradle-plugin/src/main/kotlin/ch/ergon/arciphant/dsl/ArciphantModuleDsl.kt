@@ -11,20 +11,20 @@ import ch.ergon.arciphant.util.verify
 import ch.ergon.arciphant.util.verifyName
 
 class BundleModuleBuilder internal constructor(
-    internal val name: String,
+    name: String,
     internal val plugin: String?,
     internal val includes: Set<ModuleBuilder>
-) : ModuleBuilder()
+) : ModuleBuilder(name)
 
 internal enum class FunctionalModuleType {
     LIBRARY, DOMAIN
 }
 
 class FunctionalModuleBuilder internal constructor(
-    internal val name: String,
+    name: String,
     internal val templates: Set<ModuleTemplateBuilder>,
     internal val moduleType: FunctionalModuleType,
-) : ModuleBuilder() {
+) : ModuleBuilder(name) {
     internal val componentsBuilder = ComponentsBuilder()
 
     fun createComponent(
@@ -101,10 +101,7 @@ internal class ComponentsBuilder {
     private fun Set<String>.toDependencies(type: DependencyType) = map { Dependency(ComponentReference(it), type) }.toSet()
 }
 
-sealed class ModuleBuilder {
-    internal val reference
-        get() = when (this) {
-            is FunctionalModuleBuilder -> ModuleReference(name)
-            is BundleModuleBuilder -> ModuleReference(name)
-        }
+sealed class ModuleBuilder(internal val name: String) {
+
+    internal val reference get() = ModuleReference(name)
 }
