@@ -1,6 +1,5 @@
 package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.core.model.*
 import ch.ergon.arciphant.core.model.BundleModule
 import ch.ergon.arciphant.core.model.Component
 import ch.ergon.arciphant.core.model.Dependency
@@ -34,7 +33,7 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
 
     }
 
-    private fun ComponentContainerBuilder<*>.build(inheritedComponents: List<Component>): List<Component> {
+    private fun ComponentContainerBuilder.build(inheritedComponents: List<Component>): List<Component> {
         val componentsByName = (inheritedComponents + components).toDistinctMap()
         componentDependencyOverrides.forEach { (componentName, dependencies) ->
             val existingComponent = componentsByName.getOrThrow(componentName)

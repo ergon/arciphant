@@ -24,7 +24,7 @@ class FunctionalModuleBuilder internal constructor(
     internal val name: String,
     internal val templates: Set<ModuleTemplateBuilder>,
     internal val moduleType: FunctionalModuleType,
-) : ModuleBuilder, ComponentContainerBuilder<FunctionalModuleBuilder>() {
+) : ModuleBuilder, ComponentContainerBuilder() {
 
     fun createComponent(
         name: String,
@@ -47,7 +47,7 @@ class FunctionalModuleBuilder internal constructor(
 
 }
 
-class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder<ModuleTemplateBuilder>() {
+class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder() {
 
     internal val extends = mutableListOf<ModuleTemplateBuilder>()
 
@@ -76,7 +76,7 @@ class ModuleTemplateBuilder internal constructor() : ComponentContainerBuilder<M
     }
 }
 
-sealed class ComponentContainerBuilder<B : ComponentContainerBuilder<B>> {
+sealed class ComponentContainerBuilder {
     internal val components = mutableListOf<Component>()
     internal val componentDependencyOverrides = mutableMapOf<String, Set<Dependency>>()
 
