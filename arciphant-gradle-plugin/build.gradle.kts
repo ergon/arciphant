@@ -18,7 +18,7 @@ dependencies {
 }
 
 group = "ch.ergon.arciphant"
-version = "0.1.6"
+version = "0.1.7"
 
 gradlePlugin {
     website = "https://github.com/ergon/arciphant"
