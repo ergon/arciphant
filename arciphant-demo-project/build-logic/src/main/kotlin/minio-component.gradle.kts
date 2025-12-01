@@ -2,6 +2,8 @@ plugins {
     id("spring-component")
 }
 
+val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+
 dependencies {
-    implementation("io.minio:minio:8.5.17")
+    implementation(libs.findLibrary("minio").get())
 }

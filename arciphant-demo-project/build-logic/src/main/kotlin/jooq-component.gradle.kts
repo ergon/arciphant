@@ -2,6 +2,8 @@ plugins {
     id("spring-component")
 }
 
+val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+
 dependencies {
-    implementation("org.jooq:jooq:3.20.5")
+    implementation(libs.findLibrary("jooq").get())
 }
