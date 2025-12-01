@@ -25,8 +25,8 @@ class ArciphantPlugin : Plugin<Settings> {
                 projectConfigs.map { it.path }.forEach { include(it.value) }
 
                 // apply plugins and add dependencies (during gradle configuration phase)
-                val handler = GradleProjectConfigApplicator(projectConfigs)
-                gradle.beforeProjectAction { handler.applyConfig(it) }
+                val configApplicator = GradleProjectConfigApplicator(projectConfigs)
+                gradle.beforeProjectAction { configApplicator.applyConfig(it) }
             }
 
             gradle.projectsLoaded {
