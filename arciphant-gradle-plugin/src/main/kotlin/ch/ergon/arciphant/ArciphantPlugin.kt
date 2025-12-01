@@ -7,7 +7,6 @@ import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.sca.PackageStructureValidator
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
-import ch.ergon.arciphant.util.beforeProjectAction
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 
@@ -26,7 +25,9 @@ class ArciphantPlugin : Plugin<Settings> {
 
                 // apply plugins and add dependencies (during gradle configuration phase)
                 val configApplicator = GradleProjectConfigApplicator(projectConfigs)
-                gradle.beforeProjectAction { configApplicator.applyConfig(it) }
+                gradle.allprojects {
+                    beforeEvaluate { configApplicator.applyConfig(this) }
+                }
             }
 
             gradle.projectsLoaded {
