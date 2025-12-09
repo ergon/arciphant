@@ -13,3 +13,6 @@ modules
 compiler.xml
 kotlinc.xml
 AndroidProjectSystem.xml
+queries
+data_source_mapping.xml
+db-forest-config.xml
