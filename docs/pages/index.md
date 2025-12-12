@@ -1,166 +1,47 @@
 ---
-icon: lucide/rocket
+icon: lucide/book-open
 ---
 
-# Hello World
+# Introduction
 
-If you see this page, zensical works. For full documentation visit [zensical.org](https://zensical.org/docs/).
+## About Arciphant
 
-## Commands
+![Logo](images/logo.png)
 
-* [`zensical new`][new] - Create a new project
-* [`zensical serve`][serve] - Start local web server
-* [`zensical build`][build] - Build your site
+Arciphant is a Gradle plugin that allows to specify the module structure of complex software project declaratively using a simple DSL:
 
-  [new]: https://zensical.org/docs/usage/new/
-  [serve]: https://zensical.org/docs/usage/preview/
-  [build]: https://zensical.org/docs/usage/build/
+* Module templates define the technical structure (components and their dependencies) of modules
+* These templates can be configured using a simple DSL directly in the gradle settings file
+* Modules can be instantiated based on templates and further components can be added as required
 
-## Examples
+This offers various advantages:
 
-### Admonitions
+* Architecture styles (e.g. Clean Architecture) can be mapped cleanly and declaratively as a Gradle Multi-Project Build the effort required to introduce a new module is negligible
+* No further tools (such as ArchUnit) are required to define the basic architectural units (modules and components) and map their dependencies
+* The boilerplate part in the Gradle code is minimized
+* Thanks to the interaction with the java-test-fixtures plugin (optional), testing dependencies work out-of-the-box without further effort
 
-> Go to [documentation](https://zensical.org/docs/authoring/admonitions/)
-
-!!! note
-
-    This is a **note** admonition. Use it to provide helpful information.
-
-!!! warning
-
-    This is a **warning** admonition. Be careful!
-
-### Details
-
-> Go to [documentation](https://zensical.org/docs/authoring/admonitions/#collapsible-blocks)
-
-??? info "Click to expand for more info"
-    
-    This content is hidden until you click to expand it.
-    Great for FAQs or long explanations.
-
-## Code Blocks
-
-> Go to [documentation](https://zensical.org/docs/authoring/code-blocks/)
-
-``` python hl_lines="2" title="Code blocks"
-def greet(name):
-    print(f"Hello, {name}!") # (1)!
-
-greet("Python")
-```
-
-1.  > Go to [documentation](https://zensical.org/docs/authoring/code-blocks/#code-annotations)
-
-    Code annotations allow to attach notes to lines of code.
-
-Code can also be highlighted inline: `#!python print("Hello, Python!")`.
-
-## Content tabs
-
-> Go to [documentation](https://zensical.org/docs/authoring/content-tabs/)
-
-=== "Python"
-
-    ``` python
-    print("Hello from Python!")
-    ```
-
-=== "Rust"
-
-    ``` rs
-    println!("Hello from Rust!");
-    ```
-
-## Diagrams
-
-> Go to [documentation](https://zensical.org/docs/authoring/diagrams/)
-
-``` mermaid
-graph LR
-  A[Start] --> B{Error?};
-  B -->|Yes| C[Hmm...];
-  C --> D[Debug];
-  D --> B;
-  B ---->|No| E[Yay!];
-```
-
-## Footnotes
-
-> Go to [documentation](https://zensical.org/docs/authoring/footnotes/)
-
-Here's a sentence with a footnote.[^1]
-
-Hover it, to see a tooltip.
-
-[^1]: This is the footnote.
+Arciphant offers the greatest benefit for software projects that consist of many different modules, whereby these modules have the same or a similar technical structure (e.g. Clean Architecture, Hexagonal Architecture, Onion Architecture, Layered Architecture) as, for example, in a modulith architecture.
 
 
-## Formatting
+## Technologies
 
-> Go to [documentation](https://zensical.org/docs/authoring/formatting/)
+The Arciphant Gradle Plugin is written in Kotlin.
 
-- ==This was marked (highlight)==
-- ^^This was inserted (underline)^^
-- ~~This was deleted (strikethrough)~~
-- H~2~O
-- A^T^A
-- ++ctrl+alt+del++
+![image](https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white)
+![image](https://img.shields.io/badge/Kotlin-B125EA?style=for-the-badge&logo=kotlin&logoColor=white)
 
-## Icons, Emojis
+## License
 
-> Go to [documentation](https://zensical.org/docs/authoring/icons-emojis/)
+Arciphant is released under the [MIT License](https://github.com/ergon/arciphant/blob/main/LICENSE){: target="_blank"}.
 
-* :sparkles: `:sparkles:`
-* :rocket: `:rocket:`
-* :tada: `:tada:`
-* :memo: `:memo:`
-* :eyes: `:eyes:`
+![image](https://img.shields.io/badge/MIT-green?style=for-the-badge)
 
-## Maths
+## Maintenance
 
-> Go to [documentation](https://zensical.org/docs/authoring/math/)
+The publisher (Ergon Informatik AG) does *NOT* guarantee active maintenance and further development.
+We only work on the plugin to the extent that we need for our own projects.
 
-$$
-\cos x=\sum_{k=0}^{\infty}\frac{(-1)^k}{(2k)!}x^{2k}
-$$
+## About the name
 
-!!! warning "Needs configuration"
-    Note that MathJax is included via a `script` tag on this page and is not
-    configured in the generated default configuration to avoid including it
-    in a pages that do not need it. See the documentation for details on how
-    to configure it on all your pages if they are more Maths-heavy than these
-    simple starter pages.
-
-<script id="MathJax-script" async src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [["\\(", "\\)"]],
-      displayMath: [["\\[", "\\]"]],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      ignoreHtmlClass: ".*|",
-      processHtmlClass: "arithmatex"
-    }
-  };
-</script>
-
-## Task Lists
-
-> Go to [documentation](https://zensical.org/docs/authoring/lists/#using-task-lists)
-
-* [x] Install Zensical
-* [x] Configure `zensical.toml`
-* [x] Write amazing documentation
-* [ ] Deploy anywhere
-
-## Tooltips
-
-> Go to [documentation](https://zensical.org/docs/authoring/tooltips/)
-
-[Hover me][example]
-
-  [example]: https://example.com "I'm a tooltip!"
+The name Arciphant is made up of Architecture and Elephant, whereby Elephant is to be understood as a metaphor for a large project and at the same time is a reference to the Gradle logo.
