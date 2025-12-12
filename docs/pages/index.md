@@ -1,13 +1,21 @@
-# Arciphant
+---
+icon: lucide/book-open
+---
 
-![Logo](docs/pages/images/logo.png)
+# Introduction
+
+## About Arciphant
+
+![Logo](images/logo.png)
 
 Arciphant is a Gradle plugin that allows to specify the module structure of complex software project declaratively using a simple DSL:
+
 * Module templates define the technical structure (components and their dependencies) of modules
 * These templates can be configured using a simple DSL directly in the gradle settings file
 * Modules can be instantiated based on templates and further components can be added as required
 
 This offers various advantages:
+
 * Architecture styles (e.g. Clean Architecture) can be mapped cleanly and declaratively as a Gradle Multi-Project Build the effort required to introduce a new module is negligible
 * No further tools (such as ArchUnit) are required to define the basic architectural units (modules and components) and map their dependencies
 * The boilerplate part in the Gradle code is minimized
@@ -15,9 +23,6 @@ This offers various advantages:
 
 Arciphant offers the greatest benefit for software projects that consist of many different modules, whereby these modules have the same or a similar technical structure (e.g. Clean Architecture, Hexagonal Architecture, Onion Architecture, Layered Architecture) as, for example, in a modulith architecture.
 
-## Documentation
-
-See [Arciphant documentation](https://ergon.github.io/arciphant) for a user guide.
 
 ## Technologies
 
@@ -28,7 +33,7 @@ The Arciphant Gradle Plugin is written in Kotlin.
 
 ## License
 
-Arciphant is released under the [MIT License](LICENSE).
+Arciphant is released under the [MIT License](https://github.com/ergon/arciphant/blob/main/LICENSE){: target="_blank"}.
 
 ![image](https://img.shields.io/badge/MIT-green?style=for-the-badge)
 

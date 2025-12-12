@@ -1,0 +1,41 @@
+services:
+
+  zensical_new:
+    build: .
+    image: zensical
+    container_name: zensical_new
+    command: [ "zensical", "new" ]
+    volumes:
+      - ./:/docs
+
+  zensical_serve:
+    build: .
+    image: zensical
+    container_name: zensical_serve
+    command: >
+      sh -c "zensical serve -a 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    # see readme for why we have to use watch instead of a volume mount
+    develop:
+      watch:
+        - action: sync
+          path: ./
+          target: /docs
+
+  zensical_build:
+    build: .
+    image: zensical
+    container_name: zensical_build
+    # see README for why the copy action is necessary
+    entrypoint: >
+      sh -c "
+        cp -r . /docs-temp &&
+        cd /docs-temp &&
+        zensical build &&
+        rm -rf /docs/site &&
+        cp -r . /docs &&
+        cd /docs/site
+      "
+    volumes:
+      - ./:/docs
