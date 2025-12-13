@@ -2,7 +2,7 @@
 icon: lucide/package-check
 ---
 
-# Verify Project structure
+# Verify project structure
 
 Typically in a multi-project setup, you want to have different packages for the different projects.
 Arciphant provides a task to verify correct package structure: `validatePackageStructure`.

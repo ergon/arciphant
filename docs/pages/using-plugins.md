@@ -2,7 +2,7 @@
 icon: lucide/blocks
 ---
 
-# Using plugins
+# Registering Gradle plugins in Arciphant components
 
 ## Component plugins
 

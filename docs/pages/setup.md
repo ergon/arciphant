@@ -2,7 +2,7 @@
 icon: lucide/monitor-cog
 ---
 
-# Setup
+# Arciphant setup
 
 ## Prerequisites
 

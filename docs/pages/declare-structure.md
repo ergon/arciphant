@@ -2,11 +2,9 @@
 icon: lucide/component
 ---
 
-# Declare structure
+# Creating a component and module structure
 
-## Creating a component structure
-
-### A simple example
+## A simple example
 
 Assume you have a modulithic application with 4 domain modules. In each module, you want to have a clean-architecture-like structure with the domain in the middle:
 
@@ -54,7 +52,7 @@ root-project
  |- db
 ```
 
-### Dependency-Types
+## Dependency-Types
 
 You probably noticed the different attributes to setup dependency between components:
 * `dependsOn`: Creates a *implementation* dependency from component *A* to component *B*
@@ -65,7 +63,7 @@ In above example this means that *web* and *db* can access *domain* thanks to th
 <small>Remark: Whether API dependencies are reasonable in a clean architecture or whether each ring (component) should only access the next inner ring is an interesting discussion.
 Since Arcpihant is a tool and not a methodology, it provides the ability to do things without making a statement about when and how to use it.</small>
 
-### Shared Code
+## Shared Code
 
 Now assume that for each of the components (rings) you need some shared code (e.g. some shared utility for all db-components).
 So what you can do is create a shared library module with the same component structure.
@@ -103,7 +101,7 @@ arciphant {
 <small>Remark: Whether a shared library is reasonable for independent domain modules may vary from case to case.
 It is probably more accepted in case of a modulith than with microservices.</small>
 
-### Different Shapes
+## Different Shapes
 
 Now assume that some modules (e.g. Module C and Module D) need access to a file store (e.g. MinIO). You want to put this code into a separate component called `fs` like the following:
 
@@ -139,7 +137,7 @@ arciphant {
 }
 ```
 
-### Individual Shapes
+## Individual Shapes
 
 Of course it is also possible to declare individual components in particular modules. E.g. if Module D requires the integration of an external API, you want to create a dedicated component 'api' for the integration code:
 
@@ -175,7 +173,7 @@ arciphant {
 }
 ```
 
-### Bundle modules
+## Bundle modules
 
 Domain modules should typically remain as isolated as possible.
 However, to package an application we need some kind of bundle module that brings together all the modules.
