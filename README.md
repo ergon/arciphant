@@ -1,6 +1,6 @@
 # Arciphant
 
-![Logo](docs/pages/images/logo.png)
+![Logo](logo.png)
 
 Arciphant is a Gradle plugin that allows to specify the module structure of complex software project declaratively using a simple DSL:
 * Module templates define the technical structure (components and their dependencies) of modules
