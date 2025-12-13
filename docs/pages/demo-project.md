@@ -14,4 +14,4 @@ The sub-project `arciphant-demo-project` in the [Arciphant repository](https://g
 
 The arciphant configuration specified in the demo project ([settings.gradle.kts](https://github.com/ergon/arciphant/blob/main/arciphant-demo-project/settings.gradle.kts){: target="_blank" }) defines the following module structure for an online learning platform:
 
-![Structure of the Demo-Project](images/arciphant-demo-project.drawio.png)
+![Structure of the Demo-Project](images/demo-project.drawio.png)

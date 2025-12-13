@@ -8,7 +8,7 @@ icon: lucide/component
 
 Assume you have a modulithic application with 4 domain modules. In each module, you want to have a clean-architecture-like structure with the domain in the middle:
 
-![Simple Example](images/01_modules.png)
+![Simple Example](images/structure-01-modules.drawio.png)
 
 Normally, if you want to build this structure with nested gradle project, you have a lot of duplicated build-setup.
 With arciphant you can configure a template that defines the structure of the components (rings) of a module and then use this template to create (instantiate) the 4 modules:
@@ -69,7 +69,7 @@ Now assume that for each of the components (rings) you need some shared code (e.
 So what you can do is create a shared library module with the same component structure.
 The following image shows this setup (with only two modules for simplicity):
 
-![Library](images/02_library.png)
+![Library](images/structure-02-library.drawio.png)
 
 What you normally have to do is manage all the dependencies manually, which is error prone and pollutes the gradle build setup with a lot of repetitive code.
 
@@ -105,7 +105,7 @@ It is probably more accepted in case of a modulith than with microservices.</sma
 
 Now assume that some modules (e.g. Module C and Module D) need access to a file store (e.g. MinIO). You want to put this code into a separate component called `fs` like the following:
 
-![Different shapes](images/03_different-shapes.png)
+![Different shapes](images/structure-03-different-shapes.drawio.png)
 
 You can solve this problem by creating another template, extending from the existing template:
 ``` kotlin title="settings.gradle.kts"
@@ -141,7 +141,7 @@ arciphant {
 
 Of course it is also possible to declare individual components in particular modules. E.g. if Module D requires the integration of an external API, you want to create a dedicated component 'api' for the integration code:
 
-![Individual shapes](images/04_individual_shapes.png)
+![Individual shapes](images/structure-04-individual-shapes.drawio.png)
 
 To do so, you can create a component for the specific module:
 ``` kotlin title="settings.gradle.kts"
