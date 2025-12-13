@@ -139,7 +139,7 @@ arciphant {
 
 ## Individual Shapes
 
-Of course it is also possible to declare individual components in particular modules. E.g. if Module D requires the integration of an external API, you want to create a dedicated component 'api' for the integration code:
+Of course, it is also possible to declare individual components in particular modules. E.g. if Module D requires the integration of an external API, you want to create a dedicated component 'api' for the integration code:
 
 ![Individual shapes](images/structure-04-individual-shapes.drawio.png)
 
