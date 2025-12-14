@@ -52,7 +52,7 @@ root-project
  |- db
 ```
 
-## Dependency-Types
+## Dependency types
 
 You probably noticed the different attributes to setup dependency between components:
 * `dependsOn`: Creates a *implementation* dependency from component *A* to component *B*
@@ -60,10 +60,12 @@ You probably noticed the different attributes to setup dependency between compon
 
 In above example this means that *web* and *db* can access *domain* thanks to the API dependency to *applicatoin*.
 
-<small>Remark: Whether API dependencies are reasonable in a clean architecture or whether each ring (component) should only access the next inner ring is an interesting discussion.
-Since Arcpihant is a tool and not a methodology, it provides the ability to do things without making a statement about when and how to use it.</small>
+!!! info "Remark about API dependencies in Clean Architecture"
 
-## Shared Code
+    Whether API dependencies are reasonable in a clean architecture or whether each ring (component) should only access the next inner ring is an interesting discussion.
+    Since Arcpihant is a tool and not a methodology, it provides the ability without making a statement whether to use it or not.
+
+## Shared code
 
 Now assume that for each of the components (rings) you need some shared code (e.g. some shared utility for all db-components).
 So what you can do is create a shared library module with the same component structure.
@@ -81,7 +83,7 @@ Each component of each library module will automatically get e dependency to the
 
 The complete sample now looks like the following:
 
-``` kotlin title="settings.gradle.kts"
+``` kotlin title="settings.gradle.kts" hl_lines="8"
 arciphant {
     val moduleTemplate = template()
         .createComponent(name = "domain")
@@ -101,7 +103,7 @@ arciphant {
 <small>Remark: Whether a shared library is reasonable for independent domain modules may vary from case to case.
 It is probably more accepted in case of a modulith than with microservices.</small>
 
-## Different Shapes
+## Different shapes
 
 Now assume that some modules (e.g. Module C and Module D) need access to a file store (e.g. MinIO). You want to put this code into a separate component called `fs` like the following:
 
@@ -116,7 +118,7 @@ val moduleWithFsTemplate = template()
 
 The complete example now looks like the following:
 
-``` kotlin title="settings.gradle.kts"
+``` kotlin title="settings.gradle.kts" hl_lines="8-10 16-17"
 arciphant {
     val moduleTemplate = template()
         .createComponent(name = "domain")
@@ -137,7 +139,7 @@ arciphant {
 }
 ```
 
-## Individual Shapes
+## Individual shapes
 
 Of course, it is also possible to declare individual components in particular modules. E.g. if Module D requires the integration of an external API, you want to create a dedicated component 'api' for the integration code:
 
@@ -151,7 +153,7 @@ module(name = "module-d", template = moduleWithFsTemplate)
 
 The complete example now looks like the following:
 
-``` kotlin title="settings.gradle.kts"
+``` kotlin title="settings.gradle.kts"hl_lines="18"
 arciphant {
     val moduleTemplate = template()
         .createComponent(name = "domain")

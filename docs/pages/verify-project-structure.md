@@ -10,14 +10,19 @@ The task is only available in the root project, but scans all the subprojects, t
 
 To configure the task, add a `packageStructureValidation` block to the *arciphant* configuration in `settings.gradle.kts`. Example:
 
-``` kotlin title="settings.gradle.kts"
-packageStructureValidation {
+``` kotlin title="settings.gradle.kts" hl_lines="4-10"
+arciphant {
+  [..]
+  
+  packageStructureValidation {
     basePackageName("ch.ergon.arciphant.example")
     
     mapProjectNamesToPackageFragments("module-a" to "aaa")
     
     mapProjectPathsToAbsolutePackages(":any:special:project-name" to "ch.ergon.arciphant.example.special")
+  }
 }
+
 ```
 
 If no configuration is provided, default values are applied.

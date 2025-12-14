@@ -31,7 +31,7 @@ template()
 ## Use `includeBuild` instead of `buildSrc`
 
 It is good practice to use a dedicated project for convention plugins instead of using `buildSrc`-folder and include it with `includeBuild`:
-``` kotlin title="settings.gradle.kts"
+``` kotlin title="settings.gradle.kts" hl_lines="3"
 pluginManagement {
   [..]
   includeBuild("./build-logic")
@@ -42,7 +42,7 @@ Unfortunately, these plugins won't work together with arciphant out-of-the-box. 
 the `pluginManagement` block is only treated by gradle when plugins are applied in the `plugins` block.
 Since arciphant applies plugins programmatically (using `pluginManager.apply("plugin-id")`), the plugin will not be found.
 To overcome this issue you can use the following simple hack: just add one of the convention plugins to the plugins block of your `settings.gradle.kts` file with `apply false`:
-``` kotlin title="settings.gradle.kts"
+``` kotlin title="settings.gradle.kts" hl_lines="3"
 plugins {
   [..]
   id("my-plugin") apply false // (1)!
