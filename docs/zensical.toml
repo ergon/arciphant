@@ -12,6 +12,7 @@ nav = [
     "index.md",
     "setup.md",
     {"Declare Structure" = "declare-structure.md"},
+    "additional-settings.md",
     {"Using Plugins" = "using-plugins.md"},
     "verify-project-structure.md",
     "demo-project.md"
