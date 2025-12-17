@@ -200,11 +200,6 @@ bundle(name = "bundleX", includes = setOf(coreBundle, specificModuleX))
 bundle(name = "bundleY", includes = setOf(coreBundle, specificModuleY))
 ```
 
-## Debug project dependencies
-
-If you have configured arciphant and you want to verify whether your project's dependencies are as expected, you can use the `projectDependencies` task from Arciphant.
-It prints all the dependencies of each project in the whole project hierarchy. The task is only available in the root project.
-
 ## Structurize test code
 
 `java-test-fixtures` is a nice little gradle plugin to deal with reusable test setup code.
@@ -216,3 +211,8 @@ Arciphant nicely plays together with `java-test-fixtures`: If `java-test-fixture
 it automatically creates the dependencies for the `testFixtures` source sets between components.
 So if e.g. the *application* component depends on *domain", the `testFixtures` of `domain` will be usable in `testFixtures` and `test` of `application`.
 Of course, if is an api dependency, the transitivity is also taken into account.
+
+## Debug project dependencies
+
+If you have configured arciphant and you want to verify whether your project's dependencies are as expected, you can use the `projectDependencies` task from Arciphant.
+It prints all the dependencies of each project in the whole project hierarchy. The task is only available in the root project.
