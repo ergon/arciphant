@@ -34,7 +34,7 @@ class ArciphantPluginTest {
                 .createComponent("api")
                 .createComponent("domain")
             
-            library("test", sampleTemplate)
+            library("test", template = sampleTemplate)
             """
         )
         val result = gradleRunner
@@ -53,7 +53,7 @@ class ArciphantPluginTest {
                 .createComponent("api")
                 .createComponent("domain")
             
-            module("test", sampleTemplate)
+            module("test", template = sampleTemplate)
             """
         )
         val result = gradleRunner
