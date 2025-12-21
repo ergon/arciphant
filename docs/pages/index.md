@@ -43,6 +43,6 @@ We only work on the plugin to the extent that we need for our own projects.
 
 ## About the name
 
-The name Arciphant is made up of Architecture and Elephant, whereby Elephant is to be understood as a metaphor for a large project and at the same time is a reference to the Gradle logo.
+The name Arciphant is made up of architecture and elephant, whereby elephant is to be understood as a metaphor for a large project and at the same time is a reference to the Gradle logo.
 
 ![Logo](images/logo.png){ style="width: 300px; max-width: 100%"}
