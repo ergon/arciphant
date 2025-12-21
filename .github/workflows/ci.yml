@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.1
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5.1.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Build plugin
+        run: ./gradlew --no-daemon -p arciphant-gradle-plugin clean build
+
+      - name: Build demo project
+        run: ./gradlew --no-daemon -p arciphant-demo-project clean build
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v6.0.0
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests/test/**
+            **/build/test-results/test/**
+          if-no-files-found: ignore
