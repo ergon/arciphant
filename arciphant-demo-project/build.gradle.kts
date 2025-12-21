@@ -9,6 +9,16 @@ allprojects {
     plugins.apply("org.jetbrains.kotlin.plugin.spring")
     plugins.apply("org.springframework.boot")
     plugins.apply("io.spring.dependency-management")
+
+    tasks.named("bootJar") { enabled = false }
+    tasks.named("jar") { enabled = true }
+}
+
+// TODO solve this in arciphant
+subprojects {
+    tasks.withType<Jar>().configureEach {
+        archiveBaseName.set(project.path.removePrefix(":").replace(':', '-'))
+    }
 }
 
 tasks.named("compileKotlin") {
