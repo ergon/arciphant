@@ -5,7 +5,9 @@ import ch.ergon.arciphant.util.verifyName
 open class ArciphantDsl internal constructor() {
 
     internal var globalBasePath: String? = null
+    internal var disableFolderCreation: Boolean = false
     internal var disableQualifiedArchiveBaseName: Boolean = false
+
     internal val functionalModules = mutableListOf<FunctionalModuleBuilder>()
     internal val bundleModules = mutableSetOf<BundleModuleBuilder>()
 
@@ -13,6 +15,10 @@ open class ArciphantDsl internal constructor() {
 
     fun basePath(basePath: String) {
         globalBasePath = basePath
+    }
+
+    fun disableFolderCreation() {
+        disableFolderCreation = true
     }
 
     fun disableQualifiedArchiveBaseName() {

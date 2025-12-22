@@ -5,7 +5,8 @@ import ch.ergon.arciphant.dsl.ArciphantDsl
 internal class CoreSettingsRepository(private val dsl: ArciphantDsl) {
 
     fun load() = CoreSettings(
-        disableQualifiedArchiveBaseName = dsl.disableQualifiedArchiveBaseName
+        disableFolderCreation = dsl.disableFolderCreation,
+        disableQualifiedArchiveBaseName = dsl.disableQualifiedArchiveBaseName,
     )
 
 }

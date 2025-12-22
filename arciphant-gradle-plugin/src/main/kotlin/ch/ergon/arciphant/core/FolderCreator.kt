@@ -6,11 +6,14 @@ import org.gradle.api.initialization.ProjectDescriptor
 import java.io.File
 
 internal class FolderCreator(
+    private val settings: CoreSettings,
     private val rootProject: ProjectDescriptor
 ) {
 
     fun createFoldersIfNotExists(projectConfigs: List<GradleProjectConfig>) {
-        projectConfigs.forEach { createFoldersIfNotExists(it) }
+        if (!settings.disableFolderCreation) {
+            projectConfigs.forEach { createFoldersIfNotExists(it) }
+        }
     }
 
     private fun createFoldersIfNotExists(projectConfig: GradleProjectConfig) {

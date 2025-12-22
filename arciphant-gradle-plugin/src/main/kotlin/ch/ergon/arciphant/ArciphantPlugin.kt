@@ -25,7 +25,7 @@ class ArciphantPlugin : Plugin<Settings> {
                 val projectConfigs = modules.flatMap { it.toProjectConfigs() }
 
                 // create project folders that do not yet exist
-                FolderCreator(rootProject).createFoldersIfNotExists(projectConfigs)
+                FolderCreator(settings, rootProject).createFoldersIfNotExists(projectConfigs)
 
                 // create project structure (during gradle initialization phase)
                 projectConfigs.map { it.path }.forEach { include(it.value) }
