@@ -6,7 +6,7 @@ plugins {
      */
     `kotlin-dsl`
     /**
-     * Required to publish plugin to gradle plugin portal
+     * Required to publish plugin to Gradle plugin portal
      */
     id("com.gradle.plugin-publish") version "1.3.1"
 }
