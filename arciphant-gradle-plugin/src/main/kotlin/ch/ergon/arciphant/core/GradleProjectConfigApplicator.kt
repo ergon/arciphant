@@ -28,26 +28,26 @@ internal class GradleProjectConfigApplicator(private val projectConfigs: List<Gr
         }
     }
 
-    private fun GradleBundleModuleProjectConfig.applyBundleModuleConfig(project: Project) {
-        module.plugin?.applyTo(project)
+    private fun GradleBundleModuleProjectConfig.applyBundleModuleConfig(bundleModuleProject: Project) {
+        module.plugin?.applyTo(bundleModuleProject)
 
         projectConfigs.filter { module.includes.contains(it.module.reference) }.forEach {
-            project.addDependency(IMPLEMENTATION, it.path)
+            bundleModuleProject.addDependency(IMPLEMENTATION, it.path)
         }
     }
 
-    private fun GradleComponentProjectConfig.applyComponentConfig(project: Project) {
-        component.plugin?.applyTo(project)
+    private fun GradleComponentProjectConfig.applyComponentConfig(componentProject: Project) {
+        component.plugin?.applyTo(componentProject)
 
         component.dependsOn.forEach {
             val dependencyProjectPath = module.gradleProjectPath(it.component)
-            project.addDependency(it.type, dependencyProjectPath)
+            componentProject.addDependency(it.type, dependencyProjectPath)
         }
 
         if (module is DomainModule) {
             libraryComponents.filter { it.component.reference == component.reference }.forEach { library ->
                 val dependencyProjectPath = library.module.gradleProjectPath(library.component)
-                project.addDependency(API, dependencyProjectPath)
+                componentProject.addDependency(API, dependencyProjectPath)
             }
         }
     }
