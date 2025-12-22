@@ -3,6 +3,7 @@ import org.gradle.kotlin.dsl.withType
 
 plugins {
     kotlin("jvm")
+    `jvm-test-suite`
     `java-test-fixtures`
 }
 
@@ -18,6 +19,14 @@ dependencies {
     testFixturesApi("org.springframework.boot:spring-boot-starter-test")
     // webflux is required to use WebTestClient
     testRuntimeOnly("org.springframework.boot:spring-boot-starter-webflux")
+}
+
+testing {
+    suites {
+        withType<JvmTestSuite> {
+            useJUnitJupiter()
+        }
+    }
 }
 
 tasks.withType<Test> {

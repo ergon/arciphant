@@ -5,6 +5,7 @@ plugins {
      * https://docs.gradle.org/current/userguide/kotlin_dsl.html#sec:kotlin-dsl_plugin
      */
     `kotlin-dsl`
+    `jvm-test-suite`
     /**
      * Required to publish plugin to Gradle plugin portal
      */
@@ -33,6 +34,14 @@ gradlePlugin {
             description =
                 "Arciphant is a Gradle plugin that allows to specify the module structure of complex software project declaratively using a simple DSL."
             tags = listOf("architecture", "clean-architecture", "dependencies", "dependency-management", "dependency-manager")
+        }
+    }
+}
+
+testing {
+    suites {
+        withType<JvmTestSuite> {
+            useJUnitJupiter()
         }
     }
 }
