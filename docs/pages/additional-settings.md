@@ -18,6 +18,24 @@ arciphant {
 
 The base path can also be a nested path (e.g. `backend:my-service`).
 
+## Automatic folder creation
+
+By default, Arciphant creates folders for all configured module components if they do not exist yet. You can disable this behavior:
+
+``` kotlin title="settings.gradle.kts" hl_lines="2"
+arciphant {
+    disableFolderCreation()
+    
+    [..]
+}
+```
+
+!!! warning "Gradle >= 9 requires project folders to be present"
+    
+    Creating folders for each project is especially important for projects using Gradle versions >= 9.
+    Gradle 9 requires the project folder to be present in order for the project to be configurable (which is necessary for Arciphant to work properly).
+    If you disable this feature, you are responsible yourself for creation all the necessary folders for your modules and components.
+
 ## Qualified archive base name
 
 With Arciphant, we typically have multiple gradle projects with the same name, since all the modules have the same component projects. This can lead to problems when bundling module components together, since the generated jar file of those components has the same name, too. Without declaring a *duplicate handling strategy* in the build, this leads to an error:
