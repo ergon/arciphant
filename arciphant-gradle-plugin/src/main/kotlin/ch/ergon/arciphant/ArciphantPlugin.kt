@@ -1,6 +1,7 @@
 package ch.ergon.arciphant
 
 import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
+import ch.ergon.arciphant.core.CoreSettingsRepository
 import ch.ergon.arciphant.core.GradleProjectConfigApplicator
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.toProjectConfigs
@@ -17,6 +18,7 @@ class ArciphantPlugin : Plugin<Settings> {
             val dsl = extensions.create("arciphant", ArciphantDsl::class.java)
 
             gradle.settingsEvaluated {
+                val settings = CoreSettingsRepository(dsl).load()
                 val modules = ModuleRepository(dsl).load()
                 val projectConfigs = modules.flatMap { it.toProjectConfigs() }
 
@@ -24,7 +26,7 @@ class ArciphantPlugin : Plugin<Settings> {
                 projectConfigs.map { it.path }.forEach { include(it.value) }
 
                 // apply plugins and add dependencies (during gradle configuration phase)
-                val configApplicator = GradleProjectConfigApplicator(projectConfigs)
+                val configApplicator = GradleProjectConfigApplicator(settings, projectConfigs)
                 gradle.allprojects {
                     beforeEvaluate { configApplicator.applyConfig(this) }
                 }

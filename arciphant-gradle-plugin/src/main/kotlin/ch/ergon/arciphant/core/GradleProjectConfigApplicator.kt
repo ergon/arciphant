@@ -13,7 +13,10 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
-internal class GradleProjectConfigApplicator(private val projectConfigs: List<GradleProjectConfig>) {
+internal class GradleProjectConfigApplicator(
+    private val settings: CoreSettings,
+    private val projectConfigs: List<GradleProjectConfig>
+) {
 
     private val projectConfigsByPath = projectConfigs.associateBy { it.path.value }
 
@@ -52,12 +55,18 @@ internal class GradleProjectConfigApplicator(private val projectConfigs: List<Gr
             }
         }
 
-        componentProject.tasks.withType(Jar::class.java).configureEach {
-            this.archiveBaseName.set(module.createQualifiedComponentName(component))
-        }
+        configureArchiveBaseName(componentProject)
     }
 
     private fun Plugin.applyTo(project: Project) = project.apply(plugin = id)
+
+    private fun GradleComponentProjectConfig.configureArchiveBaseName(componentProject: Project) {
+        if(!settings.disableQualifiedArchiveBaseName) {
+            componentProject.tasks.withType(Jar::class.java).configureEach {
+                this.archiveBaseName.set(module.createQualifiedComponentName(component))
+            }
+        }
+    }
 
 }
 
