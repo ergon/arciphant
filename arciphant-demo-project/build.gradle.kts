@@ -14,13 +14,6 @@ allprojects {
     tasks.named("jar") { enabled = true }
 }
 
-// TODO solve this in arciphant
-subprojects {
-    tasks.withType<Jar>().configureEach {
-        archiveBaseName.set(project.path.removePrefix(":").replace(':', '-'))
-    }
-}
-
 tasks.named("compileKotlin") {
     dependsOn("validatePackageStructure")
 }

@@ -8,6 +8,7 @@ import ch.ergon.arciphant.core.model.LibraryModule
 import ch.ergon.arciphant.core.model.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
+import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
@@ -49,6 +50,10 @@ internal class GradleProjectConfigApplicator(private val projectConfigs: List<Gr
                 val dependencyProjectPath = library.module.gradleProjectPath(library.component)
                 componentProject.addDependency(API, dependencyProjectPath)
             }
+        }
+
+        componentProject.tasks.withType(Jar::class.java).configureEach {
+            this.archiveBaseName.set(module.createQualifiedComponentName(component))
         }
     }
 
