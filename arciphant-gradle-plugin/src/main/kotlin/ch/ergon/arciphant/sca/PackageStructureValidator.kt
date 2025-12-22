@@ -3,7 +3,7 @@ package ch.ergon.arciphant.sca
 import org.gradle.api.Project
 import java.io.File
 
-internal class PackageStructureValidator(private val config: PackageStructureValidationConfig) {
+internal class PackageStructureValidator(private val settings: PackageStructureValidationSettings) {
 
     fun validate(project: Project): PackageStructureValidationResult {
         if(project.isExcluded()) {
@@ -17,7 +17,7 @@ internal class PackageStructureValidator(private val config: PackageStructureVal
     }
 
     private fun Project.isExcluded(): Boolean {
-        return config.excludedProjectPaths.contains(path)
+        return settings.excludedProjectPaths.contains(path)
     }
 
     private fun doValidate(project: Project): Set<File> {
@@ -26,7 +26,7 @@ internal class PackageStructureValidator(private val config: PackageStructureVal
             include("src/**")
 
             // exclude files from source folders excluded
-            val excludedSourceFolderPatterns = config.excludedSourceFolders.map { "src/$it/**" }
+            val excludedSourceFolderPatterns = settings.excludedSourceFolders.map { "src/$it/**" }
             project.logger.info("Exclude source folders: {}", excludedSourceFolderPatterns)
             excludedSourceFolderPatterns.forEach { exclude(it) }
 
@@ -39,12 +39,12 @@ internal class PackageStructureValidator(private val config: PackageStructureVal
     }
 
     private fun Project.toPackagePath(): String {
-        val configuredAbsolutePath = config.absolutePackagePathsByProjectPath[path]
+        val configuredAbsolutePath = settings.absolutePackagePathsByProjectPath[path]
         return configuredAbsolutePath ?: projectPathToPackageFragments().withBasePackage()
     }
 
     private fun String.withBasePackage(): String {
-        return if(config.basePackagePath != null) "${config.basePackagePath}/$this" else this
+        return if(settings.basePackagePath != null) "${settings.basePackagePath}/$this" else this
     }
 
     private fun Project.projectPathToPackageFragments(): String {
@@ -54,11 +54,11 @@ internal class PackageStructureValidator(private val config: PackageStructureVal
     }
 
     private fun String.projectNameToPackageFragment(): String? {
-        val configuredPackageFragment = config.relativePackagePathsByProjectName[this]
+        val configuredPackageFragment = settings.relativePackagePathsByProjectName[this]
         if (configuredPackageFragment != null) return if(configuredPackageFragment != "") configuredPackageFragment else null
 
-        val packageFragment = if (config.useLowerCase) this.lowercase() else this
-        return config.removedSpecialCharacters.fold(packageFragment) { fragment, character ->
+        val packageFragment = if (settings.useLowerCase) this.lowercase() else this
+        return settings.removedSpecialCharacters.fold(packageFragment) { fragment, character ->
             fragment.replace(character, "")
         }
     }

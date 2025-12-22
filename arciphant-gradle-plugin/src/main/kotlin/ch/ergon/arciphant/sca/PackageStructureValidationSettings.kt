@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.sca
 
-internal data class PackageStructureValidationConfig(
+internal data class PackageStructureValidationSettings(
     val basePackagePath: String?,
     val useLowerCase: Boolean,
     val removedSpecialCharacters: Set<String>,
