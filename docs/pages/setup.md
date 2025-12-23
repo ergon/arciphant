@@ -33,7 +33,7 @@ Arciphant is a Gradle *settings* plugin. A settings plugin is different to norma
 
 For the configuration of Arciphant, the plugin provides a simple DSL. The top-level element of the DSL is `arciphant {}`. So put the following to your `settings.gradle.kts`
 
-``` kotlin title="settings.gradle.kts" hl_lines="2 5-7"
+``` kotlin title="settings.gradle.kts" hl_lines="2 5 7"
 plugins {
   id("ch.ergon.arciphant")
 }

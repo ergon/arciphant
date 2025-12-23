@@ -15,7 +15,8 @@ nav = [
     "additional-settings.md",
     {"Using Plugins" = "using-plugins.md"},
     "verify-project-structure.md",
-    "demo-project.md"
+    "demo-project.md",
+    {"Metamodel" = "metamodel.md"},
 ]
 
 docs_dir = "pages"
@@ -318,6 +319,9 @@ toggle.name = "Switch to light mode"
 [project.markdown_extensions.attr_list]
 [project.markdown_extensions.admonition]
 [project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+    { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" }
+]
 [project.markdown_extensions.md_in_html]
 
 [project.markdown_extensions.pymdownx.highlight]
