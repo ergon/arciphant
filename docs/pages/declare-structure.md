@@ -30,26 +30,26 @@ arciphant {
 Above configuration creates the following nested gradle project structure and sets up the dependencies between the components (domain, applicatoin, web, db) in each module:
 ```
 root-project
-|- module-a
- |- domain
- |- application
- |- web
- |- db
-|- module-b
- |- domain
- |- application
- |- web
- |- db
-|- module-c
- |- domain
- |- application
- |- web
- |- db
-|- module-d
- |- domain
- |- application
- |- web
- |- db
+|-- module-a
+  |-- domain
+  |-- application
+  |-- web
+  |-- db
+|-- module-b
+  |-- domain
+  |-- application
+  |-- web
+  |-- db
+|-- module-c
+  |-- domain
+  |-- application
+  |-- web
+  |-- db
+|-- module-d
+  |-- domain
+  |-- application
+  |-- web
+  |-- db
 ```
 
 ## Dependency types
@@ -76,7 +76,7 @@ The following image shows this setup (with only two modules for simplicity):
 What you normally have to do is manage all the dependencies manually, which is error prone and pollutes the gradle build setup with a lot of repetitive code.
 
 Instead of having to manage all these dependencies manually, Arciphant provides an out-of-the-box mechanism. You can specify a library module:
-``` kotlin title="settings.gradle.kts"
+``` kotlin
 library(name = "shared", template = moduleTemplate)
 ```
 Each component of each library module will automatically get e dependency to the respective component in the library module.
@@ -113,7 +113,7 @@ Now assume that some modules (e.g. Module C and Module D) need access to a file 
 ![Different shapes](images/structure-03-different-shapes.drawio.png)
 
 You can solve this problem by creating another template, extending from the existing template:
-``` kotlin title="settings.gradle.kts"
+``` kotlin
 val moduleWithFsTemplate = template()
     .extends(moduleTemplate)
     .createComponent(name = "fs", dependsOn = setOf("application"))
@@ -121,7 +121,7 @@ val moduleWithFsTemplate = template()
 
 The complete example now looks like the following:
 
-``` kotlin title="settings.gradle.kts" hl_lines="8-10 16-17"
+``` kotlin title="settings.gradle.kts" hl_lines="8-10 12 16-17"
 arciphant {
     val moduleTemplate = template()
         .createComponent(name = "domain")
@@ -133,7 +133,7 @@ arciphant {
         .extends(moduleTemplate)
         .createComponent(name = "fs", dependsOn = setOf("application"))
 
-    library(name = "shared", template = moduleTemplate)
+    library(name = "shared", template = moduleWithFsTemplate) // (1)!
 
     module(name = "module-a", template = moduleTemplate)
     module(name = "module-b", template = moduleTemplate)
@@ -142,6 +142,8 @@ arciphant {
 }
 ```
 
+1.  Even though not all modules requiree the additional `fs` component, the library can be constructed out of `moduleWithFsTemplate`. For modules without `fs` component, this is ignored.
+
 ## Individual shapes
 
 Of course, it is also possible to declare individual components in particular modules. E.g. if Module D requires the integration of an external API, you want to create a dedicated component 'api' for the integration code:
@@ -149,7 +151,7 @@ Of course, it is also possible to declare individual components in particular mo
 ![Individual shapes](images/structure-04-individual-shapes.drawio.png)
 
 To do so, you can create a component for the specific module:
-``` kotlin title="settings.gradle.kts"
+``` kotlin
 module(name = "module-d", template = moduleWithFsTemplate)
     .createComponent(name = "ext-api", dependsOn = setOf("application"))
 ```
@@ -184,20 +186,20 @@ Domain modules should typically remain as isolated as possible.
 However, to package an application we need some kind of bundle module that brings together all the modules.
 In Arciphant, it is possible to define bundle modules:
 
-``` kotlin title="settings.gradle.kts"
+``` kotlin
 bundle(name = "my-app")
 ```
 
 This creates a module `my-app` that has a dependency to all components of all modules. The bundle module itself does not have any components.
 
-It is also possible to declare explicit dependencies, e.g. if you need mulitple different bundles who should *not* automatically depend to all domain modules:
-``` kotlin title="settings.gradle.kts"
+It is also possible to declare explicit dependencies, e.g. if you need multiple different bundles who should *not* automatically depend to all domain modules:
+``` kotlin
 bundle(name = "bundleX", includes = setOf(coreModuleA, coreModuleB, specificModuleX))
 bundle(name = "bundleY", includes = setOf(coreModuleA, coreModuleB, specificModuleY))
 ```
 
-Bundles can also include other bundles. So above example could be configured as:
-``` kotlin title="settings.gradle.kts"
+Bundles can also include other bundles. So the above example could also be specified as follows to reduce duplication:
+``` kotlin
 val coreBundle = bundle(name = "core", includes = setOf(coreModuleA, coreModuleB))
 bundle(name = "bundleX", includes = setOf(coreBundle, specificModuleX))
 bundle(name = "bundleY", includes = setOf(coreBundle, specificModuleY))
