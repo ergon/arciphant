@@ -44,7 +44,7 @@ sealed interface PackageStructureValidationDsl {
     /**
      * By default, hyphens '-' are removed when mapping project name to corresponding package fragment.
      *
-     * Example: project name 'file_store' is mapped to package fragment 'filestore'.
+     * Example: project name 'file-store' is mapped to package fragment 'filestore'.
      *
      * Use [disableRemoveHyphen] to deactivate this behavior.
      */
@@ -75,7 +75,7 @@ sealed interface PackageStructureValidationDsl {
     fun mapProjectNamesToPackageFragments(vararg projectNameToPackageFragment: Pair<String, String>)
 
     /**
-     * Completely overrides the package name for the given gradle project path.
+     * Completely overrides the package name for the given Gradle project path.
      * Other than with [mapProjectNamesToPackageFragments], the [basePackageName] is NOT used.
      *
      * Example:

@@ -56,14 +56,14 @@ root-project
 
 You probably noticed the different attributes to setup dependency between components:
 * `dependsOn`: Creates a *implementation* dependency from component *A* to component *B*
-* `dependsOnApi`: Creates an *api* dependency from component *A* to component *B*, meaning that every component depending on *A* gets access to *B*
+* `dependsOnApi`: Creates an *api* (transitive) dependency from component *A* to component *B*, meaning that every component depending on *A* gets access to *B*
 
 In above example this means that *web* and *db* can access *domain* thanks to the API dependency to *applicatoin*.
 
-!!! info "Remark about API dependencies in Clean Architecture"
+!!! info "Transitive dependencies in Clean Architecture"
 
-    Whether API dependencies are reasonable in a clean architecture or whether each ring (component) should only access the next inner ring is an interesting discussion.
-    Since Arcpihant is a tool and not a methodology, it provides the ability without making a statement whether to use it or not.
+    <p>Whether transitive dependencies (i.e. `dependsOnApi`) are reasonable in a clean architecture or whether each ring (component) should only access the next inner ring is an interesting discussion.</p>
+    <p>Since Arcpihant is a tool and not a methodology, it provides the ability without making a statement whether to use it or not.</p>
 
 ## Shared code
 
@@ -100,8 +100,11 @@ arciphant {
 }
 ```
 
-<small>Remark: Whether a shared library is reasonable for independent domain modules may vary from case to case.
-It is probably more accepted in case of a modulith than with microservices.</small>
+!!! info "Disclaimer regarding Library modules"
+
+    <p>Whether a shared library is reasonable for independent domain modules may vary from case to case.
+    It is probably more accepted in case of a modulith than with microservices.</p>
+    <p>Since Arcpihant is a tool and not a methodology, it provides the ability without making a statement whether to use it or not.</p>
 
 ## Different shapes
 
