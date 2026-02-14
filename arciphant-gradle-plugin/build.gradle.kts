@@ -38,6 +38,16 @@ gradlePlugin {
     }
 }
 
+publishing {
+    repositories {
+        maven {
+            // use `./gradlew -p arciphant-gradle-plugin :publishAllPublicationsToLocalRepository` to publish plugin locally
+            name = "local"
+            url = layout.buildDirectory.dir("publishedPlugin").get().asFile.toURI()
+        }
+    }
+}
+
 testing {
     suites {
         withType<JvmTestSuite> {
