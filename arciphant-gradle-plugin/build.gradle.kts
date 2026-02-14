@@ -1,3 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.jvm.JvmTargetValidationMode
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     /**
      * Event though we do not use the Kotlin DSL to write the arciphant plugin, it is helpful to use the 'kotlin-dsl'
@@ -19,7 +23,7 @@ dependencies {
 }
 
 group = "ch.ergon.arciphant"
-version = "0.1.8"
+version = "0.1.9"
 
 gradlePlugin {
     website = "https://github.com/ergon/arciphant"
@@ -33,7 +37,13 @@ gradlePlugin {
             displayName = "Arciphant"
             description =
                 "Arciphant is a Gradle plugin that allows to specify the module structure of complex software project declaratively using a simple DSL."
-            tags = listOf("architecture", "clean-architecture", "dependencies", "dependency-management", "dependency-manager")
+            tags = listOf(
+                "architecture",
+                "clean-architecture",
+                "dependencies",
+                "dependency-management",
+                "dependency-manager"
+            )
         }
     }
 }
@@ -46,6 +56,31 @@ publishing {
             url = layout.buildDirectory.dir("publishedPlugin").get().asFile.toURI()
         }
     }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+kotlin {
+    jvmToolchain(21)
+
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+tasks.withType<KotlinJvmCompile>().configureEach {
+    /**
+     * The following setting ensures that the Gradle build fails during compilation,
+     * if java and kotlin compilation have different target versions.
+     * Even though there are no java source files, the java target is relevant, since this is the version that is
+     * written to the plugin metadata (property 'org.gradle.jvm.version') as minimal required version to use the plugin.
+     */
+    jvmTargetValidationMode = JvmTargetValidationMode.ERROR
 }
 
 testing {
