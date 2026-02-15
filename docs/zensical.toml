@@ -276,6 +276,8 @@ features = [
 scheme = "default"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
+primary = "blue"
+accent = "blue"
 
 [[project.theme.palette]]
 scheme = "slate"
