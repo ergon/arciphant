@@ -2,7 +2,7 @@ package ch.ergon.arciphant.dsl
 
 import ch.ergon.arciphant.util.verifyName
 
-open class ArciphantDsl internal constructor() {
+open class ArciphantDsl {
 
     internal var globalBasePath: String? = null
     internal var disableFolderCreation: Boolean = false
