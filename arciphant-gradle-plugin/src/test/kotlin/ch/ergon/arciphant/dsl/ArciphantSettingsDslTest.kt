@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
-class ArciphantDslTest {
+class ArciphantSettingsDslTest {
 
-    private val dsl = ArciphantDsl()
+    private val dsl = ArciphantSettingsDsl()
     private val moduleRepository = ModuleRepository(dsl)
 
     @Nested

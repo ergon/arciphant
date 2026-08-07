@@ -34,7 +34,7 @@ Flow: the `arciphant { … }` DSL extension is registered on apply → in `setti
 
 Packages under `ch.ergon.arciphant`:
 
-- `dsl` — public DSL surface (`ArciphantDsl`, builders); everything else is `internal`
+- `dsl` — public DSL surface (`ArciphantSettingsDsl`, builders); everything else is `internal`
 - `core` / `core.model` — internal metamodel (`Module`, `Component`, `Dependency`, sealed interfaces + data classes) and Gradle wiring
 - `sca` — package structure validation (`validatePackageStructure` task)
 - `analyze` — `projectDependencies` task

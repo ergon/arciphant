@@ -13,7 +13,7 @@ import ch.ergon.arciphant.dsl.FunctionalModuleType.DOMAIN
 import ch.ergon.arciphant.dsl.FunctionalModuleType.LIBRARY
 import ch.ergon.arciphant.util.verify
 
-internal class ModuleRepository(private val dsl: ArciphantDsl) {
+internal class ModuleRepository(private val dsl: ArciphantSettingsDsl) {
 
     fun load() = dsl.functionalModules.map { it.create() } + dsl.bundleModules.map { it.createBundleModule() }
 

@@ -14,7 +14,7 @@ package ch.ergon.arciphant.dsl
  * :accounting:payment-provider-adapter | com.company.project.package.accounting.ppa
  * ```
  */
-sealed interface PackageStructureValidationDsl {
+sealed interface PackageStructureValidationSettingsDsl {
 
     /**
      * The base package name for the whole project.

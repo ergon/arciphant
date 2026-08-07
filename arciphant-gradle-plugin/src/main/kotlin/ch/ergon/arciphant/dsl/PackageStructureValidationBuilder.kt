@@ -3,7 +3,7 @@ package ch.ergon.arciphant.dsl
 import ch.ergon.arciphant.sca.PackageStructureValidationSettings
 import ch.ergon.arciphant.util.verifyName
 
-internal class PackageStructureValidationBuilder : PackageStructureValidationDsl {
+internal class PackageStructureValidationBuilder : PackageStructureValidationSettingsDsl {
 
     private var basePackageName: String? = null
     private var useLowerCase: Boolean = true
