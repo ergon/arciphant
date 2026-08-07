@@ -11,6 +11,7 @@ class ArciphantPlugin : Plugin<PluginAware> {
     override fun apply(target: PluginAware) {
         when (target) {
             is Settings -> ArciphantSettingsPlugin().apply(target)
+            is Project -> ArciphantProjectPlugin().apply(target)
             else -> error("Plugin ${ArciphantPlugin::class.simpleName} does not support target ${target::class.simpleName}")
         }
     }
