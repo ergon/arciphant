@@ -97,24 +97,3 @@ arciphant {
   }
 }
 ```
-
-## Per-project configuration
-
-To customize the expected package name of a single module or component, configure it directly in the `build.gradle.kts` of the corresponding Gradle module or component project (see also `ArciphantProjectDsl`):
-
-``` kotlin title="build.gradle.kts" hl_lines="5-7"
-plugins {
-  id("ch.ergon.arciphant")
-}
-
-arciphant {
-  packageName = "mycustomname"
-}
-```
-
-The following properties are available: 
-
-| Property                                          | Description                                                                                                                                                                                                                                                                                                                                               |
-|---------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <span class="nowrap">`packageName`</span>         | <p>Replaces the package fragment derived from this project's name. The `basePackageName` still applies, and the replacement also affects the expected packages of all subprojects.</p><p>Example: with `basePackageName("com.company.project")`, the config above maps `:accounting:payment-provider-adapter` to `com.company.project.accounting.ppa`.</p> |
-| <span class="nowrap">`absolutePackageName`</span> | <p>Completely overrides the expected package name for this module/component.</p>                                                                                                                                   |

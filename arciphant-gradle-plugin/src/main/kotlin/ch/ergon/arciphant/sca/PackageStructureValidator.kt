@@ -39,36 +39,24 @@ internal class PackageStructureValidator(private val settings: PackageStructureV
     }
 
     private fun Project.toPackagePath(): String {
-        val projectDsl = arciphantProjectDsl()
-        projectDsl?.absolutePackagePath()?.let { return it }
-        if (projectDsl?.relativePackagePath() == null) {
-            settings.absolutePackagePathsByProjectPath[path]?.let { return it }
-        }
-        return packageFragments().withBasePackage()
+        val configuredAbsolutePath = settings.absolutePackagePathsByProjectPath[path]
+        return configuredAbsolutePath ?: projectPathToPackageFragments().withBasePackage()
     }
 
     private fun String.withBasePackage(): String {
         return if(settings.basePackagePath != null) "${settings.basePackagePath}/$this" else this
     }
 
-    private fun Project.packageFragments(): String {
-        // the root project does not contribute a package fragment
-        return generateSequence(this) { it.parent }
-            .takeWhile { it.parent != null }
-            .toList()
-            .asReversed()
-            .mapNotNull { it.toPackageFragment() }
+    private fun Project.projectPathToPackageFragments(): String {
+        return project.path.replaceFirst(":", "").split(":")
+            .mapNotNull { it.projectNameToPackageFragment() }
             .joinToString("/")
     }
 
-    private fun Project.toPackageFragment(): String? {
-        val configuredPackageFragment = arciphantProjectDsl()?.relativePackagePath()
-            ?: settings.relativePackagePathsByProjectName[name]
-        if (configuredPackageFragment != null) return configuredPackageFragment.ifEmpty { null }
-        return name.toDefaultPackageFragment()
-    }
+    private fun String.projectNameToPackageFragment(): String? {
+        val configuredPackageFragment = settings.relativePackagePathsByProjectName[this]
+        if (configuredPackageFragment != null) return if(configuredPackageFragment != "") configuredPackageFragment else null
 
-    private fun String.toDefaultPackageFragment(): String {
         val packageFragment = if (settings.useLowerCase) this.lowercase() else this
         return settings.removedSpecialCharacters.fold(packageFragment) { fragment, character ->
             fragment.replace(character, "")
