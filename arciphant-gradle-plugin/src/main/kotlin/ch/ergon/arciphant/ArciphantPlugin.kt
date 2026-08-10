@@ -7,8 +7,7 @@ import ch.ergon.arciphant.core.GradleProjectConfigApplicator
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
-import ch.ergon.arciphant.sca.PackageStructureValidator
-import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
+import ch.ergon.arciphant.sca.RegisterPackageStructureValidationTask
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 import org.gradle.api.logging.Logging
@@ -23,6 +22,7 @@ class ArciphantPlugin : Plugin<Settings> {
                 val settings = CoreSettingsRepository(dsl).load()
                 val modules = ModuleRepository(dsl).load()
                 val projectConfigs = modules.flatMap { it.toProjectConfigs() }
+                val packageStructureValidationSettings = dsl.packageStructureValidation.build()
 
                 // create project folders that do not yet exist
                 FolderCreator(settings, rootProject).createFoldersIfNotExists(projectConfigs)
@@ -35,11 +35,13 @@ class ArciphantPlugin : Plugin<Settings> {
                 gradle.allprojects {
                     beforeEvaluate { configApplicator.applyConfig(this) }
                 }
+
+                gradle.lifecycle.beforeProject(
+                    RegisterPackageStructureValidationTask(packageStructureValidationSettings)
+                )
             }
 
             gradle.projectsLoaded {
-                val packageStructureValidator = PackageStructureValidator(dsl.packageStructureValidation.build())
-                rootProject.registerValidatePackageStructureTask(packageStructureValidator)
                 rootProject.registerProjectDependenciesTask()
             }
         }

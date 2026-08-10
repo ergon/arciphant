@@ -1,37 +1,90 @@
 package ch.ergon.arciphant.sca
 
+import ch.ergon.arciphant.util.SimpleTask
 import org.gradle.api.GradleException
+import org.gradle.api.IsolatedAction
 import org.gradle.api.Project
+import org.gradle.api.file.ConfigurableFileTree
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.SetProperty
+import org.gradle.api.tasks.*
+import org.gradle.work.DisableCachingByDefault
+import javax.inject.Inject
 
-internal fun Project.registerValidatePackageStructureTask(validator: PackageStructureValidator) {
-    tasks.register("validatePackageStructure") {
-        group = "verification"
-        doLast {
-            validatePackageStructure(validator)
+internal class RegisterPackageStructureValidationTask(
+    private val settings: PackageStructureValidationSettings,
+) : IsolatedAction<Project> {
+    override fun execute(project: Project) {
+        if (project.path == project.rootProject.path) {
+            project.registerValidatePackageStructureAggregateTask()
+        } else {
+            project.registerValidatePackageStructureTask(settings)
         }
     }
 }
 
-private fun Project.validatePackageStructure(validator: PackageStructureValidator) {
-    var hasError = false
+@DisableCachingByDefault(because = "The task validates source files and does not produce outputs.")
+internal abstract class PackageStructureValidationTask @Inject constructor(
+    objects: ObjectFactory,
+) : SimpleTask() {
+    @get:Input
+    abstract val expectedPackage: Property<String>
 
-    project.allprojects.forEach { currentProject ->
-        logger.info("Validate package structure of project '${currentProject.path}'.")
-        when (val result = validator.validate(currentProject)) {
-            is ValidPackageStructure -> {
-                logger.info("Package structure of project '${currentProject.path}' is valid.")
-            }
+    @get:Input
+    abstract val excludedSourceFolders: SetProperty<String>
 
-            is InvalidPackageStructure -> {
-                hasError = true
-                result.invalidFiles.forEach {
-                    logger.error("Source file '${it.path}' has invalid package name.")
-                }
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val sourceFiles: ConfigurableFileTree = objects.fileTree()
+
+    @TaskAction
+    fun validatePackageStructure() {
+        logger.info("Validate package structure of project '$projectPath'.")
+        val excludedSourceFolderPatterns = excludedSourceFolders.get().map { "src/$it/**" }
+        logger.info("Exclude source folders: {}", excludedSourceFolderPatterns)
+
+        val correctSourceFolderPattern = "src/*/*/${expectedPackage.get()}/**"
+        logger.info("Expected source folder: {}", correctSourceFolderPattern)
+
+        val invalidFiles = sourceFiles.matching {
+            excludedSourceFolderPatterns.forEach { exclude(it) }
+            exclude(correctSourceFolderPattern)
+        }.files
+
+        if (invalidFiles.isNotEmpty()) {
+            invalidFiles.sortedBy { it.path }.forEach {
+                logger.error("Source file '${it.path}' has invalid package name.")
             }
+            throw GradleException("There are source files with invalid package names. See error log above.")
+        } else {
+
+            logger.info("Package structure of project '$projectPath' is valid.")
         }
     }
+}
 
-    if (hasError) {
-        throw GradleException("There are source files with invalid package names. See error log above.")
+private fun Project.registerValidatePackageStructureTask(settings: PackageStructureValidationSettings) {
+    val projectPath = path
+    tasks.register(VALIDATE_PACKAGE_STRUCTURE_TASK, PackageStructureValidationTask::class.java) {
+        group = GROUP
+        description = "Validates the package structure of project '$projectPath'."
+        expectedPackage.set(settings.determinePackageFor(projectPath))
+        enabled = projectPath !in settings.excludedProjectPaths
+        excludedSourceFolders.set(settings.excludedSourceFolders)
+        sourceFiles.from(projectDir)
+        sourceFiles.include("src/**")
     }
 }
+
+private fun Project.registerValidatePackageStructureAggregateTask() {
+    tasks.register(VALIDATE_PACKAGE_STRUCTURE_TASK) {
+        group = GROUP
+        description = "Validates the package structure of all projects"
+
+        dependsOn(subprojects.map { "${it.path}:$VALIDATE_PACKAGE_STRUCTURE_TASK" })
+    }
+}
+
+private const val VALIDATE_PACKAGE_STRUCTURE_TASK = "validatePackageStructure"
+private const val GROUP = "verification"

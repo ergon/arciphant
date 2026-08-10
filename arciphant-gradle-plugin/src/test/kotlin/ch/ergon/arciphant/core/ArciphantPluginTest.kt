@@ -2,9 +2,8 @@ package ch.ergon.arciphant.core
 
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.UnexpectedBuildFailure
+import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 
@@ -64,6 +63,48 @@ class ArciphantPluginTest {
         assertThat(result.output).contains("Project ':test:domain'")
     }
 
+    @Test
+    fun `test that package structure validation is scoped to the selected project`() {
+        settingsFileWithArciphant(
+            """
+            packageStructureValidation {
+                basePackageName("com.example")
+            }
+
+            val sampleTemplate = template()
+                .createComponent("api")
+                .createComponent("domain")
+
+            module("test", template = sampleTemplate)
+            """
+        )
+        projectFolder.resolve("test/api/src/main/kotlin/com/example/test/api/Valid.kt").write(
+            """
+            package com.example.test.api
+            """
+        )
+        val invalidSourceFile = projectFolder.resolve("test/domain/src/main/kotlin/wrong/Invalid.kt")
+        invalidSourceFile.write(
+            """
+            package wrong
+            """
+        )
+
+        val validResult = gradleRunner
+            .withArguments(":test:api:validatePackageStructure")
+            .build()
+        assertThat(validResult.task(":test:api:validatePackageStructure")?.outcome)
+            .isEqualTo(TaskOutcome.SUCCESS)
+
+        val invalidResult = gradleRunner
+            .withArguments("validatePackageStructure")
+            .buildAndFail()
+        assertThat(invalidResult.task(":test:domain:validatePackageStructure")?.outcome)
+            .isEqualTo(TaskOutcome.FAILED)
+        assertThat(invalidResult.output)
+            .contains("Source file '${invalidSourceFile.path}' has invalid package name.")
+    }
+
     private fun settingsFileWithArciphant(arciphantConfiguration: String) = settingsFile.write(
         """
                 plugins {
@@ -76,6 +117,8 @@ class ArciphantPluginTest {
                 """
     )
 
-    private fun File.write(content: String) = writeText(content.trimIndent())
-
+    private fun File.write(content: String) {
+        parentFile.mkdirs()
+        writeText(content.trimIndent())
+    }
 }
