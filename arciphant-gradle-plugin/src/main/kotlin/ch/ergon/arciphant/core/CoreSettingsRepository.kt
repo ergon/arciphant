@@ -1,8 +1,8 @@
 package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.dsl.ArciphantSettingsDsl
+import ch.ergon.arciphant.dsl.ArciphantDsl
 
-internal class CoreSettingsRepository(private val dsl: ArciphantSettingsDsl) {
+internal class CoreSettingsRepository(private val dsl: ArciphantDsl) {
 
     fun load() = CoreSettings(
         disableFolderCreation = dsl.disableFolderCreation,

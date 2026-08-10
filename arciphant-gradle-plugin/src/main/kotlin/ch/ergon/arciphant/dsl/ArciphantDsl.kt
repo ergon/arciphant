@@ -2,7 +2,7 @@ package ch.ergon.arciphant.dsl
 
 import ch.ergon.arciphant.util.verifyName
 
-open class ArciphantSettingsDsl {
+open class ArciphantDsl {
 
     internal var globalBasePath: String? = null
     internal var disableFolderCreation: Boolean = false
@@ -57,7 +57,7 @@ open class ArciphantSettingsDsl {
         ).also { bundleModules.add(it) }
     }
 
-    fun packageStructureValidation(block: PackageStructureValidationSettingsDsl.() -> Unit) {
+    fun packageStructureValidation(block: PackageStructureValidationDsl.() -> Unit) {
         packageStructureValidation.block()
     }
 

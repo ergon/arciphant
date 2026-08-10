@@ -34,7 +34,7 @@ If no configuration is provided, default values are applied.
 
 ## Configuration options
 
-The `packageStructureValidation` task provides the following configuration options (see also `PackageStructureValidationSettingsDsl`) to customize the desired package structure:
+The `packageStructureValidation` task provides the following configuration options (see also `PackageStructureValidationDsl`) to customize the desired package structure:
 
 | Option                                                          | Description                                                                                                                                                                                                                                                                        |
 |-----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
