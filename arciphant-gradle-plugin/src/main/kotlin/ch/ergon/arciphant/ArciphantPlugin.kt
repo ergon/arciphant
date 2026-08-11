@@ -7,7 +7,7 @@ import ch.ergon.arciphant.core.GradleProjectConfigApplicator
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
-import ch.ergon.arciphant.sca.RegisterPackageStructureValidationTask
+import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 import org.gradle.api.logging.Logging
@@ -36,9 +36,7 @@ class ArciphantPlugin : Plugin<Settings> {
                     beforeEvaluate { configApplicator.applyConfig(this) }
                 }
 
-                gradle.lifecycle.beforeProject(
-                    RegisterPackageStructureValidationTask(packageStructureValidationSettings)
-                )
+                gradle.lifecycle.beforeProject { registerValidatePackageStructureTask(packageStructureValidationSettings) }
             }
 
             gradle.projectsLoaded {

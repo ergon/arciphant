@@ -2,7 +2,6 @@ package ch.ergon.arciphant.sca
 
 import ch.ergon.arciphant.util.SimpleTask
 import org.gradle.api.GradleException
-import org.gradle.api.IsolatedAction
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.model.ObjectFactory
@@ -11,18 +10,6 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.*
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
-
-internal class RegisterPackageStructureValidationTask(
-    private val settings: PackageStructureValidationSettings,
-) : IsolatedAction<Project> {
-    override fun execute(project: Project) {
-        if (project.path == project.rootProject.path) {
-            project.registerValidatePackageStructureAggregateTask()
-        } else {
-            project.registerValidatePackageStructureTask(settings)
-        }
-    }
-}
 
 @DisableCachingByDefault(because = "The task validates source files and does not produce outputs.")
 internal abstract class PackageStructureValidationTask @Inject constructor(
@@ -64,16 +51,11 @@ internal abstract class PackageStructureValidationTask @Inject constructor(
     }
 }
 
-private fun Project.registerValidatePackageStructureTask(settings: PackageStructureValidationSettings) {
-    val projectPath = path
-    tasks.register(VALIDATE_PACKAGE_STRUCTURE_TASK, PackageStructureValidationTask::class.java) {
-        group = GROUP
-        description = "Validates the package structure of project '$projectPath'."
-        expectedPackage.set(settings.determinePackageFor(projectPath))
-        enabled = projectPath !in settings.excludedProjectPaths
-        excludedSourceFolders.set(settings.excludedSourceFolders)
-        sourceFiles.from(projectDir)
-        sourceFiles.include("src/**")
+internal fun Project.registerValidatePackageStructureTask(settings: PackageStructureValidationSettings) {
+    if (project.path == project.rootProject.path) {
+        project.registerValidatePackageStructureAggregateTask()
+    } else {
+        project.registerValidatePackageStructureExecutionTask(settings)
     }
 }
 
@@ -83,6 +65,19 @@ private fun Project.registerValidatePackageStructureAggregateTask() {
         description = "Validates the package structure of all projects"
 
         dependsOn(subprojects.map { "${it.path}:$VALIDATE_PACKAGE_STRUCTURE_TASK" })
+    }
+}
+
+private fun Project.registerValidatePackageStructureExecutionTask(settings: PackageStructureValidationSettings) {
+    val projectPath = path
+    tasks.register(VALIDATE_PACKAGE_STRUCTURE_TASK, PackageStructureValidationTask::class.java) {
+        group = GROUP
+        description = "Validates the package structure of project '$projectPath'."
+        expectedPackage.set(settings.determinePackageFor(projectPath))
+        enabled = projectPath !in settings.excludedProjectPaths
+        excludedSourceFolders.set(settings.excludedSourceFolders)
+        sourceFiles.from(projectDir)
+        sourceFiles.include("src/**")
     }
 }
 
