@@ -1,8 +1,6 @@
 package ch.ergon.arciphant.sca
 
-import ch.ergon.arciphant.dsl.ArciphantProjectDsl
 import ch.ergon.arciphant.util.SimpleTask
-import ch.ergon.arciphant.util.projectHierarchy
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileTree
@@ -53,7 +51,7 @@ internal abstract class PackageStructureValidationTask @Inject constructor(
     }
 }
 
-internal fun Project.registerValidatePackageStructureTask(settings: GlobalPackageStructureValidationSettings) {
+internal fun Project.registerValidatePackageStructureTask(settings: PackageStructureValidationSettings) {
     if (project.path == project.rootProject.path) {
         project.registerValidatePackageStructureAggregateTask()
     } else {
@@ -70,28 +68,18 @@ private fun Project.registerValidatePackageStructureAggregateTask() {
     }
 }
 
-private fun Project.registerValidatePackageStructureExecutionTask(settings: GlobalPackageStructureValidationSettings) {
+private fun Project.registerValidatePackageStructureExecutionTask(settings: PackageStructureValidationSettings) {
     val projectPath = path
-    val expectedPackageProvider = provider { settings.determinePackageFor(packageConfigHierarchy()) }
     tasks.register(VALIDATE_PACKAGE_STRUCTURE_TASK, PackageStructureValidationTask::class.java) {
         group = GROUP
         description = "Validates the package structure of project '$projectPath'."
-        expectedPackage.set(expectedPackageProvider)
+        expectedPackage.set(settings.determinePackageFor(projectPath))
         enabled = projectPath !in settings.excludedProjectPaths
         excludedSourceFolders.set(settings.excludedSourceFolders)
         sourceFiles.from(projectDir)
         sourceFiles.include("src/**")
     }
 }
-
-/**
- * Collects the project-level arciphant configuration of this project and all its parent projects
- * (excluding the root project), ordered from the topmost parent down to this project.
- */
-private fun Project.packageConfigHierarchy(): List<ProjectPackageStructureValidationSettings> = projectHierarchy().map {
-        val dsl = it.extensions.getByType(ArciphantProjectDsl::class.java)
-        ProjectPackageStructureValidationSettings(it.name, dsl.packageName, dsl.absolutePackageName)
-    }
 
 private const val VALIDATE_PACKAGE_STRUCTURE_TASK = "validatePackageStructure"
 private const val GROUP = "verification"

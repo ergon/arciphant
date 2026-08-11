@@ -7,7 +7,6 @@ import ch.ergon.arciphant.core.GradleProjectConfigApplicator
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
-import ch.ergon.arciphant.dsl.ArciphantProjectDsl
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
@@ -17,7 +16,7 @@ class ArciphantPlugin : Plugin<Settings> {
 
     override fun apply(settings: Settings) {
         with(settings) {
-            val dsl = extensions.create(ARCIPHANT_EXTENSION_NAME, ArciphantDsl::class.java)
+            val dsl = extensions.create("arciphant", ArciphantDsl::class.java)
 
             gradle.settingsEvaluated {
                 val settings = CoreSettingsRepository(dsl).load()
@@ -37,10 +36,7 @@ class ArciphantPlugin : Plugin<Settings> {
                     beforeEvaluate { configApplicator.applyConfig(this) }
                 }
 
-                gradle.lifecycle.beforeProject {
-                    extensions.create(ARCIPHANT_EXTENSION_NAME, ArciphantProjectDsl::class.java)
-                    registerValidatePackageStructureTask(packageStructureValidationSettings)
-                }
+                gradle.lifecycle.beforeProject { registerValidatePackageStructureTask(packageStructureValidationSettings) }
             }
 
             gradle.projectsLoaded {
@@ -51,8 +47,6 @@ class ArciphantPlugin : Plugin<Settings> {
     }
 
     companion object {
-        private val ARCIPHANT_EXTENSION_NAME = "arciphant"
-
         internal val logger = Logging.getLogger(ArciphantPlugin::class.java)
     }
 }

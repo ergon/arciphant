@@ -42,6 +42,10 @@ arciphant {
     bundle(name = "online-learning-platform", plugin = "spring-boot-bundle-module")
 
     packageStructureValidation {
-        basePackageName("ch.ergon.arciphant.example")
+        val basePackage = "ch.ergon.arciphant.example"
+        basePackageName(basePackage)
+        mapProjectNamesToPackageFragments("payment-provider-adapter" to "ppa")
+        mapProjectNamesToPackageFragments("certificate-authority-adapter" to "caa")
+        mapProjectPathsToAbsolutePackages(":online-learning-platform" to basePackage)
     }
 }
