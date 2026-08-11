@@ -51,44 +51,6 @@ sealed interface PackageStructureValidationDsl {
     fun disableRemoveHyphen()
 
     /**
-     * Configure mappings for specific project names.
-     * The project name can be either a leaf project (e.g., an arciphant component) or a parent project (e.g., an arciphant module).
-     * The [basePackageName] is still used. The configured value replaces only the package fragment related to the specified project.
-     *
-     * Example:
-     * ```
-     * basePackageName("com.company.project")
-     * mapProjectNameToPackageFragment(
-     *   "financial-accounting" to "accounting",
-     *   "payment-provider-adapter", "ppa",
-     * )
-     * ```
-     * Above config results in the following mapping:
-     * ```
-     * Gradle project path                            | Absolute package name
-     * -----------------------------------------------|--------------------------------------
-     * :financial-accounting:domain                   | com.company.project.accounting.domain
-     * :financial-accounting:web-api                  | com.company.project.accounting.webapi
-     * :financial-accounting:payment-provider-adapter | com.company.project.accounting.ppa
-     * ```
-     */
-    fun mapProjectNamesToPackageFragments(vararg projectNameToPackageFragment: Pair<String, String>)
-
-    /**
-     * Completely overrides the package name for the given Gradle project path.
-     * Other than with [mapProjectNamesToPackageFragments], the [basePackageName] is NOT used.
-     *
-     * Example:
-     * ```
-     * mapProjectPathToAbsolutePackage(
-     *   ":specific:project:path" to "com.specific.package.name",
-     *   ":any:other:path" to "com.any.other.package.name",
-     * )
-     * ```
-     */
-    fun mapProjectPathsToAbsolutePackages(vararg projectPathToAbsolutePackage: Pair<String, String>)
-
-    /**
      * Excludes a specific project from package validation.
      *
      * @param projectPath the project path in the Gradle dot notation, e.g. ':specific:project:path'

@@ -42,58 +42,59 @@ The `packageStructureValidation` task provides the following configuration optio
 | <span class="nowrap">`disableUseLowerCase`</span>               | <p>By default, upper case letters are converted to lower case when mapping project names to corresponding package fragments.</p><p>Example: project name `FileStore` is mapped to package fragment `filestore`.</p><p>Use `disableUseLowerCase()` to deactivate this behavior.</p> |
 | <span class="nowrap">`disableRemoveUnderscore`</span>           | <p>By default, underscores '_' are removed when mapping project name to corresponding package fragment.</p><p>Example: project name `file_store` is mapped to package fragment `filestore`.</p><p>Use `disableRemoveUnderscore()` to deactivate this behavior.</p>                 |
 | <span class="nowrap">`disableRemoveHyphen`</span>               | <p>By default, hyphens '-' are removed when mapping project name to corresponding package fragment.</p><p>Example: project name `file-store` is mapped to package fragment `filestore`.</p><p>Use `disableRemoveHyphen` to deactivate this behavior.</p>                           |
-| <span class="nowrap">`mapProjectNamesToPackageFragments`</span> | Configure mappings for specific project names. See detailed description [below](#mapprojectnamestopackagefragments).                                                                                                                                                               |
-| <span class="nowrap">`mapProjectPathsToAbsolutePackages`</span> | Completely overrides the package name for the given Gradle project path. See detailed description [below](#mapprojectpathstoabsolutepackages).                                                                                                                                                                       |
 | <span class="nowrap">`excludeProjectPath`</span>                | <p>Excludes a specific project from package validation.</p><p>Example: `excludeProjectPath(:specific:project:path)`</p>                                                                                                                                                            |
 | <span class="nowrap">`excludeResourcesFolder`</span>            | <p>By default, all folders in the `src`-folder of each project are validated.</p><p>Use `excludeResourcesFolder()` to exclude the resource folder (`src/main/resources`) from validation.</p>                                                                                      |
 | <span class="nowrap">`excludeSrcFolders`</span>                 | <p>By default, all folders in the src-folder of each project are validated.</p><p>Use `excludeSrcFolders()` to exclude specific folders.</p><p>Example: To exclude `src/main/generated` use: `excludedSrcFolder("main/generated")`</p>                                             |
 
-### `mapProjectNamesToPackageFragments`
+## Project-specific overrides
 
-Configure mappings for specific project names. The project name can be either a leaf project (e.g., an arciphant component) or a parent project (e.g., an arciphant module). The `basePackageName` is still used. The configured value replaces only the package fragment related to the specified project.
+The expected package of a single project can be overridden in the project's own `build.gradle.kts`.
+Arciphant registers the extension `arciphant` (type `ArciphantProjectDsl`) on every project for this purpose.
+
+### `packageName`
+
+Overrides the package fragment of the project. The project can be either a leaf project (e.g., an arciphant component) or a parent project (e.g., an arciphant module). The `basePackageName` and the package fragments of the parent projects are still used. The configured value replaces only the package fragment derived from the project's name.
 
 Example:
-``` kotlin title="settings.gradle.kts" hl_lines="7-10"
-arciphant {
-  [..]
-  
-  packageStructureValidation {
-    basePackageName("com.company.project")
-    
-    mapProjectNameToPackageFragment(
-      "financial-accounting" to "accounting",
-      "payment-provider-adapter", "ppa",
-    )
-  }
+``` kotlin title="financial-accounting/payment-provider-adapter/build.gradle.kts"
+import ch.ergon.arciphant.dsl.ArciphantProjectDsl
+
+configure<ArciphantProjectDsl> {
+    packageName = "ppa"
 }
 ```
 
-The above config results in the following mapping:
+With `basePackageName("com.company.project")`, the above config results in the following mapping:
 
-| Gradle project path                              | Absolute package name                   |
-|--------------------------------------------------|-----------------------------------------|
-| `:financial-accounting:domain`                   | `com.company.project.accounting.domain` |
-| `:financial-accounting:web-api`                  | `com.company.project.accounting.webapi` |
-| `:financial-accounting:payment-provider-adapter` | `com.company.project.accounting.ppa`    |
+| Gradle project path                              | Absolute package name                            |
+|--------------------------------------------------|--------------------------------------------------|
+| `:financial-accounting:domain`                   | `com.company.project.financialaccounting.domain` |
+| `:financial-accounting:payment-provider-adapter` | `com.company.project.financialaccounting.ppa`    |
 
-### `mapProjectPathsToAbsolutePackages`
+An empty string removes the fragment of the project from the expected package.
 
-Completely overrides the package name for the given Gradle project path.
-Other than with `mapProjectNamesToPackageFragments`, the `basePackageName` is NOT used.
+### `absolutePackageName`
+
+Completely overrides the expected package of the project.
+Other than with `packageName`, neither the `basePackageName` nor the package fragments of the parent projects are used.
+
+The override is inherited by child projects: their expected package is the configured absolute package name extended by their own package fragments (including possible `packageName` overrides). A child project can replace an inherited absolute package name by configuring its own `absolutePackageName`.
 
 Example:
 
-``` kotlin title="settings.gradle.kts" hl_lines="7-10"
-arciphant {
-  [..]
-  
-  packageStructureValidation {
-    basePackageName("com.company.project")
-    
-    mapProjectPathToAbsolutePackage(
-      ":specific:project:path" to "com.specific.package.name",
-      ":any:other:path" to "com.any.other.package.name",
-    )
-  }
+``` kotlin title="backend/accounting/build.gradle.kts"
+import ch.ergon.arciphant.dsl.ArciphantProjectDsl
+
+configure<ArciphantProjectDsl> {
+    absolutePackageName = "my.special"
 }
 ```
+
+The above config results in the following mapping (regardless of the configured `basePackageName`):
+
+| Gradle project path            | Configuration in `build.gradle.kts`      | Absolute package name |
+|--------------------------------|------------------------------------------|-----------------------|
+| `:backend:accounting`          | `absolutePackageName = "my.special"`     | `my.special`          |
+| `:backend:accounting:domain`   | —                                        | `my.special.domain`   |
+| `:backend:accounting:web-api`  | `packageName = "foo"`                    | `my.special.foo`      |
+| `:backend:accounting:db`       | `absolutePackageName = "org.other.db"`   | `org.other.db`        |
