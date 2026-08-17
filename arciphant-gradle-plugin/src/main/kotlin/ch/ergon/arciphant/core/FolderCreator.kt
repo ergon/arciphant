@@ -1,6 +1,5 @@
 package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.ArciphantPlugin
 import ch.ergon.arciphant.ArciphantPlugin.Companion.logger
 import org.gradle.api.initialization.ProjectDescriptor
 import java.io.File

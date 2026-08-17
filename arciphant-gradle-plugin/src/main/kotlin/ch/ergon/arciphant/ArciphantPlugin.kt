@@ -1,11 +1,7 @@
 package ch.ergon.arciphant
 
 import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
-import ch.ergon.arciphant.core.CoreSettingsRepository
-import ch.ergon.arciphant.core.FolderCreator
-import ch.ergon.arciphant.core.GradleProjectConfigApplicator
-import ch.ergon.arciphant.core.ModuleRepository
-import ch.ergon.arciphant.core.toProjectConfigs
+import ch.ergon.arciphant.core.*
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.dsl.ArciphantProjectDsl
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
