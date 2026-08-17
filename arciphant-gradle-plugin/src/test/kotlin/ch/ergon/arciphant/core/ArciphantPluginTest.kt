@@ -348,6 +348,77 @@ class ArciphantPluginTest {
     }
 
     @Test
+    fun `test that consumable components can be used through project DSL`() {
+        settingsFileWithArciphant(
+            """
+            sourceSetComponentLayout()
+
+            module("producer").createComponent("api", consumable = true)
+            module("consumer").createComponent("application")
+            """
+        )
+        buildFileWithJvmPlugins()
+        projectFolder.resolve("consumer/build.gradle.kts").write(
+            """
+            import org.gradle.api.tasks.SourceSetContainer
+
+            val sourceSets = extensions.getByType<SourceSetContainer>()
+            arciphant {
+                sourceSetDependencies {
+                    implementation(sourceSets.getByName("application"), ":producer", "api")
+                }
+            }
+            """
+        )
+        projectFolder.resolve("producer/src/api/java/example/producer/Api.java").write(
+            """
+            package example.producer;
+
+            public class Api {}
+            """
+        )
+        projectFolder.resolve("producer/src/apiTestFixtures/java/example/producer/ApiFixtures.java").write(
+            """
+            package example.producer;
+
+            public class ApiFixtures {
+                public static Api create() { return new Api(); }
+            }
+            """
+        )
+        projectFolder.resolve("consumer/src/application/java/example/consumer/Application.java").write(
+            """
+            package example.consumer;
+
+            import example.producer.Api;
+
+            public class Application extends Api {}
+            """
+        )
+        projectFolder.resolve("consumer/src/applicationTestFixtures/java/example/consumer/ApplicationFixtures.java").write(
+            """
+            package example.consumer;
+
+            import example.producer.ApiFixtures;
+
+            public class ApplicationFixtures {
+                public static Application create() {
+                    ApiFixtures.create();
+                    return new Application();
+                }
+            }
+            """
+        )
+
+        val result = gradleRunner.withArguments(":consumer:compileApplicationTestFixturesJava").build()
+
+        assertThat(result.task(":producer:compileApiJava")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":producer:compileApiTestFixturesJava")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":consumer:compileApplicationTestFixturesJava")?.outcome)
+            .isEqualTo(TaskOutcome.SUCCESS)
+    }
+
+    @Test
     fun `test that bundles consume source set modules`() {
         settingsFileWithArciphant(
             """
