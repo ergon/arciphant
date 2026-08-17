@@ -18,7 +18,7 @@ class ArciphantPlugin : Plugin<Settings> {
             gradle.settingsEvaluated {
                 val settings = CoreSettingsRepository(dsl).load()
                 val modules = ModuleRepository(dsl).load()
-                val projectConfigs = modules.flatMap { it.toProjectConfigs() }
+                val projectConfigs = modules.flatMap { it.toProjectConfigs(settings.componentLayout) }
                 val packageStructureValidationSettings = dsl.packageStructureValidation.build()
 
                 // create project folders that do not yet exist

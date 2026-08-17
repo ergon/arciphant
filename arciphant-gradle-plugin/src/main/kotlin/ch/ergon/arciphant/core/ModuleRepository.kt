@@ -1,5 +1,7 @@
 package ch.ergon.arciphant.core
 
+import ch.ergon.arciphant.core.ComponentLayout.PROJECT
+import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
 import ch.ergon.arciphant.core.model.*
 import ch.ergon.arciphant.dsl.*
 import ch.ergon.arciphant.dsl.FunctionalModuleType.DOMAIN
@@ -12,6 +14,7 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
 
     private fun FunctionalModuleBuilder.create(): FunctionalModule {
         val components = build()
+        components.validate()
         return when (moduleType) {
             LIBRARY -> LibraryModule(this.reference(), components)
             DOMAIN -> DomainModule(this.reference(), components)
@@ -57,15 +60,44 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
     private fun Component.addDependencies(additionalDependencies: Set<Dependency>) = Component(
         reference = reference,
         plugin = plugin,
-        dependsOn = dependsOn + additionalDependencies
+        dependsOn = dependsOn + additionalDependencies,
+        withTestSourceSet = withTestSourceSet,
+        withTestFixturesSourceSet = withTestFixturesSourceSet,
+        consumable = consumable,
     )
+
+    private fun Collection<Component>.validate() = forEach { it.validate() }
+
+    private fun Component.validate() {
+        when (dsl.componentLayout) {
+            PROJECT -> {
+                PROJECT.verifyConfig(this::withTestSourceSet)
+                PROJECT.verifyConfig(this::withTestFixturesSourceSet)
+                PROJECT.verifyConfig(this::consumable)
+            }
+            SOURCE_SET -> {
+                SOURCE_SET.verifyConfig(this::plugin)
+            }
+        }
+    }
 
     private fun BundleModuleBuilder.createBundleModule(): BundleModule {
         return BundleModule(
             reference = reference(),
             plugin = plugin?.let { Plugin(it) },
             includes = includes.ifEmpty { dsl.functionalModules }.map { it.reference() }.toSet()
-        )
+        ).also { it.validate() }
+    }
+
+    private fun BundleModule.validate() {
+        when (dsl.componentLayout) {
+            PROJECT -> {
+                // no forbidden config
+            }
+            SOURCE_SET -> {
+                SOURCE_SET.verifyConfig(this::plugin)
+            }
+        }
     }
 
     private fun ModuleBuilder.reference() = ModuleReference(

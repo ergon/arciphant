@@ -217,6 +217,8 @@ it automatically creates the dependencies for the `testFixtures` source sets bet
 So if e.g. the *application* component depends on *domain", the `testFixtures` of `domain` will be usable in `testFixtures` and `test` of `application`.
 Of course, if is an api dependency, the transitivity is also taken into account.
 
+This describes the default `PROJECT` layout. In the `SOURCE_SET` layout, Arciphant creates dedicated production, test-fixtures, and test source sets itself; the `java-test-fixtures` plugin is not required. See [Component Layouts](component-layouts.md) for configuration details.
+
 ## Debug project dependencies
 
 If you have configured arciphant and you want to verify whether your project's dependencies are as expected, you can use the `projectDependencies` task from Arciphant.
