@@ -18,29 +18,29 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
     fun load() = dsl.functionalModules.map { it.create() } + dsl.bundleModules.map { it.createBundleModule() }
 
     private fun FunctionalModuleBuilder.create(): FunctionalModule {
-        val components = build().toSet()
+        val components = build()
         return when (moduleType) {
             LIBRARY -> LibraryModule(this.reference(), components)
             DOMAIN -> DomainModule(this.reference(), components)
         }
     }
 
-    private fun FunctionalModuleBuilder.build(): List<Component> {
+    private fun FunctionalModuleBuilder.build(): Set<Component> {
         return componentsBuilder.build(inheritedComponents = templates.flatMap { it.build() })
     }
 
-    private fun ModuleTemplateBuilder.build(): List<Component> {
+    private fun ModuleTemplateBuilder.build(): Set<Component> {
         return componentsBuilder.build(inheritedComponents = extends.flatMap { it.build() })
 
     }
 
-    private fun ComponentsBuilder.build(inheritedComponents: List<Component>): List<Component> {
+    private fun ComponentsBuilder.build(inheritedComponents: List<Component>): Set<Component> {
         val componentsByName = (inheritedComponents + components).toDistinctMap()
         componentDependencyOverrides.forEach { (componentName, dependencies) ->
             val existingComponent = componentsByName.getOrThrow(componentName)
             componentsByName[componentName] = existingComponent.addDependencies(dependencies)
         }
-        return componentsByName.values.toList()
+        return componentsByName.values.toSet()
     }
 
     private fun List<Component>.toDistinctMap(): MutableMap<String, Component> {
