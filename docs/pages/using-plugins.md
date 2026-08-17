@@ -28,6 +28,8 @@ template()
     .createComponent(name = "db", plugin = "jooq-component")
 ```
 
+Component plugins are available only with `ComponentLayout.PROJECT`. With `ComponentLayout.SOURCE_SET`, components are source sets rather than Gradle projects, so plugins must be applied at module-project level instead.
+
 ## Use `includeBuild` instead of `buildSrc`
 
 It is good practice to use a dedicated project for convention plugins instead of using `buildSrc`-folder and include it with `includeBuild`:

@@ -6,6 +6,7 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
+import java.util.zip.ZipFile
 
 /**
  * Before running this test with IntelliJ, the project should be built using Gradle.
@@ -17,6 +18,7 @@ class ArciphantPluginTest {
     private lateinit var projectFolder: File
 
     private val settingsFile by lazy { projectFolder.resolve("settings.gradle.kts") }
+    private val buildFile by lazy { projectFolder.resolve("build.gradle.kts") }
 
     private val gradleRunner by lazy {
         GradleRunner.create()
@@ -105,6 +107,347 @@ class ArciphantPluginTest {
             .contains("Source file '${invalidSourceFile.path}' has invalid package name.")
     }
 
+    @Test
+    fun `test that components can be created as source sets`() {
+        settingsFileWithArciphant(
+            """
+            sourceSetComponentLayout()
+
+            module("test")
+                .createComponent("domain")
+                .createComponent("application", dependsOnApi = setOf("domain"))
+            """
+        )
+        buildFileWithJvmPlugins()
+        projectFolder.resolve("test/build.gradle.kts").write(
+            """
+            dependencies {
+                add("applicationTestImplementation", "org.junit.jupiter:junit-jupiter:5.11.3")
+                add("applicationTestRuntimeOnly", "org.junit.platform:junit-platform-launcher")
+            }
+            """
+        )
+        projectFolder.resolve("test/src/domain/java/example/domain/Domain.java").write(
+            """
+            package example.domain;
+
+            public class Domain {
+                public String value() { return "domain"; }
+            }
+            """
+        )
+        projectFolder.resolve("test/src/domainTestFixtures/java/example/domain/DomainFixtures.java").write(
+            """
+            package example.domain;
+
+            public class DomainFixtures {
+                public static Domain create() { return new Domain(); }
+            }
+            """
+        )
+        projectFolder.resolve("test/src/application/java/example/application/Application.java").write(
+            """
+            package example.application;
+
+            import example.domain.Domain;
+
+            public class Application {
+                public Domain domain() { return new Domain(); }
+            }
+            """
+        )
+        projectFolder.resolve("test/src/applicationTestFixtures/java/example/application/ApplicationFixtures.java").write(
+            """
+            package example.application;
+
+            import example.domain.DomainFixtures;
+
+            public class ApplicationFixtures {
+                public static Application create() {
+                    DomainFixtures.create();
+                    return new Application();
+                }
+            }
+            """
+        )
+        projectFolder.resolve("test/src/applicationTest/java/example/application/ApplicationTest.java").write(
+            """
+            package example.application;
+
+            import org.junit.jupiter.api.Test;
+
+            import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+            class ApplicationTest {
+                @Test
+                void createsApplication() {
+                    assertNotNull(ApplicationFixtures.create());
+                }
+            }
+            """
+        )
+
+        val projectsResult = gradleRunner.withArguments("-q", "projects").build()
+        val buildResult = gradleRunner.withArguments(":test:test", ":test:jar").build()
+
+        assertThat(projectsResult.output).contains("Project ':test'")
+        assertThat(projectsResult.output).doesNotContain("Project ':test:domain'")
+        assertThat(buildResult.task(":test:applicationTest")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        ZipFile(projectFolder.resolve("test/build/libs/test.jar")).use { jar ->
+            assertThat(jar.getEntry("example/domain/Domain.class")).isNotNull()
+            assertThat(jar.getEntry("example/application/Application.class")).isNotNull()
+        }
+    }
+
+    @Test
+    fun `test that library source sets are consumed by modules`() {
+        settingsFileWithArciphant(
+            """
+            sourceSetComponentLayout()
+
+            val template = template().createComponent("api")
+            library("shared", template = template)
+            module("module", template = template)
+            """
+        )
+        buildFileWithJvmPlugins()
+        projectFolder.resolve("module/build.gradle.kts").write(
+            """
+            dependencies {
+                add("apiTestImplementation", "org.junit.jupiter:junit-jupiter:5.11.3")
+                add("apiTestRuntimeOnly", "org.junit.platform:junit-platform-launcher")
+            }
+            """
+        )
+        projectFolder.resolve("shared/src/api/java/example/shared/SharedApi.java").write(
+            """
+            package example.shared;
+
+            public class SharedApi {}
+            """
+        )
+        projectFolder.resolve("shared/src/apiTestFixtures/java/example/shared/SharedFixtures.java").write(
+            """
+            package example.shared;
+
+            public class SharedFixtures {
+                public static SharedApi create() { return new SharedApi(); }
+            }
+            """
+        )
+        projectFolder.resolve("module/src/api/java/example/module/ModuleApi.java").write(
+            """
+            package example.module;
+
+            import example.shared.SharedApi;
+
+            public class ModuleApi extends SharedApi {}
+            """
+        )
+        projectFolder.resolve("module/src/apiTestFixtures/java/example/module/ModuleFixtures.java").write(
+            """
+            package example.module;
+
+            import example.shared.SharedFixtures;
+
+            public class ModuleFixtures {
+                public static ModuleApi create() {
+                    SharedFixtures.create();
+                    return new ModuleApi();
+                }
+            }
+            """
+        )
+        projectFolder.resolve("module/src/apiTest/java/example/module/ModuleApiTest.java").write(
+            """
+            package example.module;
+
+            import org.junit.jupiter.api.Test;
+
+            import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+            class ModuleApiTest {
+                @Test
+                void createsModuleApi() {
+                    assertNotNull(ModuleFixtures.create());
+                }
+            }
+            """
+        )
+
+        val result = gradleRunner.withArguments(":module:test").build()
+
+        assertThat(result.task(":shared:compileApiJava")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":shared:compileApiTestFixturesJava")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":module:apiTest")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    }
+
+    @Test
+    fun `test that source set names and flags can be overridden`() {
+        settingsFileWithArciphant(
+            """
+            sourceSetComponentLayout()
+            withTestSourceSet(false)
+            withTestFixturesSourceSet(false)
+            testSourceSetName { "${'$'}{it}Spec" }
+            testFixturesSourceSetName { "${'$'}{it}Fixtures" }
+
+            module("test").createComponent(
+                name = "domain",
+                withTestSourceSet = true,
+                withTestFixturesSourceSet = true,
+            )
+            """
+        )
+        buildFileWithJvmPlugins()
+        projectFolder.resolve("test/build.gradle.kts").write(
+            """
+            dependencies {
+                add("domainSpecImplementation", "org.junit.jupiter:junit-jupiter:5.11.3")
+                add("domainSpecRuntimeOnly", "org.junit.platform:junit-platform-launcher")
+            }
+            """
+        )
+        projectFolder.resolve("test/src/domain/java/example/Domain.java").write(
+            """
+            package example;
+
+            public class Domain {}
+            """
+        )
+        projectFolder.resolve("test/src/domainFixtures/java/example/DomainFixtures.java").write(
+            """
+            package example;
+
+            public class DomainFixtures {
+                public static Domain create() { return new Domain(); }
+            }
+            """
+        )
+        projectFolder.resolve("test/src/domainSpec/java/example/DomainSpec.java").write(
+            """
+            package example;
+
+            import org.junit.jupiter.api.Test;
+
+            import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+            class DomainSpec {
+                @Test
+                void createsDomain() {
+                    assertNotNull(DomainFixtures.create());
+                }
+            }
+            """
+        )
+
+        val result = gradleRunner.withArguments(":test:test").build()
+
+        assertThat(result.task(":test:domainSpec")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":test:compileDomainFixturesJava")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    }
+
+    @Test
+    fun `test that bundles consume source set modules`() {
+        settingsFileWithArciphant(
+            """
+            sourceSetComponentLayout()
+
+            module("module").createComponent("api")
+            bundle("application")
+            """
+        )
+        buildFileWithJvmPlugins()
+        projectFolder.resolve("module/src/api/java/example/module/Api.java").write(
+            """
+            package example.module;
+
+            public class Api {}
+            """
+        )
+        projectFolder.resolve("application/src/main/java/example/application/Application.java").write(
+            """
+            package example.application;
+
+            import example.module.Api;
+
+            public class Application extends Api {}
+            """
+        )
+
+        val result = gradleRunner.withArguments(":application:compileJava").build()
+
+        assertThat(result.task(":module:jar")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":application:compileJava")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    }
+
+    @Test
+    fun `test that Kotlin component source sets are associated`() {
+        settingsFileWithArciphant(
+            """
+            sourceSetComponentLayout()
+
+            module("module")
+                .createComponent("domain")
+                .createComponent("application", dependsOn = setOf("domain"))
+            """
+        )
+        buildFile.write(
+            """
+            plugins {
+                kotlin("jvm") version "2.2.0" apply false
+            }
+
+            allprojects {
+                pluginManager.apply("org.jetbrains.kotlin.jvm")
+                pluginManager.apply("java-library")
+                repositories { mavenCentral() }
+            }
+            """
+        )
+        projectFolder.resolve("module/src/domain/kotlin/example/domain/Domain.kt").write(
+            """
+            package example.domain
+
+            internal class Domain
+            """
+        )
+        projectFolder.resolve("module/src/domainTestFixtures/kotlin/example/domain/DomainFixtures.kt").write(
+            """
+            package example.domain
+
+            fun createDomain(): Any = Domain()
+            """
+        )
+        projectFolder.resolve("module/src/application/kotlin/example/application/Application.kt").write(
+            """
+            package example.application
+
+            class Application
+            """
+        )
+        projectFolder.resolve("module/src/applicationTestFixtures/kotlin/example/application/ApplicationFixtures.kt").write(
+            """
+            package example.application
+
+            import example.domain.createDomain
+
+            fun createApplication(): Application {
+                createDomain()
+                return Application()
+            }
+            """
+        )
+
+        val result = gradleRunner.withArguments(":module:compileApplicationTestFixturesKotlin").build()
+
+        assertThat(result.task(":module:compileDomainKotlin")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":module:compileDomainTestFixturesKotlin")?.outcome)
+            .isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":module:compileApplicationTestFixturesKotlin")?.outcome)
+            .isEqualTo(TaskOutcome.SUCCESS)
+    }
+
     private fun settingsFileWithArciphant(arciphantConfiguration: String) = settingsFile.write(
         """
                 plugins {
@@ -115,6 +458,20 @@ class ArciphantPluginTest {
                     $arciphantConfiguration
                 }
                 """
+    )
+
+    private fun buildFileWithJvmPlugins(additionalConfiguration: String = "") = buildFile.write(
+        """
+        import org.gradle.api.tasks.testing.Test
+
+        allprojects {
+            pluginManager.apply("java-library")
+            repositories { mavenCentral() }
+            tasks.withType<Test>().configureEach { useJUnitPlatform() }
+        }
+
+        $additionalConfiguration
+        """
     )
 
     private fun File.write(content: String) {

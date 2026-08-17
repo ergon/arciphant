@@ -6,6 +6,7 @@ Arciphant is a Gradle plugin that allows to specify the module structure of comp
 * Module templates define the technical structure (components and their dependencies) of modules
 * These templates can be configured using a simple DSL directly in the Gradle settings file
 * Modules can be instantiated based on templates and further components can be added as required
+* Components can be mapped either to Gradle projects or to isolated source sets inside their module project
 
 This offers various advantages:
 * Architecture styles (e.g. Clean Architecture) can be mapped cleanly and declaratively as a Gradle Multi-Project Build

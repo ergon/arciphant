@@ -28,6 +28,9 @@ internal data class Component(
     val reference: ComponentReference,
     val plugin: Plugin?,
     val dependsOn: Set<Dependency>,
+    val withTestSourceSet: Boolean?,
+    val withTestFixturesSourceSet: Boolean?,
+    val consumable: Boolean?,
 )
 
 internal data class Dependency(val component: ComponentReference, val type: DependencyType)

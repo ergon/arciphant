@@ -1,11 +1,9 @@
 package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.core.model.DependencyType
+import ch.ergon.arciphant.core.ComponentLayout.PROJECT
+import ch.ergon.arciphant.core.model.*
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
-import ch.ergon.arciphant.core.model.DomainModule
-import ch.ergon.arciphant.core.model.LibraryModule
-import ch.ergon.arciphant.core.model.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.jvm.tasks.Jar
@@ -18,9 +16,15 @@ internal class GradleProjectConfigApplicator(
     private val projectConfigs: List<GradleProjectConfig>
 ) {
 
+    private val projectComponentSettings = settings.projectComponentSettings
+    private val sourceSetComponentSettings = settings.sourceSetComponentSettings
+
     private val projectConfigsByPath = projectConfigs.associateBy { it.path.value }
 
     private val libraryComponents = projectConfigs.filterIsInstance<GradleComponentProjectConfig>()
+        .filter { it.module is LibraryModule }
+
+    private val libraryModules = projectConfigs.filterIsInstance<GradleFunctionalModuleProjectConfig>()
         .filter { it.module is LibraryModule }
 
     internal fun applyConfig(project: Project) {
@@ -28,6 +32,7 @@ internal class GradleProjectConfigApplicator(
             when (it) {
                 is GradleBundleModuleProjectConfig -> it.applyBundleModuleConfig(project)
                 is GradleComponentProjectConfig -> it.applyComponentConfig(project)
+                is GradleFunctionalModuleProjectConfig -> it.applyFunctionalModuleConfig(project)
             }
         }
     }
@@ -36,7 +41,15 @@ internal class GradleProjectConfigApplicator(
         module.plugin?.applyTo(bundleModuleProject)
 
         projectConfigs.filter { module.includes.contains(it.module.reference) }.forEach {
-            bundleModuleProject.addDependency(IMPLEMENTATION, it.path)
+            if (it is GradleFunctionalModuleProjectConfig) {
+                bundleModuleProject.addSourceSetModuleDependency(it.path)
+            } else {
+                bundleModuleProject.addDependency(
+                    type = IMPLEMENTATION,
+                    path = it.path,
+                    withTestFixturesSourceSet = settings.componentLayout == PROJECT,
+                )
+            }
         }
     }
 
@@ -58,10 +71,53 @@ internal class GradleProjectConfigApplicator(
         configureArchiveBaseName(componentProject)
     }
 
+    private fun GradleFunctionalModuleProjectConfig.applyFunctionalModuleConfig(moduleProject: Project) {
+        val sourceSetsByComponent = module.components.associateWith { component ->
+            moduleProject.createComponent(
+                name = component.reference.name,
+                settings = sourceSetComponentSettings,
+                withTestSourceSet = component.withTestSourceSet,
+                withTestFixturesSourceSet = component.withTestFixturesSourceSet,
+                consumable = module is LibraryModule || (component.consumable ?: false),
+            )
+        }
+
+        moduleProject.sourceSetDependencies(sourceSetComponentSettings) {
+            sourceSetsByComponent.forEach { (component, sourceSets) ->
+                component.dependsOn.forEach { dependency ->
+                    val target = sourceSetsByComponent.entries.singleOrNull {
+                        it.key.reference == dependency.component
+                    } ?: throw IllegalArgumentException(
+                        "Arciphant configuration error: Component '${component.reference.name}' depends on unknown component '${dependency.component.name}' in module '${module.reference.name}'."
+                    )
+                    addLocalDependency(dependency.type, sourceSets.production, target.value.production)
+                }
+
+                if (module is DomainModule) {
+                    libraryModules.forEach { library ->
+                        library.module.components
+                            .filter { it.reference == component.reference }
+                            .forEach { libraryComponent ->
+                                addProjectDependency(
+                                    type = API,
+                                    sourceSet = sourceSets.production,
+                                    projectPath = library.path.value,
+                                    componentName = libraryComponent.reference.name,
+                                    withTestFixturesSourceSet = libraryComponent.withTestFixturesSourceSet,
+                                )
+                            }
+                    }
+                }
+            }
+        }
+
+        moduleProject.createConsumableModuleConfigurations(sourceSetsByComponent.values)
+    }
+
     private fun Plugin.applyTo(project: Project) = project.apply(plugin = id)
 
     private fun GradleComponentProjectConfig.configureArchiveBaseName(componentProject: Project) {
-        if(!settings.disableQualifiedArchiveBaseName) {
+        if(!settings.projectComponentSettings.disableQualifiedArchiveBaseName) {
             componentProject.tasks.withType(Jar::class.java).configureEach {
                 this.archiveBaseName.set(module.createQualifiedComponentName(component))
             }
@@ -70,10 +126,14 @@ internal class GradleProjectConfigApplicator(
 
 }
 
-private fun Project.addDependency(type: DependencyType, path: GradleProjectPath) {
+private fun Project.addDependency(
+    type: DependencyType,
+    path: GradleProjectPath,
+    withTestFixturesSourceSet: Boolean = true,
+) {
     logger.info("Add ${type.configurationName} dependency: $path -> ${path.value}")
     addMainDependency(type, path)
-    addTestFixturesDependency(path)
+    if (withTestFixturesSourceSet) addTestFixturesDependency(path)
 }
 
 private fun Project.addMainDependency(type: DependencyType, path: GradleProjectPath) {
@@ -95,4 +155,25 @@ private fun Project.addTestFixturesDependency(path: GradleProjectPath) {
     pluginManager.withPlugin("java-test-fixtures") {
         dependencies { add("testFixturesApi", testFixtures(project(path.value))) }
     }
+}
+
+private fun Project.addSourceSetModuleDependency(path: GradleProjectPath) {
+    dependencies.add(
+        IMPLEMENTATION.configurationName,
+        dependencies.project(
+            mapOf(
+                "path" to path.value,
+                "configuration" to MODULE_API_ELEMENTS_CONFIGURATION,
+            )
+        )
+    )
+    dependencies.add(
+        "runtimeOnly",
+        dependencies.project(
+            mapOf(
+                "path" to path.value,
+                "configuration" to MODULE_RUNTIME_ELEMENTS_CONFIGURATION,
+            )
+        )
+    )
 }

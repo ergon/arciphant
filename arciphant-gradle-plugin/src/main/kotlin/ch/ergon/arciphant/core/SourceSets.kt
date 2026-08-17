@@ -1,112 +1,298 @@
 package ch.ergon.arciphant.core
 
+import ch.ergon.arciphant.core.model.DependencyType
+import ch.ergon.arciphant.core.model.DependencyType.API
+import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSet.MAIN_SOURCE_SET_NAME
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.plugins.ide.idea.model.IdeaModel
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
-fun Project.createComponent(
+internal data class ComponentSourceSets(
+    val production: SourceSet,
+    val testFixtures: SourceSet?,
+    val test: SourceSet?,
+)
+
+internal fun Project.createComponent(
     name: String,
-    withTesting: Boolean = true,
+    settings: SourceSetComponentSettings,
+    withTestSourceSet: Boolean? = null,
+    withTestFixturesSourceSet: Boolean? = null,
+    consumable: Boolean = false,
     sourceSetDependenciesBlock: (SourceSetDependencyScope.(SourceSet) -> Unit)? = null,
-): SourceSet {
-    val sourceSet = sourceSets.create(name)
+): ComponentSourceSets {
+    val sourceSets = sourceSets()
+    val production = sourceSets.createOrReuseMain(name)
+    apiConfiguration(production)
 
-    createConsumableConfiguration(sourceSet)
+    val testFixtures = if (withTestFixturesSourceSet ?: settings.withTestFixturesSourceSet) {
+        sourceSets.create(settings.testFixturesSourceSetName(name)).also {
+            apiConfiguration(it)
+            associate(it, production)
+        }
+    } else {
+        null
+    }
 
-    if (withTesting) createTestSourceSets(sourceSet)
+    val test = if (withTestSourceSet ?: settings.withTestSourceSet) {
+        sourceSets.create(settings.testSourceSetName(name)).also {
+            associate(it, testFixtures ?: production)
+            registerTestTask(it)
+        }
+    } else {
+        null
+    }
 
-    sourceSetDependencies {
-        if(sourceSetDependenciesBlock != null) {
-            sourceSetDependenciesBlock(sourceSet)
+    if (consumable) {
+        createConsumableConfigurations(production)
+        testFixtures?.let { createConsumableConfigurations(it) }
+    }
+
+    sourceSetDependenciesBlock?.let { block -> sourceSetDependencies(settings) { block(production) } }
+
+    includeInMainSourceSet(production)
+    markAsTestSources(testFixtures, test)
+
+    return ComponentSourceSets(production, testFixtures, test)
+}
+
+internal fun Project.sourceSetDependencies(
+    settings: SourceSetComponentSettings,
+    block: SourceSetDependencyScope.() -> Unit,
+) {
+    SourceSetDependencyScope(this, settings).block()
+}
+
+internal fun Project.createConsumableModuleConfigurations(componentSourceSets: Collection<ComponentSourceSets>) {
+    val apiElements = createConsumableConfiguration(
+        name = MODULE_API_ELEMENTS_CONFIGURATION,
+        description = "API elements of all Arciphant component source sets in this module.",
+        superConfigurations = componentSourceSets.map { apiConfiguration(it.production) },
+    )
+    val runtimeElements = createConsumableConfiguration(
+        name = MODULE_RUNTIME_ELEMENTS_CONFIGURATION,
+        description = "Runtime elements of all Arciphant component source sets in this module.",
+        superConfigurations = componentSourceSets.flatMap { runtimeConfigurations(it.production) },
+    )
+    listOf(apiElements, runtimeElements).forEach { artifacts.add(it.name, tasks.named("jar")) }
+}
+
+class SourceSetDependencyScope internal constructor(
+    private val project: Project,
+    private val settings: SourceSetComponentSettings,
+) {
+
+    fun implementation(sourceSet: SourceSet, dependency: SourceSet) {
+        addLocalDependency(IMPLEMENTATION, sourceSet, dependency)
+    }
+
+    fun api(sourceSet: SourceSet, dependency: SourceSet) {
+        addLocalDependency(API, sourceSet, dependency)
+    }
+
+    fun implementation(
+        sourceSet: SourceSet,
+        projectPath: String,
+        componentName: String,
+        withTestFixturesSourceSet: Boolean? = null,
+    ) {
+        addProjectDependency(IMPLEMENTATION, sourceSet, projectPath, componentName, withTestFixturesSourceSet)
+    }
+
+    fun api(
+        sourceSet: SourceSet,
+        projectPath: String,
+        componentName: String,
+        withTestFixturesSourceSet: Boolean? = null,
+    ) {
+        addProjectDependency(API, sourceSet, projectPath, componentName, withTestFixturesSourceSet)
+    }
+
+    internal fun addLocalDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
+        addDependency(type, sourceSet, dependency)
+
+        val sourceTestFixtures = sourceSet.testFixturesSourceSet()
+        val dependencyTestFixtures = dependency.testFixturesSourceSet()
+        if (sourceTestFixtures != null && dependencyTestFixtures != null) {
+            addDependency(type, sourceTestFixtures, dependencyTestFixtures)
         }
     }
 
-    makeConfigurationsInvisibleToOtherProjects(sourceSet)
-    includeInMainSourceSet(sourceSet)
+    internal fun addProjectDependency(
+        type: DependencyType,
+        sourceSet: SourceSet,
+        projectPath: String,
+        componentName: String,
+        withTestFixturesSourceSet: Boolean? = null,
+    ) {
+        addDependency(type, sourceSet, projectPath, componentName)
 
-    return sourceSet
-}
-
-/**
- * Creates the `<name>TestFixtures` and `<name>Test` source sets belonging to [sourceSet], associates them
- * with each other and registers a `Test` task for the test source set.
- */
-fun Project.createTestSourceSets(sourceSet: SourceSet) {
-    val testFixturesSourceSet = sourceSets().create(sourceSet.getCorrespondingTestFixturesSourceSetName())
-    val testSourceSet = sourceSets().create(sourceSet.getCorrespondingTestSourceSetName())
-
-    associate(testFixturesSourceSet, sourceSet)
-    associate(testSourceSet, testFixturesSourceSet)
-
-    createConsumableConfiguration(testFixturesSourceSet)
-
-    registerTestTask(testSourceSet)
-
-    if (pluginManager.hasPlugin("idea")) {
-        val ideaModule = extensions.getByType(IdeaModel::class.java).module
-        ideaModule.testSources.from(testFixturesSourceSet.allSource.srcDirs)
-        ideaModule.testSources.from(testSourceSet.allSource.srcDirs)
+        val sourceTestFixtures = sourceSet.testFixturesSourceSet()
+        if (sourceTestFixtures != null && (withTestFixturesSourceSet ?: settings.withTestFixturesSourceSet)) {
+            addDependency(type, sourceTestFixtures, projectPath, settings.testFixturesSourceSetName(componentName))
+        }
     }
-}
 
-internal fun Project.sourceSets() = project.extensions.getByType(SourceSetContainer::class.java)
-
-private fun Project.associate(sourceSet: SourceSet, other: SourceSet) =
-    compilationOf(sourceSet).associateWith(compilationOf(other))
-
-private fun Project.compilationOf(sourceSet: SourceSet) =
-    extensions.getByType(KotlinJvmProjectExtension::class.java).target.compilations.getByName(sourceSet.name)
-
-/** Makes the classes of [sourceSet] as well as its dependencies available to consuming projects. */
-fun Project.createConsumableConfiguration(sourceSet: SourceSet) {
-    val consumableConfiguration = configurations.create(sourceSet.name) {
-        description =
-            "configuration to be used by other projects depending on this project's '${sourceSet.name}' source set"
+    private fun addDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
+        val dependencyConfiguration = project.dependencyConfiguration(sourceSet, type)
+        dependencyConfiguration.extendsFrom(project.apiConfiguration(dependency))
+        project.dependencies.add(dependencyConfiguration.name, dependency.output)
+        project.extendRuntimeOnly(sourceSet, dependency)
     }
-    consumableConfiguration.extendsFrom(configurations.getByName(sourceSet.implementationConfigurationName))
-    dependencies.add(sourceSet.name, sourceSet.output)
+
+    private fun addDependency(
+        type: DependencyType,
+        sourceSet: SourceSet,
+        projectPath: String,
+        dependencySourceSetName: String,
+    ) {
+        project.dependencies.add(
+            project.dependencyConfiguration(sourceSet, type).name,
+            project.createProjectDependency(projectPath, dependencySourceSetName.apiElementsConfigurationName()),
+        )
+        project.dependencies.add(
+            sourceSet.runtimeOnlyConfigurationName,
+            project.createProjectDependency(projectPath, dependencySourceSetName.runtimeElementsConfigurationName()),
+        )
+    }
+
+    private fun SourceSet.testFixturesSourceSet(): SourceSet? =
+        project.sourceSets().findByName(settings.testFixturesSourceSetName(name))
 }
 
-// registers a Test task for the custom test source set and hooks it into the default `test` task
+private fun Project.createConsumableConfigurations(sourceSet: SourceSet) {
+    val apiElements = createConsumableConfiguration(
+        name = sourceSet.name.apiElementsConfigurationName(),
+        description = "API elements of the '${sourceSet.name}' source set.",
+        superConfigurations = listOf(apiConfiguration(sourceSet)),
+    )
+    val runtimeElements = createConsumableConfiguration(
+        name = sourceSet.name.runtimeElementsConfigurationName(),
+        description = "Runtime elements of the '${sourceSet.name}' source set.",
+        superConfigurations = runtimeConfigurations(sourceSet),
+    )
+    listOf(apiElements, runtimeElements).forEach { dependencies.add(it.name, sourceSet.output) }
+}
+
+private fun Project.createConsumableConfiguration(
+    name: String,
+    description: String,
+    superConfigurations: List<Configuration>,
+): Configuration = configurations.create(name) {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    this.description = description
+    extendsFrom(*superConfigurations.toTypedArray())
+}
+
+private fun Project.associate(sourceSet: SourceSet, dependency: SourceSet) {
+    val implementation = getConfiguration(sourceSet.implementationConfigurationName)
+    implementation.extendsFrom(getConfiguration(dependency.implementationConfigurationName))
+    dependencies.add(implementation.name, dependency.output)
+    extendRuntimeOnly(sourceSet, dependency)
+    associateKotlinCompilations(sourceSet, dependency)
+}
+
 private fun Project.registerTestTask(testSourceSet: SourceSet) {
-    val testTask = tasks.register(testSourceSet.name, Test::class.java) {
-        description = "Runs the tests of the '${testSourceSet.name}' source set."
-        group = LifecycleBasePlugin.VERIFICATION_GROUP
-        val compilation = compilationOf(testSourceSet)
-        testClassesDirs = compilation.output.classesDirs
-        classpath = compilation.output.allOutputs + compilation.runtimeDependencyFiles
+    val testTask = if (tasks.names.contains(testSourceSet.name)) {
+        tasks.named(testSourceSet.name, Test::class.java)
+    } else {
+        tasks.register(testSourceSet.name, Test::class.java) {
+            description = "Runs the tests of the '${testSourceSet.name}' source set."
+            group = LifecycleBasePlugin.VERIFICATION_GROUP
+        }
     }
-    tasks.named("test").configure { dependsOn(testTask) }
+    testTask.configure {
+        testClassesDirs = testSourceSet.output.classesDirs
+        classpath = testSourceSet.runtimeClasspath
+    }
+    if (testSourceSet.name != SourceSet.TEST_SOURCE_SET_NAME) {
+        tasks.named(SourceSet.TEST_SOURCE_SET_NAME).configure { dependsOn(testTask) }
+    }
 }
 
 private fun Project.includeInMainSourceSet(sourceSet: SourceSet) {
     val mainSourceSet = sourceSets().getByName(MAIN_SOURCE_SET_NAME)
+    if (sourceSet == mainSourceSet) return
 
     mainSourceSet.compileClasspath += sourceSet.output
     mainSourceSet.runtimeClasspath += sourceSet.output
-    mainSourceSet.resources.srcDirs += sourceSet.resources.srcDirs
-
-    val implementationConfiguration = configurations.getByName("implementation")
-    val runtimeOnlyConfiguration = configurations.getByName("runtimeOnly")
-
-    implementationConfiguration.extendsFrom(getConfiguration(sourceSet.implementationConfigurationName))
-    runtimeOnlyConfiguration.extendsFrom(getConfiguration(sourceSet.runtimeOnlyConfigurationName))
+    sourceSet.output.classesDirs.forEach {
+        mainSourceSet.output.dir(mapOf("builtBy" to sourceSet.classesTaskName), it)
+    }
+    sourceSet.output.resourcesDir?.let {
+        mainSourceSet.output.dir(mapOf("builtBy" to sourceSet.processResourcesTaskName), it)
+    }
+    apiConfiguration(mainSourceSet).extendsFrom(apiConfiguration(sourceSet))
+    getConfiguration(mainSourceSet.implementationConfigurationName)
+        .extendsFrom(getConfiguration(sourceSet.implementationConfigurationName))
+    getConfiguration(mainSourceSet.runtimeOnlyConfigurationName)
+        .extendsFrom(getConfiguration(sourceSet.runtimeOnlyConfigurationName))
 }
 
-private fun Project.makeConfigurationsInvisibleToOtherProjects(sourceSet: SourceSet) {
-    getConfiguration(sourceSet.implementationConfigurationName).isVisible = false
-    getConfiguration(sourceSet.runtimeOnlyConfigurationName).isVisible = false
+private fun Project.markAsTestSources(vararg sourceSets: SourceSet?) {
+    pluginManager.withPlugin("idea") {
+        val testSources = extensions.getByType(IdeaModel::class.java).module.testSources
+        sourceSets.filterNotNull().forEach { testSources.from(it.allSource.srcDirs) }
+    }
 }
 
-fun Project.getConfiguration(configurationName: String) = project.configurations.getByName(configurationName)
+private fun Project.dependencyConfiguration(sourceSet: SourceSet, type: DependencyType) = when (type) {
+    API -> apiConfiguration(sourceSet)
+    IMPLEMENTATION -> getConfiguration(sourceSet.implementationConfigurationName)
+}
 
-internal fun SourceSet.getCorrespondingTestSourceSetName() = name.getCorrespondingTestSourceSetName()
-internal fun SourceSet.getCorrespondingTestFixturesSourceSetName() = name.getCorrespondingTestFixturesSourceSetName()
+private fun Project.apiConfiguration(sourceSet: SourceSet): Configuration =
+    configurations.maybeCreate(sourceSet.apiConfigurationName()).apply {
+        isCanBeConsumed = false
+        isCanBeResolved = false
+        isVisible = false
+        description = "API dependencies for the '${sourceSet.name}' source set."
+        getConfiguration(sourceSet.implementationConfigurationName).extendsFrom(this)
+    }
 
-internal fun String.getCorrespondingTestSourceSetName() = "${this}Test"
-internal fun String.getCorrespondingTestFixturesSourceSetName() = "${this}TestFixtures"
+private fun Project.runtimeConfigurations(sourceSet: SourceSet): List<Configuration> = listOf(
+    getConfiguration(sourceSet.implementationConfigurationName),
+    getConfiguration(sourceSet.runtimeOnlyConfigurationName),
+)
+
+private fun Project.extendRuntimeOnly(sourceSet: SourceSet, dependency: SourceSet) {
+    getConfiguration(sourceSet.runtimeOnlyConfigurationName)
+        .extendsFrom(*runtimeConfigurations(dependency).toTypedArray())
+}
+
+private fun Project.createProjectDependency(projectPath: String, targetConfiguration: String): Dependency =
+    dependencies.project(
+        mapOf(
+            "path" to projectPath,
+            "configuration" to targetConfiguration,
+        )
+    )
+
+internal fun Project.sourceSets(): SourceSetContainer =
+    extensions.findByType(SourceSetContainer::class.java)
+        ?: throw IllegalArgumentException("Arciphant error: cannot access source sets in project '$path' because no compatible JVM plugin has been applied.")
+
+internal fun Project.getConfiguration(configurationName: String): Configuration =
+    configurations.getByName(configurationName)
+
+private fun SourceSetContainer.createOrReuseMain(name: String): SourceSet =
+    if (name == MAIN_SOURCE_SET_NAME) getByName(name) else create(name)
+
+private fun SourceSet.apiConfigurationName() =
+    if (name == MAIN_SOURCE_SET_NAME) "api" else "${name}Api"
+
+internal fun String.defaultTestSourceSetName() = "${this}Test"
+internal fun String.defaultTestFixturesSourceSetName() = "${this}TestFixtures"
+
+private fun String.apiElementsConfigurationName() = "${this}ApiElements"
+private fun String.runtimeElementsConfigurationName() = "${this}RuntimeElements"
+
+internal const val MODULE_API_ELEMENTS_CONFIGURATION = "arciphantModuleApiElements"
+internal const val MODULE_RUNTIME_ELEMENTS_CONFIGURATION = "arciphantModuleRuntimeElements"

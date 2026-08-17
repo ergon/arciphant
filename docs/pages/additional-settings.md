@@ -54,6 +54,8 @@ arciphant {
 }
 ```
 
+This option applies only to `ComponentLayout.PROJECT`. Arciphant rejects it in `SOURCE_SET` mode because that layout creates a single archive per module.
+
 !!! warning "Duplicate name handling strategy required"
 
     But be aware that if you disable it, you have to take care of preventing duplicated names yourself. To solve the issue in a generic way for arbitrary gradle projects, you can use something like this:
