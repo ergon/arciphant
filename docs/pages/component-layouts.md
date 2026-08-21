@@ -6,18 +6,16 @@ icon: lucide/layout-grid
 
 Arciphant supports two ways of mapping configured components to Gradle:
 
-* `ComponentLayout.PROJECT` creates one Gradle project per component. This is the default and preserves the original Arciphant behavior.
-* `ComponentLayout.SOURCE_SET` creates one Gradle project per functional module and maps every component to source sets inside that project.
+* The project layout creates one Gradle project per component. This is the default and preserves the original Arciphant behavior.
+* The source set layout creates one Gradle project per functional module and maps every component to source sets inside that project.
 
 ## Source set layout
 
-Enable the source set layout in `settings.gradle.kts`:
+Enable the source set layout with `sourceSetComponentLayout()` in `settings.gradle.kts`:
 
 ``` kotlin title="settings.gradle.kts"
-import ch.ergon.arciphant.dsl.ComponentLayout
-
 arciphant {
-    componentLayout(ComponentLayout.SOURCE_SET)
+    sourceSetComponentLayout()
 
     val template = template()
         .createComponent("domain")
@@ -48,7 +46,7 @@ Tests and test fixtures are enabled by default. Their names and global availabil
 
 ``` kotlin title="settings.gradle.kts"
 arciphant {
-    componentLayout(ComponentLayout.SOURCE_SET)
+    sourceSetComponentLayout()
 
     withTestSourceSet(true)
     withTestFixturesSourceSet(false)
@@ -64,7 +62,7 @@ arciphant {
 }
 ```
 
-The component parameters override the global flags. They can also be supplied to `extendComponent`, which is useful when a component comes from a template.
+The component parameters override the global flags.
 
 Source-set settings and component source-set options are rejected in `PROJECT` mode rather than being silently ignored.
 
@@ -120,3 +118,7 @@ The name of the target test-fixtures source set is derived from the global `test
 Component plugins cannot be configured in `SOURCE_SET` mode because Gradle plugins can only be applied to projects. Configure the JVM and convention plugins on the module projects instead.
 
 `disableQualifiedArchiveBaseName()` is also invalid in `SOURCE_SET` mode: a module produces only one archive, so component-qualified archive names are unnecessary.
+
+## Demo project
+
+The sub-project `arciphant-source-set-demo` in the [Arciphant repository](https://github.com/ergon/arciphant){ target="_blank" } demonstrates a complete application using the source set layout. It mirrors the structure of the [demo project](demo-project.md) that uses the project layout.
