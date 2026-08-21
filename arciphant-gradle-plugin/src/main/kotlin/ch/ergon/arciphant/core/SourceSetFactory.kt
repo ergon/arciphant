@@ -55,12 +55,12 @@ internal class SourceSetFactory(private val project: Project) {
 
     private fun createConsumableConfigurations(sourceSet: SourceSet) {
         val apiElements = createConsumableConfiguration(
-            name = sourceSet.name.apiElementsConfigurationName(),
+            name = sourceSet.apiElementsConfigurationName,
             description = "API elements of the '${sourceSet.name}' source set.",
             superConfigurations = listOf(sourceSet.apiConfiguration()),
         )
         val runtimeElements = createConsumableConfiguration(
-            name = sourceSet.name.runtimeElementsConfigurationName(),
+            name = sourceSet.runtimeElementsConfigurationName,
             description = "Runtime elements of the '${sourceSet.name}' source set.",
             superConfigurations = runtimeConfigurations(sourceSet),
         )
@@ -133,10 +133,6 @@ internal class SourceSetFactory(private val project: Project) {
     private fun runtimeConfigurations(sourceSet: SourceSet): List<Configuration> = project.runtimeConfigurations(sourceSet)
 
     private fun extendRuntimeOnly(sourceSet: SourceSet, dependency: SourceSet) = project.extendRuntimeOnly(sourceSet, dependency)
-
-    private fun String.apiElementsConfigurationName() = "${this}ApiElements"
-    private fun String.runtimeElementsConfigurationName() = "${this}RuntimeElements"
-
 
     private fun SourceSet.apiConfiguration() = getConfiguration(apiConfigurationName)
     private fun SourceSet.implementationConfiguration() = getConfiguration(implementationConfigurationName)
