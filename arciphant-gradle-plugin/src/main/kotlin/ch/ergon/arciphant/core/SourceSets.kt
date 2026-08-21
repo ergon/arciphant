@@ -29,11 +29,11 @@ internal fun Project.createComponent(
 ): ComponentSourceSets {
     val sourceSets = sourceSets()
     val production = sourceSets.create(name)
-    apiConfiguration(production)
+    createOrReuseApiConfiguration(production)
 
     val testFixtures = if (withTestFixturesSourceSet ?: settings.withTestFixturesSourceSet) {
         sourceSets.create(settings.testFixturesSourceSetName(name)).also {
-            apiConfiguration(it)
+            createOrReuseApiConfiguration(it)
             associate(it, production)
         }
     } else {
@@ -192,8 +192,8 @@ private fun Project.createConsumableConfiguration(
 }
 
 private fun Project.associate(sourceSet: SourceSet, dependency: SourceSet) {
-    val implementation = getConfiguration(sourceSet.implementationConfigurationName)
-    implementation.extendsFrom(getConfiguration(dependency.implementationConfigurationName))
+    val implementation = implementationConfiguration(sourceSet)
+    implementation.extendsFrom(implementationConfiguration(dependency))
     dependencies.add(implementation.name, dependency.output)
     extendRuntimeOnly(sourceSet, dependency)
     associateKotlinCompilations(sourceSet, dependency)
@@ -229,11 +229,9 @@ private fun Project.includeInMainSourceSet(sourceSet: SourceSet) {
     sourceSet.output.resourcesDir?.let {
         mainSourceSet.output.dir(mapOf("builtBy" to sourceSet.processResourcesTaskName), it)
     }
-    getConfiguration(mainSourceSet.apiConfigurationName).extendsFrom(apiConfiguration(sourceSet))
-    getConfiguration(mainSourceSet.implementationConfigurationName)
-        .extendsFrom(getConfiguration(sourceSet.implementationConfigurationName))
-    getConfiguration(mainSourceSet.runtimeOnlyConfigurationName)
-        .extendsFrom(getConfiguration(sourceSet.runtimeOnlyConfigurationName))
+    apiConfiguration(mainSourceSet).extendsFrom(apiConfiguration(sourceSet))
+    implementationConfiguration(mainSourceSet).extendsFrom(implementationConfiguration(sourceSet))
+    runtimeConfiguration(mainSourceSet).extendsFrom(runtimeConfiguration(sourceSet))
 }
 
 private fun Project.markAsTestSources(vararg sourceSets: SourceSet?) {
@@ -245,25 +243,30 @@ private fun Project.markAsTestSources(vararg sourceSets: SourceSet?) {
 
 private fun Project.dependencyConfiguration(sourceSet: SourceSet, type: DependencyType) = when (type) {
     API -> apiConfiguration(sourceSet)
-    IMPLEMENTATION -> getConfiguration(sourceSet.implementationConfigurationName)
+    IMPLEMENTATION -> implementationConfiguration(sourceSet)
 }
 
-private fun Project.apiConfiguration(sourceSet: SourceSet): Configuration =
-    configurations.maybeCreate("${sourceSet.name}Api").apply {
+private fun Project.apiConfiguration(sourceSet: SourceSet) = getConfiguration(sourceSet.apiConfigurationName)
+private fun Project.implementationConfiguration(sourceSet: SourceSet) = getConfiguration(sourceSet.implementationConfigurationName)
+private fun Project.runtimeConfiguration(sourceSet: SourceSet) = getConfiguration(sourceSet.runtimeOnlyConfigurationName)
+
+private fun Project.createOrReuseApiConfiguration(sourceSet: SourceSet): Configuration {
+    return configurations.maybeCreate(sourceSet.apiConfigurationName).apply {
         isCanBeConsumed = false
         isCanBeResolved = false
         isVisible = false
         description = "API dependencies for the '${sourceSet.name}' source set."
-        getConfiguration(sourceSet.implementationConfigurationName).extendsFrom(this)
+        implementationConfiguration(sourceSet).extendsFrom(this)
     }
+}
 
 private fun Project.runtimeConfigurations(sourceSet: SourceSet): List<Configuration> = listOf(
-    getConfiguration(sourceSet.implementationConfigurationName),
-    getConfiguration(sourceSet.runtimeOnlyConfigurationName),
+    implementationConfiguration(sourceSet),
+    runtimeConfiguration(sourceSet),
 )
 
 private fun Project.extendRuntimeOnly(sourceSet: SourceSet, dependency: SourceSet) {
-    getConfiguration(sourceSet.runtimeOnlyConfigurationName)
+    runtimeConfiguration(sourceSet)
         .extendsFrom(*runtimeConfigurations(dependency).toTypedArray())
 }
 
