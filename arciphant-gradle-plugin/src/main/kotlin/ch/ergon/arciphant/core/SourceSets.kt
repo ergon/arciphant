@@ -5,9 +5,10 @@ import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.kotlin.dsl.project
 
 internal fun Project.sourceSetDependencies(
     settings: SourceSetComponentSettings,
@@ -87,11 +88,11 @@ class SourceSetDependencyScope internal constructor(
     ) {
         project.dependencies.add(
             project.dependencyConfiguration(sourceSet, type).name,
-            project.createProjectDependency(projectPath, dependencySourceSetName.apiElementsConfigurationName()),
+            project.projectDependency(projectPath, dependencySourceSetName.apiElementsConfigurationName()),
         )
         project.dependencies.add(
             sourceSet.runtimeOnlyConfigurationName,
-            project.createProjectDependency(projectPath, dependencySourceSetName.runtimeElementsConfigurationName()),
+            project.projectDependency(projectPath, dependencySourceSetName.runtimeElementsConfigurationName()),
         )
     }
 
@@ -117,13 +118,9 @@ internal fun Project.extendRuntimeOnly(sourceSet: SourceSet, dependency: SourceS
     runtimeConfiguration(sourceSet).extendsFrom(*runtimeConfigurations(dependency).toTypedArray())
 }
 
-internal fun Project.createProjectDependency(projectPath: String, targetConfiguration: String): Dependency =
-    dependencies.project(
-        mapOf(
-            "path" to projectPath,
-            "configuration" to targetConfiguration,
-        )
-    )
+internal fun Project.projectDependency(projectPath: String, targetConfiguration: String): ProjectDependency {
+    return dependencies.project(projectPath, targetConfiguration)
+}
 
 internal fun Project.sourceSets(): SourceSetContainer =
     extensions.findByType(SourceSetContainer::class.java)
