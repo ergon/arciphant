@@ -159,10 +159,10 @@ private fun Project.addTestFixturesDependency(path: GradleProjectPath) {
 private fun Project.addSourceSetComponentDependency(path: GradleProjectPath, componentName: String) {
     dependencies.add(
         IMPLEMENTATION.configurationName,
-        createProjectDependency(path.value, componentName.apiElementsConfigurationName()),
+        projectDependency(path.value, componentName.apiElementsConfigurationName()),
     )
     dependencies.add(
         "runtimeOnly",
-        createProjectDependency(path.value, componentName.runtimeElementsConfigurationName()),
+        projectDependency(path.value, componentName.runtimeElementsConfigurationName()),
     )
 }
