@@ -75,9 +75,10 @@ class SourceSetsTest {
 
         val factory = SourceSetFactory(project)
         factory.createComponent(name = "domain", settings = settings)
-        factory.createComponent(name = "api", settings = settings, consumable = true)
+        factory.createComponent(name = "api", settings = settings)
 
-        assertThat(project.configurations.findByName("domainApiElements")).isNull()
+        assertThat(project.configuration("domainApiElements").isCanBeConsumed).isTrue()
+        assertThat(project.configuration("domainRuntimeElements").isCanBeConsumed).isTrue()
         assertThat(project.configuration("apiApiElements").isCanBeConsumed).isTrue()
         assertThat(project.configuration("apiRuntimeElements").isCanBeConsumed).isTrue()
         assertThat(project.configuration("apiTestFixturesApiElements").isCanBeConsumed).isTrue()
@@ -148,7 +149,6 @@ class SourceSetsTest {
         SourceSetFactory(javaProject("library", root)).createComponent(
             name = "domain",
             settings = customSettings,
-            consumable = true,
         )
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = customSettings)
@@ -178,7 +178,6 @@ class SourceSetsTest {
             name = "domain",
             settings = settings,
             withTestFixturesSourceSet = false,
-            consumable = true,
         )
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = settings)

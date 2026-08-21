@@ -30,7 +30,6 @@ internal data class Component(
     val dependsOn: Set<Dependency>,
     val withTestSourceSet: Boolean?,
     val withTestFixturesSourceSet: Boolean?,
-    val consumable: Boolean?,
 )
 
 internal data class Dependency(val component: ComponentReference, val type: DependencyType)

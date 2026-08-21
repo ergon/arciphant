@@ -63,7 +63,6 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
         dependsOn = dependsOn + additionalDependencies,
         withTestSourceSet = withTestSourceSet,
         withTestFixturesSourceSet = withTestFixturesSourceSet,
-        consumable = consumable,
     )
 
     private fun Collection<Component>.validate() = forEach { it.validate() }
@@ -73,7 +72,6 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
             PROJECT -> {
                 PROJECT.verifyConfig(this::withTestSourceSet)
                 PROJECT.verifyConfig(this::withTestFixturesSourceSet)
-                PROJECT.verifyConfig(this::consumable)
             }
             SOURCE_SET -> {
                 SOURCE_SET.verifyConfig(this::plugin)
