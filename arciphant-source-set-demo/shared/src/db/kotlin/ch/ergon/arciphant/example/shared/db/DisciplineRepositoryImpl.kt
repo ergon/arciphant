@@ -6,7 +6,7 @@ import ch.ergon.arciphant.example.shared.domain.DisciplineRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-internal class DisciplineRepositoryImpl : DisciplineRepository, InMemoryRepository<Discipline, DisciplineId>() {
+class DisciplineRepositoryImpl : DisciplineRepository, InMemoryRepository<Discipline, DisciplineId>() {
 
     override fun addDiscipline(discipline: Discipline) {
         addRecord(discipline.id, discipline)
