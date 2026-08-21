@@ -110,10 +110,10 @@ class GradleProjectConfigApplicatorTest {
 
             project.applyModuleConfig(module, settings())
 
-            assertThat(project.configuration("domainApiElements").isCanBeConsumed).isTrue()
-            assertThat(project.configuration("domainRuntimeElements").isCanBeConsumed).isTrue()
-            assertThat(project.configuration("domainTestFixturesApiElements").isCanBeConsumed).isTrue()
-            assertThat(project.configuration("domainTestFixturesRuntimeElements").isCanBeConsumed).isTrue()
+            assertThat(project.configurations.getByName("domainApiElements").isCanBeConsumed).isTrue()
+            assertThat(project.configurations.getByName("domainRuntimeElements").isCanBeConsumed).isTrue()
+            assertThat(project.configurations.getByName("domainTestFixturesApiElements").isCanBeConsumed).isTrue()
+            assertThat(project.configurations.getByName("domainTestFixturesRuntimeElements").isCanBeConsumed).isTrue()
         }
 
         @Test
@@ -128,8 +128,8 @@ class GradleProjectConfigApplicatorTest {
 
             assertThat(project.configurations.findByName("domainApiElements")).isNull()
             assertThat(project.configurations.findByName("domainRuntimeElements")).isNull()
-            assertThat(project.configuration("apiApiElements").isCanBeConsumed).isTrue()
-            assertThat(project.configuration("apiRuntimeElements").isCanBeConsumed).isTrue()
+            assertThat(project.configurations.getByName("apiApiElements").isCanBeConsumed).isTrue()
+            assertThat(project.configurations.getByName("apiRuntimeElements").isCanBeConsumed).isTrue()
         }
     }
 
@@ -157,5 +157,4 @@ class GradleProjectConfigApplicatorTest {
             listOf(GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf(name)), module)),
         ).applyConfig(this)
 
-    private fun Project.configuration(name: String) = configurations.getByName(name)
 }
