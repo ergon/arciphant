@@ -52,12 +52,12 @@ internal class SourceSetFactory(private val project: Project) {
 
     private fun createConsumableConfigurations(sourceSet: SourceSet) {
         val apiElements = createConsumableConfiguration(
-            name = sourceSet.apiElementsConfigurationName,
+            name = sourceSet.name.apiElementsConfigurationName(),
             description = "API elements of the '${sourceSet.name}' source set.",
             superConfigurations = listOf(sourceSet.apiConfiguration()),
         )
         val runtimeElements = createConsumableConfiguration(
-            name = sourceSet.runtimeElementsConfigurationName,
+            name = sourceSet.name.runtimeElementsConfigurationName(),
             description = "Runtime elements of the '${sourceSet.name}' source set.",
             superConfigurations = runtimeConfigurations(sourceSet),
         )
