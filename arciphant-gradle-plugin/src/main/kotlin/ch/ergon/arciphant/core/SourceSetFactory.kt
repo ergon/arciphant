@@ -64,8 +64,14 @@ internal class SourceSetFactory(private val project: Project) {
         listOf(apiElements, runtimeElements).forEach { project.dependencies.add(it.name, sourceSet.output) }
     }
 
-    private fun createConsumableConfiguration(name: String, description: String, superConfigurations: List<Configuration>) =
-        project.createConsumableConfiguration(name, description, superConfigurations)
+    private fun createConsumableConfiguration(name: String, description: String, superConfigurations: List<Configuration>): Configuration {
+        return project.configurations.create(name) {
+            isCanBeConsumed = true
+            isCanBeResolved = false
+            this.description = description
+            extendsFrom(*superConfigurations.toTypedArray())
+        }
+    }
 
     private fun associate(sourceSet: SourceSet, dependency: SourceSet) {
         val implementation = sourceSet.implementationConfiguration()
