@@ -66,17 +66,6 @@ The component parameters override the global flags.
 
 Source-set settings and component source-set options are rejected in `PROJECT` mode rather than being silently ignored.
 
-## Consumable components
-
-By default, a component source set cannot be consumed from another module project. Set `consumable = true` when another module needs an `api` or `implementation` dependency on that component:
-
-``` kotlin title="settings.gradle.kts"
-module("contracts")
-    .createComponent(name = "api", consumable = true)
-```
-
-All components of a `library` module are always consumable, regardless of the configured flag, because Arciphant automatically connects matching library components to domain modules.
-
 ## Project-level utility DSL
 
 The same source-set creation and dependency functions used internally by Arciphant are available through the `arciphant` extension in `build.gradle.kts` files:
@@ -93,7 +82,7 @@ arciphant {
 }
 ```
 
-A consumable component in another module can be referenced by project path and component name:
+A component in another module can be referenced by project path and component name:
 
 ``` kotlin title="build.gradle.kts"
 import org.gradle.api.tasks.SourceSetContainer

@@ -42,7 +42,9 @@ internal class GradleProjectConfigApplicator(
 
         projectConfigs.filter { module.includes.contains(it.module.reference) }.forEach {
             if (it is GradleFunctionalModuleProjectConfig) {
-                bundleModuleProject.addSourceSetModuleDependency(it.path)
+                it.module.components.forEach { component ->
+                    bundleModuleProject.addSourceSetComponentDependency(it.path, component.reference.name)
+                }
             } else {
                 bundleModuleProject.addDependency(
                     type = IMPLEMENTATION,
@@ -78,7 +80,6 @@ internal class GradleProjectConfigApplicator(
                 settings = sourceSetComponentSettings,
                 withTestSourceSet = component.withTestSourceSet,
                 withTestFixturesSourceSet = component.withTestFixturesSourceSet,
-                consumable = module is LibraryModule || (component.consumable ?: false),
             )
         }
 
@@ -110,8 +111,6 @@ internal class GradleProjectConfigApplicator(
                 }
             }
         }
-
-        moduleProject.createConsumableModuleConfigurations(sourceSetsByComponent.values)
     }
 
     private fun Plugin.applyTo(project: Project) = project.apply(plugin = id)
@@ -157,23 +156,13 @@ private fun Project.addTestFixturesDependency(path: GradleProjectPath) {
     }
 }
 
-private fun Project.addSourceSetModuleDependency(path: GradleProjectPath) {
+private fun Project.addSourceSetComponentDependency(path: GradleProjectPath, componentName: String) {
     dependencies.add(
         IMPLEMENTATION.configurationName,
-        dependencies.project(
-            mapOf(
-                "path" to path.value,
-                "configuration" to MODULE_API_ELEMENTS_CONFIGURATION,
-            )
-        )
+        createProjectDependency(path.value, componentName.apiElementsConfigurationName()),
     )
     dependencies.add(
         "runtimeOnly",
-        dependencies.project(
-            mapOf(
-                "path" to path.value,
-                "configuration" to MODULE_RUNTIME_ELEMENTS_CONFIGURATION,
-            )
-        )
+        createProjectDependency(path.value, componentName.runtimeElementsConfigurationName()),
     )
 }

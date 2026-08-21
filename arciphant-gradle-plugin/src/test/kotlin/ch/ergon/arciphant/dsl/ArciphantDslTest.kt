@@ -322,19 +322,6 @@ class ArciphantDslTest {
             )
         }
 
-        @ParameterizedTest
-        @ValueSource(booleans = [true, false])
-        fun `it should reject 'consumable' for project layout`(value: Boolean) {
-            with(dsl) {
-                module(name = "module").createComponent(name = "domain", consumable = value)
-            }
-
-            val exception = assertThrows<IllegalArgumentException> { moduleRepository.load() }
-
-            assertThat(exception.message).isEqualTo(
-                "Arciphant configuration error: 'consumable' cannot be configured for component layout 'PROJECT'"
-            )
-        }
     }
 
     @Nested

@@ -32,7 +32,6 @@ class FunctionalModuleBuilder internal constructor(
         dependsOn: Set<String> = emptySet(),
         withTestSourceSet: Boolean? = null,
         withTestFixturesSourceSet: Boolean? = null,
-        consumable: Boolean? = null,
     ): FunctionalModuleBuilder {
         componentsBuilder.doCreateComponent(
             name = name,
@@ -41,7 +40,6 @@ class FunctionalModuleBuilder internal constructor(
             dependsOn = dependsOn,
             withTestSourceSet = withTestSourceSet,
             withTestFixturesSourceSet = withTestFixturesSourceSet,
-            consumable = consumable,
         )
         return this
     }
@@ -74,7 +72,6 @@ class ModuleTemplateBuilder internal constructor() {
         dependsOn: Set<String> = emptySet(),
         withTestSourceSet: Boolean? = null,
         withTestFixturesSourceSet: Boolean? = null,
-        consumable: Boolean? = null,
     ): ModuleTemplateBuilder {
         componentsBuilder.doCreateComponent(
             name = name,
@@ -83,7 +80,6 @@ class ModuleTemplateBuilder internal constructor() {
             dependsOn = dependsOn,
             withTestSourceSet = withTestSourceSet,
             withTestFixturesSourceSet = withTestFixturesSourceSet,
-            consumable = consumable,
         )
         return this
     }
@@ -113,7 +109,6 @@ internal class ComponentsBuilder {
         dependsOn: Set<String>,
         withTestSourceSet: Boolean?,
         withTestFixturesSourceSet: Boolean?,
-        consumable: Boolean?,
     ) {
         verifyName(name, "component")
         val dependencies = mapDependencies(dependsOnApi, dependsOn)
@@ -124,7 +119,6 @@ internal class ComponentsBuilder {
                 dependsOn = dependencies,
                 withTestSourceSet = withTestSourceSet,
                 withTestFixturesSourceSet = withTestFixturesSourceSet,
-                consumable = consumable,
             )
         )
     }

@@ -6,12 +6,10 @@ internal fun component(
     dependsOn: Set<Dependency> = emptySet(),
     withTestSourceSet: Boolean? = null,
     withTestFixturesSourceSet: Boolean? = null,
-    consumable: Boolean? = null,
 ) = Component(
     reference = reference,
     plugin = plugin,
     dependsOn = dependsOn,
     withTestSourceSet = withTestSourceSet,
     withTestFixturesSourceSet = withTestFixturesSourceSet,
-    consumable = consumable,
 )

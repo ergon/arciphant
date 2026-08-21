@@ -15,7 +15,6 @@ internal class SourceSetFactory(private val project: Project) {
         settings: SourceSetComponentSettings,
         withTestSourceSet: Boolean? = null,
         withTestFixturesSourceSet: Boolean? = null,
-        consumable: Boolean = false,
         sourceSetDependenciesBlock: (SourceSetDependencyScope.(SourceSet) -> Unit)? = null,
     ): ComponentSourceSets {
         val sourceSets = project.sourceSets()
@@ -40,10 +39,8 @@ internal class SourceSetFactory(private val project: Project) {
             null
         }
 
-        if (consumable) {
-            createConsumableConfigurations(production)
-            testFixtures?.let { createConsumableConfigurations(it) }
-        }
+        createConsumableConfigurations(production)
+        testFixtures?.let { createConsumableConfigurations(it) }
 
         sourceSetDependenciesBlock?.let { block -> project.sourceSetDependencies(settings) { block(production) } }
 

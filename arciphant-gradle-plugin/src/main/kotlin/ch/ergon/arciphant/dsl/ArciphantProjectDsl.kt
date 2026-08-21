@@ -10,14 +10,12 @@ open class ArciphantProjectDsl internal constructor(private val project: Project
         name: String,
         withTestSourceSet: Boolean? = null,
         withTestFixturesSourceSet: Boolean? = null,
-        consumable: Boolean = false,
         sourceSetDependencies: (SourceSetDependencyScope.(SourceSet) -> Unit)? = null,
     ): SourceSet = SourceSetFactory(project).createComponent(
         name = name,
         settings = componentSettings,
         withTestSourceSet = withTestSourceSet,
         withTestFixturesSourceSet = withTestFixturesSourceSet,
-        consumable = consumable,
         sourceSetDependenciesBlock = sourceSetDependencies,
     ).production
 

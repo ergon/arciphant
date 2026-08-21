@@ -7,31 +7,13 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.tasks.SourceSet
-import org.gradle.api.tasks.SourceSet.MAIN_SOURCE_SET_NAME
 import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.api.tasks.testing.Test
-import org.gradle.language.base.plugins.LifecycleBasePlugin
-import org.gradle.plugins.ide.idea.model.IdeaModel
 
 internal fun Project.sourceSetDependencies(
     settings: SourceSetComponentSettings,
     block: SourceSetDependencyScope.() -> Unit,
 ) {
     SourceSetDependencyScope(this, settings).block()
-}
-
-internal fun Project.createConsumableModuleConfigurations(componentSourceSets: Collection<ComponentSourceSets>) {
-    val apiElements = createConsumableConfiguration(
-        name = MODULE_API_ELEMENTS_CONFIGURATION,
-        description = "API elements of all Arciphant component source sets in this module.",
-        superConfigurations = componentSourceSets.map { apiConfiguration(it.production) },
-    )
-    val runtimeElements = createConsumableConfiguration(
-        name = MODULE_RUNTIME_ELEMENTS_CONFIGURATION,
-        description = "Runtime elements of all Arciphant component source sets in this module.",
-        superConfigurations = componentSourceSets.flatMap { runtimeConfigurations(it.production) },
-    )
-    listOf(apiElements, runtimeElements).forEach { artifacts.add(it.name, tasks.named("jar")) }
 }
 
 class SourceSetDependencyScope internal constructor(
@@ -147,7 +129,7 @@ internal fun Project.extendRuntimeOnly(sourceSet: SourceSet, dependency: SourceS
         .extendsFrom(*runtimeConfigurations(dependency).toTypedArray())
 }
 
-private fun Project.createProjectDependency(projectPath: String, targetConfiguration: String): Dependency =
+internal fun Project.createProjectDependency(projectPath: String, targetConfiguration: String): Dependency =
     dependencies.project(
         mapOf(
             "path" to projectPath,
@@ -165,8 +147,5 @@ internal fun Project.getConfiguration(configurationName: String): Configuration 
 internal fun String.defaultTestSourceSetName() = "${this}Test"
 internal fun String.defaultTestFixturesSourceSetName() = "${this}TestFixtures"
 
-private fun String.apiElementsConfigurationName() = "${this}ApiElements"
-private fun String.runtimeElementsConfigurationName() = "${this}RuntimeElements"
-
-internal const val MODULE_API_ELEMENTS_CONFIGURATION = "arciphantModuleApiElements"
-internal const val MODULE_RUNTIME_ELEMENTS_CONFIGURATION = "arciphantModuleRuntimeElements"
+internal fun String.apiElementsConfigurationName() = "${this}ApiElements"
+internal fun String.runtimeElementsConfigurationName() = "${this}RuntimeElements"

@@ -348,12 +348,12 @@ class ArciphantPluginTest {
     }
 
     @Test
-    fun `test that consumable components can be used through project DSL`() {
+    fun `test that components of other modules can be used through project DSL`() {
         settingsFileWithArciphant(
             """
             sourceSetComponentLayout()
 
-            module("producer").createComponent("api", consumable = true)
+            module("producer").createComponent("api")
             module("consumer").createComponent("application")
             """
         )
@@ -448,7 +448,8 @@ class ArciphantPluginTest {
 
         val result = gradleRunner.withArguments(":application:compileJava").build()
 
-        assertThat(result.task(":module:jar")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":module:compileApiJava")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":module:jar")).isNull()
         assertThat(result.task(":application:compileJava")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
     }
 
