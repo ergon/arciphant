@@ -20,7 +20,8 @@ class SourceSetsTest {
     fun `it should create component source sets and test task`() {
         val project = javaProject()
 
-        val component = project.createComponent(name = "domain", settings = settings)
+        val factory = SourceSetFactory(project)
+        val component = factory.createComponent(name = "domain", settings = settings)
 
         assertThat(component.production.name).isEqualTo("domain")
         assertThat(component.testFixtures?.name).isEqualTo("domainTestFixtures")
@@ -34,12 +35,13 @@ class SourceSetsTest {
     fun `it should support optional test source sets`() {
         val project = javaProject()
 
-        val withoutTestFixtures = project.createComponent(
+        val factory = SourceSetFactory(project)
+        val withoutTestFixtures = factory.createComponent(
             name = "domain",
             settings = settings,
             withTestFixturesSourceSet = false,
         )
-        val withoutTest = project.createComponent(
+        val withoutTest = factory.createComponent(
             name = "api",
             settings = settings,
             withTestSourceSet = false,
@@ -58,7 +60,8 @@ class SourceSetsTest {
     fun `it should fall back to the global test source set settings`() {
         val project = javaProject()
 
-        val component = project.createComponent(
+        val factory = SourceSetFactory(project)
+        val component = factory.createComponent(
             name = "domain",
             settings = sourceSetComponentSettings(withTestSourceSet = false, withTestFixturesSourceSet = false),
         )
@@ -71,8 +74,9 @@ class SourceSetsTest {
     fun `it should create consumable API and runtime configurations`() {
         val project = javaProject()
 
-        project.createComponent(name = "domain", settings = settings)
-        project.createComponent(name = "api", settings = settings, consumable = true)
+        val factory = SourceSetFactory(project)
+        factory.createComponent(name = "domain", settings = settings)
+        factory.createComponent(name = "api", settings = settings, consumable = true)
 
         assertThat(project.configurations.findByName("domainApiElements")).isNull()
         assertThat(project.configuration("apiApiElements").isCanBeConsumed).isTrue()
@@ -85,7 +89,8 @@ class SourceSetsTest {
     fun `it should include component output and API in main`() {
         val project = javaProject()
 
-        project.createComponent(name = "domain", settings = settings)
+        val factory = SourceSetFactory(project)
+        factory.createComponent(name = "domain", settings = settings)
 
         assertThat(project.configuration("api").extendsFrom).contains(project.configuration("domainApi"))
         assertThat(project.configuration("implementation").extendsFrom)
@@ -96,7 +101,8 @@ class SourceSetsTest {
     fun `it should mark tests and test fixtures as IDEA test sources`() {
         val project = javaProject().also { it.pluginManager.apply("idea") }
 
-        val component = project.createComponent(name = "domain", settings = settings)
+        val factory = SourceSetFactory(project)
+        val component = factory.createComponent(name = "domain", settings = settings)
 
         val testSources = project.extensions.getByType(IdeaModel::class.java).module.testSources.files
         assertThat(testSources).containsAll(component.testFixtures!!.allSource.srcDirs)
@@ -106,8 +112,9 @@ class SourceSetsTest {
     @Test
     fun `it should mirror local component dependencies to test fixtures only`() {
         val project = javaProject()
-        val target = project.createComponent(name = "domain", settings = settings)
-        val source = project.createComponent(name = "application", settings = settings) { sourceSet ->
+        val factory = SourceSetFactory(project)
+        val target = factory.createComponent(name = "domain", settings = settings)
+        val source = factory.createComponent(name = "application", settings = settings) { sourceSet ->
             implementation(sourceSet, target.production)
         }
 
@@ -128,8 +135,9 @@ class SourceSetsTest {
             testFixturesSourceSetName = { "${it}Fixtures" },
         )
         val project = javaProject()
-        val target = project.createComponent(name = "domain", settings = customSettings)
-        val source = project.createComponent(name = "application", settings = customSettings) { sourceSet ->
+        val factory = SourceSetFactory(project)
+        val target = factory.createComponent(name = "domain", settings = customSettings)
+        val source = factory.createComponent(name = "application", settings = customSettings) { sourceSet ->
             implementation(sourceSet, target.production)
         }
 
@@ -144,13 +152,13 @@ class SourceSetsTest {
     fun `it should add project dependencies to consumable source set configurations`() {
         val customSettings = sourceSetComponentSettings(testFixturesSourceSetName = { "${it}Fixtures" })
         val root = javaProject("root")
-        javaProject("library", root).createComponent(
+        SourceSetFactory(javaProject("library", root)).createComponent(
             name = "domain",
             settings = customSettings,
             consumable = true,
         )
         val module = javaProject("module", root)
-        val source = module.createComponent(name = "application", settings = customSettings)
+        val source = SourceSetFactory(module).createComponent(name = "application", settings = customSettings)
 
         module.sourceSetDependencies(customSettings) {
             api(
@@ -173,14 +181,14 @@ class SourceSetsTest {
     @Test
     fun `it should skip the test fixtures dependency if the target has none`() {
         val root = javaProject("root")
-        javaProject("library", root).createComponent(
+        SourceSetFactory(javaProject("library", root)).createComponent(
             name = "domain",
             settings = settings,
             withTestFixturesSourceSet = false,
             consumable = true,
         )
         val module = javaProject("module", root)
-        val source = module.createComponent(name = "application", settings = settings)
+        val source = SourceSetFactory(module).createComponent(name = "application", settings = settings)
 
         module.sourceSetDependencies(settings) {
             api(
@@ -201,7 +209,7 @@ class SourceSetsTest {
         val project = ProjectBuilder.builder().build()
 
         val exception = assertThrows<IllegalArgumentException> {
-            project.createComponent(name = "domain", settings = settings)
+            SourceSetFactory(project).createComponent(name = "domain", settings = settings)
         }
 
         assertThat(exception.message).isEqualTo("Arciphant error: cannot access source sets in project ':' because no compatible JVM plugin has been applied.")
