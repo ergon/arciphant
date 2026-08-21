@@ -14,3 +14,5 @@ The sub-project `arciphant-demo-project` in the [Arciphant repository](https://g
 The arciphant configuration specified in ([settings.gradle.kts](https://github.com/ergon/arciphant/blob/main/arciphant-demo-project/settings.gradle.kts){ target="_blank" }) defines the following module structure for an online learning platform:
 
 ![Structure of the Demo-Project](images/demo-project.drawio.png)
+
+The sibling sub-project `arciphant-source-set-demo` implements the same module structure with the [source set component layout](component-layouts.md): every functional module is a single Gradle project whose components are source sets.
