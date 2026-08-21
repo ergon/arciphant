@@ -28,7 +28,7 @@ internal fun Project.createComponent(
     sourceSetDependenciesBlock: (SourceSetDependencyScope.(SourceSet) -> Unit)? = null,
 ): ComponentSourceSets {
     val sourceSets = sourceSets()
-    val production = sourceSets.createOrReuseMain(name)
+    val production = sourceSets.create(name)
     apiConfiguration(production)
 
     val testFixtures = if (withTestFixturesSourceSet ?: settings.withTestFixturesSourceSet) {
@@ -229,7 +229,7 @@ private fun Project.includeInMainSourceSet(sourceSet: SourceSet) {
     sourceSet.output.resourcesDir?.let {
         mainSourceSet.output.dir(mapOf("builtBy" to sourceSet.processResourcesTaskName), it)
     }
-    apiConfiguration(mainSourceSet).extendsFrom(apiConfiguration(sourceSet))
+    getConfiguration(mainSourceSet.apiConfigurationName).extendsFrom(apiConfiguration(sourceSet))
     getConfiguration(mainSourceSet.implementationConfigurationName)
         .extendsFrom(getConfiguration(sourceSet.implementationConfigurationName))
     getConfiguration(mainSourceSet.runtimeOnlyConfigurationName)
@@ -249,7 +249,7 @@ private fun Project.dependencyConfiguration(sourceSet: SourceSet, type: Dependen
 }
 
 private fun Project.apiConfiguration(sourceSet: SourceSet): Configuration =
-    configurations.maybeCreate(sourceSet.apiConfigurationName()).apply {
+    configurations.maybeCreate("${sourceSet.name}Api").apply {
         isCanBeConsumed = false
         isCanBeResolved = false
         isVisible = false
@@ -281,12 +281,6 @@ internal fun Project.sourceSets(): SourceSetContainer =
 
 internal fun Project.getConfiguration(configurationName: String): Configuration =
     configurations.getByName(configurationName)
-
-private fun SourceSetContainer.createOrReuseMain(name: String): SourceSet =
-    if (name == MAIN_SOURCE_SET_NAME) getByName(name) else create(name)
-
-private fun SourceSet.apiConfigurationName() =
-    if (name == MAIN_SOURCE_SET_NAME) "api" else "${name}Api"
 
 internal fun String.defaultTestSourceSetName() = "${this}Test"
 internal fun String.defaultTestFixturesSourceSetName() = "${this}TestFixtures"

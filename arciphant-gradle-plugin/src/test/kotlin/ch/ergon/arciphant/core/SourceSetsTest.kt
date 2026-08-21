@@ -197,15 +197,6 @@ class SourceSetsTest {
     }
 
     @Test
-    fun `it should reuse main as a component source set`() {
-        val project = javaProject()
-
-        val component = project.createComponent(name = SourceSet.MAIN_SOURCE_SET_NAME, settings = settings)
-
-        assertThat(component.production).isSameAs(project.sourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME))
-    }
-
-    @Test
     fun `it should require a JVM plugin`() {
         val project = ProjectBuilder.builder().build()
 
