@@ -99,17 +99,6 @@ class SourceSetDependencyScope internal constructor(
         project.sourceSets().findByName(settings.testFixturesSourceSetName(name))
 }
 
-internal fun Project.createConsumableConfiguration(
-    name: String,
-    description: String,
-    superConfigurations: List<Configuration>,
-): Configuration = configurations.create(name) {
-    isCanBeConsumed = true
-    isCanBeResolved = false
-    this.description = description
-    extendsFrom(*superConfigurations.toTypedArray())
-}
-
 private fun Project.dependencyConfiguration(sourceSet: SourceSet, type: DependencyType) = when (type) {
     API -> apiConfiguration(sourceSet)
     IMPLEMENTATION -> implementationConfiguration(sourceSet)
@@ -125,8 +114,7 @@ internal fun Project.runtimeConfigurations(sourceSet: SourceSet): List<Configura
 )
 
 internal fun Project.extendRuntimeOnly(sourceSet: SourceSet, dependency: SourceSet) {
-    runtimeConfiguration(sourceSet)
-        .extendsFrom(*runtimeConfigurations(dependency).toTypedArray())
+    runtimeConfiguration(sourceSet).extendsFrom(*runtimeConfigurations(dependency).toTypedArray())
 }
 
 internal fun Project.createProjectDependency(projectPath: String, targetConfiguration: String): Dependency =
