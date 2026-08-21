@@ -73,7 +73,7 @@ internal class GradleProjectConfigApplicator(
 
     private fun GradleFunctionalModuleProjectConfig.applyFunctionalModuleConfig(moduleProject: Project) {
         val sourceSetsByComponent = module.components.associateWith { component ->
-            moduleProject.createComponent(
+            SourceSetFactory(moduleProject).createComponent(
                 name = component.reference.name,
                 settings = sourceSetComponentSettings,
                 withTestSourceSet = component.withTestSourceSet,

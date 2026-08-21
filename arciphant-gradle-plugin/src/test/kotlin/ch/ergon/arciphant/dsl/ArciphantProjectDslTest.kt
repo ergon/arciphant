@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.dsl
 
+import ch.ergon.arciphant.core.SourceSetFactory
 import ch.ergon.arciphant.core.sourceSetComponentSettings
 import ch.ergon.arciphant.core.sourceSets
 import ch.ergon.arciphant.util.configuration
