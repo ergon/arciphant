@@ -49,8 +49,7 @@ class SourceSetsTest {
 
         assertThat(withoutTestFixtures.testFixtures).isNull()
         assertThat(withoutTestFixtures.test).isNotNull()
-        assertThat(project.configuration("domainTestImplementation").hasFileDependencyOn(withoutTestFixtures.production))
-            .isTrue()
+        assertThat(project.configuration("domainTestImplementation").hasFileDependencyOn(withoutTestFixtures.production)).isTrue()
         assertThat(withoutTest.testFixtures).isNotNull()
         assertThat(withoutTest.test).isNull()
         assertThat(project.tasks.findByName("apiTest")).isNull()
@@ -118,13 +117,9 @@ class SourceSetsTest {
             implementation(sourceSet, target.production)
         }
 
-        assertThat(project.configuration("applicationImplementation").hasFileDependencyOn(target.production))
-            .isTrue()
-        assertThat(
-            project.configuration("applicationTestFixturesImplementation").hasFileDependencyOn(target.testFixtures!!)
-        ).isTrue()
-        assertThat(project.configuration("applicationTestImplementation").hasFileDependencyOn(target.test!!))
-            .isFalse()
+        assertThat(project.configuration("applicationImplementation").hasFileDependencyOn(target.production)).isTrue()
+        assertThat(project.configuration("applicationTestFixturesImplementation").hasFileDependencyOn(target.testFixtures!!)).isTrue()
+        assertThat(project.configuration("applicationTestImplementation").hasFileDependencyOn(target.test!!)).isFalse()
         assertThat(source.test).isNotNull()
     }
 
@@ -143,9 +138,7 @@ class SourceSetsTest {
 
         assertThat(target.testFixtures?.name).isEqualTo("domainFixtures")
         assertThat(source.test?.name).isEqualTo("applicationSpec")
-        assertThat(
-            project.configuration("applicationFixturesImplementation").hasFileDependencyOn(target.testFixtures!!)
-        ).isTrue()
+        assertThat(project.configuration("applicationFixturesImplementation").hasFileDependencyOn(target.testFixtures!!)).isTrue()
     }
 
     @Test
