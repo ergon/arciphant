@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.sourceSetComponentSettings
 import ch.ergon.arciphant.util.configuration
 import ch.ergon.arciphant.util.hasFileDependencyOn
@@ -118,7 +119,7 @@ class SourceSetFactoryTest {
         val factory = SourceSetFactory(project)
         val target = factory.createComponent(name = "domain", settings = settings)
         val source = factory.createComponent(name = "application", settings = settings) { sourceSet ->
-            implementation(sourceSet, target.production)
+            addLocalDependency(IMPLEMENTATION, sourceSet, target.production)
         }
 
         assertThat(project.configuration("applicationImplementation").hasFileDependencyOn(target.production)).isTrue()
@@ -137,7 +138,7 @@ class SourceSetFactoryTest {
         val factory = SourceSetFactory(project)
         val target = factory.createComponent(name = "domain", settings = customSettings)
         val source = factory.createComponent(name = "application", settings = customSettings) { sourceSet ->
-            implementation(sourceSet, target.production)
+            addLocalDependency(IMPLEMENTATION, sourceSet, target.production)
         }
 
         assertThat(target.testFixtures?.name).isEqualTo("domainFixtures")
