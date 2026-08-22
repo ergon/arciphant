@@ -6,7 +6,6 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.util.zip.ZipFile
 
 /**
  * Before running this test with IntelliJ, the project should be built using Gradle.
@@ -188,15 +187,13 @@ class ArciphantPluginTest {
         )
 
         val projectsResult = gradleRunner.withArguments("-q", "projects").build()
-        val buildResult = gradleRunner.withArguments(":test:test", ":test:jar").build()
+        val buildResult = gradleRunner.withArguments(":test:build").build()
 
         assertThat(projectsResult.output).contains("Project ':test'")
         assertThat(projectsResult.output).doesNotContain("Project ':test:domain'")
+        assertThat(buildResult.task(":test:domainClasses")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(buildResult.task(":test:applicationClasses")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
         assertThat(buildResult.task(":test:applicationTest")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
-        ZipFile(projectFolder.resolve("test/build/libs/test.jar")).use { jar ->
-            assertThat(jar.getEntry("example/domain/Domain.class")).isNotNull()
-            assertThat(jar.getEntry("example/application/Application.class")).isNotNull()
-        }
     }
 
     @Test

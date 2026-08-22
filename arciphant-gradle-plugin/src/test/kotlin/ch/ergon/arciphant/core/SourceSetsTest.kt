@@ -86,15 +86,18 @@ class SourceSetsTest {
     }
 
     @Test
-    fun `it should include component output and API in main`() {
+    fun `it should attach component source sets to the lifecycle tasks`() {
         val project = javaProject()
 
         val factory = SourceSetFactory(project)
         factory.createComponent(name = "domain", settings = settings)
 
-        assertThat(project.configuration("api").extendsFrom).contains(project.configuration("domainApi"))
-        assertThat(project.configuration("implementation").extendsFrom)
-            .contains(project.configuration("domainImplementation"))
+        val classes = project.tasks.getByName("classes")
+        val testClasses = project.tasks.getByName("testClasses")
+        assertThat(classes.taskDependencies.getDependencies(classes))
+            .contains(project.tasks.getByName("domainClasses"))
+        assertThat(testClasses.taskDependencies.getDependencies(testClasses))
+            .contains(project.tasks.getByName("domainTestClasses"), project.tasks.getByName("domainTestFixturesClasses"))
     }
 
     @Test
