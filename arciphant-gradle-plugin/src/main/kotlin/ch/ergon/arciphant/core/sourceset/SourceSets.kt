@@ -17,7 +17,8 @@ internal fun Project.runtimeConfigurations(sourceSet: SourceSet): List<Configura
 )
 
 internal fun Project.extendRuntimeOnly(sourceSet: SourceSet, dependency: SourceSet) {
-    runtimeConfiguration(sourceSet).extendsFrom(*runtimeConfigurations(dependency).toTypedArray())
+    val runtimeConfiguration = runtimeConfiguration(sourceSet)
+    runtimeConfigurations(dependency).forEach { runtimeConfiguration.extendsFrom(it) }
 }
 
 internal fun Project.projectDependency(projectPath: String, targetConfiguration: String): ProjectDependency {
