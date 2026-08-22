@@ -93,7 +93,6 @@ internal class SourceSetFactory(private val project: Project) {
 
     private fun includeInMainSourceSet(sourceSet: SourceSet) {
         val mainSourceSet = project.sourceSets().getByName(MAIN_SOURCE_SET_NAME)
-        if (sourceSet == mainSourceSet) return
 
         mainSourceSet.compileClasspath += sourceSet.output
         mainSourceSet.runtimeClasspath += sourceSet.output
