@@ -7,6 +7,7 @@ import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.FunctionalModule
 import ch.ergon.arciphant.core.model.ModuleReference
 import ch.ergon.arciphant.core.model.component
+import ch.ergon.arciphant.core.sourceset.sourceSets
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.util.projectDependencyConfigurations
 import org.assertj.core.api.Assertions.assertThat

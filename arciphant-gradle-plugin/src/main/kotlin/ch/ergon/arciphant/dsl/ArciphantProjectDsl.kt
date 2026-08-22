@@ -1,6 +1,9 @@
 package ch.ergon.arciphant.dsl
 
 import ch.ergon.arciphant.core.*
+import ch.ergon.arciphant.core.sourceset.SourceSetDependencyScope
+import ch.ergon.arciphant.core.sourceset.SourceSetFactory
+import ch.ergon.arciphant.core.sourceset.sourceSetDependencies
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 

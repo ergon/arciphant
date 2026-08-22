@@ -1,11 +1,11 @@
-package ch.ergon.arciphant.core
+package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.sourceSetComponentSettings
 import ch.ergon.arciphant.util.configuration
 import ch.ergon.arciphant.util.hasFileDependencyOn
 import ch.ergon.arciphant.util.javaProject
 import ch.ergon.arciphant.util.projectDependencyConfigurations
 import org.assertj.core.api.Assertions.assertThat
-import org.gradle.api.tasks.SourceSet
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test

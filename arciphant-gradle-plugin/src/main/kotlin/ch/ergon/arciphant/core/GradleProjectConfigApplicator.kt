@@ -4,6 +4,11 @@ import ch.ergon.arciphant.core.ComponentLayout.PROJECT
 import ch.ergon.arciphant.core.model.*
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.core.sourceset.SourceSetFactory
+import ch.ergon.arciphant.core.sourceset.apiElementsConfigurationName
+import ch.ergon.arciphant.core.sourceset.projectDependency
+import ch.ergon.arciphant.core.sourceset.runtimeElementsConfigurationName
+import ch.ergon.arciphant.core.sourceset.sourceSetDependencies
 import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.jvm.tasks.Jar
