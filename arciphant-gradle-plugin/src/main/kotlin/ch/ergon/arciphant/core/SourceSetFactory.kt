@@ -2,8 +2,8 @@ package ch.ergon.arciphant.core
 
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.SourceSet
-import org.gradle.api.tasks.SourceSet.MAIN_SOURCE_SET_NAME
 import org.gradle.api.tasks.testing.Test
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.plugins.ide.idea.model.IdeaModel
@@ -44,7 +44,7 @@ internal class SourceSetFactory(private val project: Project) {
 
         sourceSetDependenciesBlock?.let { block -> project.sourceSetDependencies(settings) { block(production) } }
 
-        includeInMainSourceSet(production)
+        attachToLifecycleTasks(production, testFixtures, test)
         markAsTestSources(testFixtures, test)
 
         return ComponentSourceSets(production, testFixtures, test)
@@ -91,20 +91,13 @@ internal class SourceSetFactory(private val project: Project) {
         project.tasks.named("test").configure { dependsOn(testTask) }
     }
 
-    private fun includeInMainSourceSet(sourceSet: SourceSet) {
-        val mainSourceSet = project.sourceSets().getByName(MAIN_SOURCE_SET_NAME)
+    private fun attachToLifecycleTasks(production: SourceSet, testFixtures: SourceSet?, test: SourceSet?) {
+        attachToLifecycleTask(JavaPlugin.CLASSES_TASK_NAME, production)
+        listOfNotNull(testFixtures, test).forEach { attachToLifecycleTask(JavaPlugin.TEST_CLASSES_TASK_NAME, it) }
+    }
 
-        mainSourceSet.compileClasspath += sourceSet.output
-        mainSourceSet.runtimeClasspath += sourceSet.output
-        sourceSet.output.classesDirs.forEach {
-            mainSourceSet.output.dir(mapOf("builtBy" to sourceSet.classesTaskName), it)
-        }
-        sourceSet.output.resourcesDir?.let {
-            mainSourceSet.output.dir(mapOf("builtBy" to sourceSet.processResourcesTaskName), it)
-        }
-        mainSourceSet.apiConfiguration().extendsFrom(sourceSet.apiConfiguration())
-        mainSourceSet.implementationConfiguration().extendsFrom(sourceSet.implementationConfiguration())
-        mainSourceSet.runtimeConfiguration().extendsFrom(sourceSet.runtimeConfiguration())
+    private fun attachToLifecycleTask(lifecycleTaskName: String, sourceSet: SourceSet) {
+        project.tasks.named(lifecycleTaskName).configure { dependsOn(sourceSet.classesTaskName) }
     }
 
     private fun markAsTestSources(vararg sourceSets: SourceSet?) {
@@ -130,7 +123,6 @@ internal class SourceSetFactory(private val project: Project) {
 
     private fun SourceSet.apiConfiguration() = getConfiguration(apiConfigurationName)
     private fun SourceSet.implementationConfiguration() = getConfiguration(implementationConfigurationName)
-    private fun SourceSet.runtimeConfiguration() = getConfiguration(runtimeOnlyConfigurationName)
 
     private fun getConfiguration(configurationName: String) = project.getConfiguration(configurationName)
 }
