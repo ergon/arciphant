@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.dsl
 
+import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.sourceSetComponentSettings
 import ch.ergon.arciphant.core.sourceset.sourceSets
 import ch.ergon.arciphant.util.configuration
@@ -22,7 +23,7 @@ class ArciphantProjectDslTest {
         val domain = dsl.createComponent(name = "domain")
         dsl.createComponent(
             name = "application",
-            sourceSetDependencies = { application -> api(application, domain) },
+            sourceSetDependencies = { application -> addLocalDependency(API, application, domain) },
         )
 
         assertThat(project.sourceSets().names)
