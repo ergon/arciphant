@@ -129,8 +129,5 @@ internal fun Project.sourceSets(): SourceSetContainer =
 internal fun Project.getConfiguration(configurationName: String): Configuration =
     configurations.getByName(configurationName)
 
-internal fun String.defaultTestSourceSetName() = "${this}Test"
-internal fun String.defaultTestFixturesSourceSetName() = "${this}TestFixtures"
-
 internal fun String.apiElementsConfigurationName() = "${this}ApiElements"
 internal fun String.runtimeElementsConfigurationName() = "${this}RuntimeElements"

@@ -17,8 +17,8 @@ internal class CoreSettingsRepository(private val dsl: ArciphantDsl) {
             sourceSetComponentSettings = SourceSetComponentSettings(
                 withTestSourceSet = dsl.withTestSourceSet ?: true,
                 withTestFixturesSourceSet = dsl.withTestFixturesSourceSet ?: true,
-                testSourceSetName = dsl.testSourceSetName ?: { it.defaultTestSourceSetName() },
-                testFixturesSourceSetName = dsl.testFixturesSourceSetName ?: { it.defaultTestFixturesSourceSetName() },
+                testSourceSetName = dsl.testSourceSetName ?: { "${it}Test" },
+                testFixturesSourceSetName = dsl.testFixturesSourceSetName ?: { "${it}TestFixtures" },
             ),
         )
     }
