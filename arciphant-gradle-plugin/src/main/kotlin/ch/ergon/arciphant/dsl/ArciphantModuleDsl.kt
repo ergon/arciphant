@@ -30,8 +30,17 @@ class FunctionalModuleBuilder internal constructor(
         plugin: String? = null,
         dependsOnApi: Set<String> = emptySet(),
         dependsOn: Set<String> = emptySet(),
+        withTestSourceSet: Boolean? = null,
+        withTestFixturesSourceSet: Boolean? = null,
     ): FunctionalModuleBuilder {
-        componentsBuilder.doCreateComponent(name = name, plugin = plugin, dependsOnApi = dependsOnApi, dependsOn = dependsOn)
+        componentsBuilder.doCreateComponent(
+            name = name,
+            plugin = plugin,
+            dependsOnApi = dependsOnApi,
+            dependsOn = dependsOn,
+            withTestSourceSet = withTestSourceSet,
+            withTestFixturesSourceSet = withTestFixturesSourceSet,
+        )
         return this
     }
 
@@ -61,8 +70,17 @@ class ModuleTemplateBuilder internal constructor() {
         plugin: String? = null,
         dependsOnApi: Set<String> = emptySet(),
         dependsOn: Set<String> = emptySet(),
+        withTestSourceSet: Boolean? = null,
+        withTestFixturesSourceSet: Boolean? = null,
     ): ModuleTemplateBuilder {
-        componentsBuilder.doCreateComponent(name = name, plugin = plugin, dependsOnApi = dependsOnApi, dependsOn = dependsOn)
+        componentsBuilder.doCreateComponent(
+            name = name,
+            plugin = plugin,
+            dependsOnApi = dependsOnApi,
+            dependsOn = dependsOn,
+            withTestSourceSet = withTestSourceSet,
+            withTestFixturesSourceSet = withTestFixturesSourceSet,
+        )
         return this
     }
 
@@ -71,7 +89,11 @@ class ModuleTemplateBuilder internal constructor() {
         dependsOnApi: Set<String> = emptySet(),
         dependsOn: Set<String> = emptySet(),
     ): ModuleTemplateBuilder {
-        componentsBuilder.doExtendComponent(name = name, dependsOnApi = dependsOnApi, dependsOn = dependsOn)
+        componentsBuilder.doExtendComponent(
+            name = name,
+            dependsOnApi = dependsOnApi,
+            dependsOn = dependsOn,
+        )
         return this
     }
 }
@@ -80,10 +102,25 @@ internal class ComponentsBuilder {
     internal val components = mutableListOf<Component>()
     internal val componentDependencyOverrides = mutableMapOf<String, Set<Dependency>>()
 
-    fun doCreateComponent(name: String, plugin: String?, dependsOnApi: Set<String>, dependsOn: Set<String>) {
+    fun doCreateComponent(
+        name: String,
+        plugin: String?,
+        dependsOnApi: Set<String>,
+        dependsOn: Set<String>,
+        withTestSourceSet: Boolean?,
+        withTestFixturesSourceSet: Boolean?,
+    ) {
         verifyName(name, "component")
         val dependencies = mapDependencies(dependsOnApi, dependsOn)
-        components.add(Component(ComponentReference(name), plugin?.let { Plugin(it) }, dependencies))
+        components.add(
+            Component(
+                reference = ComponentReference(name),
+                plugin = plugin?.let { Plugin(it) },
+                dependsOn = dependencies,
+                withTestSourceSet = withTestSourceSet,
+                withTestFixturesSourceSet = withTestFixturesSourceSet,
+            )
+        )
     }
 
     fun doExtendComponent(name: String, dependsOnApi: Set<String>, dependsOn: Set<String>) {
