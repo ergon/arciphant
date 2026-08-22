@@ -3,8 +3,8 @@ package ch.ergon.arciphant.core
 internal fun sourceSetComponentSettings(
     withTestSourceSet: Boolean = true,
     withTestFixturesSourceSet: Boolean = true,
-    testSourceSetName: ((String) -> String) = { it.defaultTestSourceSetName() },
-    testFixturesSourceSetName: ((String) -> String) = { it.defaultTestFixturesSourceSetName() },
+    testSourceSetName: ((String) -> String) = { "${it}Test" },
+    testFixturesSourceSetName: ((String) -> String) = { "${it}TestFixtures" },
 ) = SourceSetComponentSettings(
     withTestSourceSet = withTestSourceSet,
     withTestFixturesSourceSet = withTestFixturesSourceSet,
