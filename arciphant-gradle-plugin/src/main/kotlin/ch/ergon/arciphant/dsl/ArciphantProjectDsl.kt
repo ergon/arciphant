@@ -19,7 +19,7 @@ open class ArciphantProjectDsl internal constructor(private val project: Project
         settings = componentSettings,
         withTestSourceSet = withTestSourceSet,
         withTestFixturesSourceSet = withTestFixturesSourceSet,
-        sourceSetDependenciesBlock = sourceSetDependencies,
+        sourceSetDependencies = sourceSetDependencies,
     ).production
 
     fun sourceSetDependencies(block: SourceSetDependencyScope.() -> Unit) {
