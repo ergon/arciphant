@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.gradle.api.tasks.testing.Test as GradleTest
 
-class SourceSetsTest {
+class SourceSetFactoryTest {
 
     private val settings = sourceSetComponentSettings()
 
