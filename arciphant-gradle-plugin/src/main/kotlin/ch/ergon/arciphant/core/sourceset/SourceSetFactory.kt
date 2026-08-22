@@ -1,5 +1,7 @@
-package ch.ergon.arciphant.core
+package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.SourceSetComponentSettings
+import ch.ergon.arciphant.core.associateKotlinCompilations
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
