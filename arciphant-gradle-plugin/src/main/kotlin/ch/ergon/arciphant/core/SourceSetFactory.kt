@@ -82,21 +82,13 @@ internal class SourceSetFactory(private val project: Project) {
     }
 
     private fun registerTestTask(testSourceSet: SourceSet) {
-        val testTask = if (project.tasks.names.contains(testSourceSet.name)) {
-            project.tasks.named(testSourceSet.name, Test::class.java)
-        } else {
-            project.tasks.register(testSourceSet.name, Test::class.java) {
-                description = "Runs the tests of the '${testSourceSet.name}' source set."
-                group = LifecycleBasePlugin.VERIFICATION_GROUP
-            }
-        }
-        testTask.configure {
+        val testTask = project.tasks.register(testSourceSet.name, Test::class.java) {
+            description = "Runs the tests of the '${testSourceSet.name}' source set."
+            group = LifecycleBasePlugin.VERIFICATION_GROUP
             testClassesDirs = testSourceSet.output.classesDirs
             classpath = testSourceSet.runtimeClasspath
         }
-        if (testSourceSet.name != SourceSet.TEST_SOURCE_SET_NAME) {
-            project.tasks.named(SourceSet.TEST_SOURCE_SET_NAME).configure { dependsOn(testTask) }
-        }
+        project.tasks.named("test").configure { dependsOn(testTask) }
     }
 
     private fun includeInMainSourceSet(sourceSet: SourceSet) {
