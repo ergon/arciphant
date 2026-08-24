@@ -27,7 +27,7 @@ jobs:
         run: ./gradlew --no-daemon -p arciphant-gradle-plugin clean build
 
       - name: Build project demo
-        run: ./gradlew --no-daemon -p arciphant-demo-project clean build
+        run: ./gradlew --no-daemon -p arciphant-project-demo clean build
 
       - name: Build source set demo
         run: ./gradlew --no-daemon -p arciphant-source-set-demo clean build

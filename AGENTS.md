@@ -7,7 +7,8 @@ Arciphant is a Gradle settings plugin with the plugin ID `ch.ergon.arciphant`. I
 The repository root is a composite build with no tasks of its own:
 
 - `arciphant-gradle-plugin/`: the Kotlin Gradle plugin.
-- `arciphant-demo-project/`: the Kotlin/Spring Boot example application and canonical DSL example.
+- `arciphant-project-demo/`: an example application for the usage of Arciphant with component layout 'project'
+- `arciphant-source-set-demo/`: an example application for the usage of Arciphant with component layout 'source set'
 - `docs/`: Zensical user documentation published to GitHub Pages.
 
 ## Build and Verification
@@ -17,7 +18,8 @@ Always target a sub-build with `-p` when invoking Gradle from the repository roo
 ```bash
 ./gradlew -p arciphant-gradle-plugin build
 ./gradlew -p arciphant-gradle-plugin test
-./gradlew -p arciphant-demo-project build
+./gradlew -p arciphant-project-demo build
+./gradlew -p arciphant-source-set-demo build
 ./gradlew -p arciphant-gradle-plugin :publishAllPublicationsToLocalRepository
 ```
 
@@ -70,8 +72,8 @@ The plugin version is declared in `arciphant-gradle-plugin/build.gradle.kts`.
 
 ## Demo Project Constraints
 
-- Treat `arciphant-demo-project/settings.gradle.kts` as the canonical DSL example.
-- Convention plugins live in `arciphant-demo-project/build-logic/`. At least one must be declared with `apply false` in the settings `plugins` block so Gradle resolves them; see `docs/pages/using-plugins.md`.
+- Treat `arciphant-project-demo/settings.gradle.kts` as the canonical DSL example.
+- Convention plugins live in `arciphant-project-demo/build-logic/`. At least one must be declared with `apply false` in the settings `plugins` block so Gradle resolves them; see `docs/pages/using-plugins.md`.
 - Component directories normally have no `build.gradle.kts`; Arciphant configures them. Add one only when a component needs extra configuration or dependencies.
 - `compileKotlin` depends on `validatePackageStructure`, so demo builds validate package structure automatically.
 
