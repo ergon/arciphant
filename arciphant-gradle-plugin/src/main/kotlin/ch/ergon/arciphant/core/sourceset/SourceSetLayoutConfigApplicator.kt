@@ -1,14 +1,7 @@
 package ch.ergon.arciphant.core.sourceset
 
-import ch.ergon.arciphant.core.ConfigApplicator
-import ch.ergon.arciphant.core.CoreSettings
-import ch.ergon.arciphant.core.GradleBundleModuleProjectConfig
-import ch.ergon.arciphant.core.GradleComponentProjectConfig
-import ch.ergon.arciphant.core.GradleFunctionalModuleProjectConfig
-import ch.ergon.arciphant.core.GradleProjectConfig
-import ch.ergon.arciphant.core.GradleProjectPath
-import ch.ergon.arciphant.core.addDependency
-import ch.ergon.arciphant.core.applyTo
+import ch.ergon.arciphant.core.*
+import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.model.DomainModule
@@ -33,7 +26,7 @@ internal class SourceSetLayoutConfigApplicator(
                 is GradleBundleModuleProjectConfig -> it.applyBundleModuleConfig(project)
                 is GradleFunctionalModuleProjectConfig -> it.applyFunctionalModuleConfig(project)
                 is GradleComponentProjectConfig -> throw IllegalStateException(
-                    "Arciphant error: unexpected component project '${project.path}' in component layout 'SOURCE_SET'."
+                    "Arciphant error: unexpected component project '${project.path}' in component layout ${SOURCE_SET}."
                 )
             }
         }
