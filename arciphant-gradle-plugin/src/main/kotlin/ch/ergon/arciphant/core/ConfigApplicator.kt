@@ -1,10 +1,8 @@
 package ch.ergon.arciphant.core
 
 import ch.ergon.arciphant.core.model.DependencyType
-import ch.ergon.arciphant.core.model.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
@@ -12,17 +10,8 @@ internal interface ConfigApplicator {
     fun applyConfig(project: Project)
 }
 
-internal fun Project.addDependency(
-    type: DependencyType,
-    path: GradleProjectPath,
-    withTestFixturesSourceSet: Boolean = true,
-) {
+internal fun Project.addMainDependency(type: DependencyType, path: GradleProjectPath) {
     logger.info("Add ${type.configurationName} dependency: $path -> ${path.value}")
-    addMainDependency(type, path)
-    if (withTestFixturesSourceSet) addTestFixturesDependency(path)
-}
-
-private fun Project.addMainDependency(type: DependencyType, path: GradleProjectPath) {
     try {
         dependencies { add(type.configurationName, project(path.value)) }
     } catch (e: UnknownConfigurationException) {
@@ -34,11 +23,5 @@ private fun Project.addMainDependency(type: DependencyType, path: GradleProjectP
             """.trimIndent(),
             e,
         )
-    }
-}
-
-private fun Project.addTestFixturesDependency(path: GradleProjectPath) {
-    pluginManager.withPlugin("java-test-fixtures") {
-        dependencies { add("testFixturesApi", testFixtures(project(path.value))) }
     }
 }
