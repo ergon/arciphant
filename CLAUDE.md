@@ -6,10 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Arciphant is a Gradle **settings** plugin (plugin ID `ch.ergon.arciphant`) that lets projects declare their module structure with a DSL directly in `settings.gradle.kts`: module *templates* define the technical structure (components + dependencies), modules are instantiated from templates, and Arciphant generates the Gradle multi-project structure from that.
 
-Three parts (the root is a composite build via `includeBuild`):
+Four parts (the root is a composite build via `includeBuild`):
 
 - `arciphant-gradle-plugin/` — the plugin itself (Kotlin)
-- `arciphant-project-demo/` — example app "Online Learning Platform" (Kotlin + Spring Boot), reference for DSL usage
+- `arciphant-project-demo/` — example app "Online Learning Platform" (Kotlin + Spring Boot) with component layout **project**, reference for DSL usage
+- `arciphant-source-set-demo/` — the same example app with component layout **source set** (components are source sets inside one Gradle project per module)
 - `docs/` — user documentation (Zensical, published to GitHub Pages)
 
 ## Build & Test Commands
@@ -43,18 +44,21 @@ Packages under `ch.ergon.arciphant`:
 
 Mapping rules: `dependsOn` → `implementation`, `dependsOnApi` → `api`; every component of a domain module automatically gets an `api` dependency on the same-named library component; a `bundle` without `includes` depends on all functional modules.
 
-## Demo Project
+## Demo Projects
 
-- `arciphant-project-demo/settings.gradle.kts` is the canonical DSL example.
-- Convention plugins live in `arciphant-project-demo/build-logic/` (included build). At least one of them must appear with `apply false` in the settings `plugins` block, otherwise Gradle does not resolve them (known workaround, see `docs/pages/using-plugins.md`).
-- Component folders normally have **no** `build.gradle.kts` — Arciphant configures them. Only components with extra dependencies have one (e.g. `course/domain/build.gradle.kts`).
-- `compileKotlin` depends on `validatePackageStructure`, so every build validates the package structure.
+Both demos implement the same "Online Learning Platform" module structure, once per component layout:
+
+- `arciphant-project-demo/settings.gradle.kts` is the canonical DSL example (project layout); `arciphant-source-set-demo/settings.gradle.kts` is the canonical example for the source set layout (`sourceSetComponentLayout()`).
+- Convention plugins live in each demo's `build-logic/` (included build). At least one of them must appear with `apply false` in the settings `plugins` block, otherwise Gradle does not resolve them (known workaround, see `docs/pages/using-plugins.md`).
+- Project layout: component folders normally have **no** `build.gradle.kts` — Arciphant configures them. Only components with extra dependencies have one (e.g. `course/domain/build.gradle.kts`). Component-specific convention plugins (e.g. `spring-web-component`) are registered in the DSL.
+- Source set layout: components live under `src/<component>/` of the module project; component names are **lowerCamelCase** (e.g. `webApi`) because they become source set names. Plugins cannot be applied per component — the root `build.gradle.kts` applies the `module` convention plugin (plus Spring plugins) to all projects. Module projects normally have no `build.gradle.kts`; only modules with extra configuration do (e.g. `certificate/`, `online-learning-platform/`).
+- `compileKotlin` depends on `validatePackageStructure`, so every build validates the package structure (in both demos).
 
 ## Conventions & Gotchas
 
 - Tests: JUnit 5 + AssertJ; test names are backtick strings (`` `it should …` ``), grouped with `@Nested` inner classes; parameterized tests use the `dynamicTest` helper in `src/test/kotlin/ch/ergon/arciphant/util/DynamicTestExtension.kt`.
 - `ArciphantPluginTest` is a functional test using Gradle TestKit (`GradleRunner`); build the project with Gradle before running it from IntelliJ.
 - Code style: `internal` by default outside the DSL, extension functions instead of utility classes, named arguments in DSL calls.
-- Docs source is `docs/pages/`; `docs/site/` is **checked-in build output** — never edit it by hand, regenerate via the Zensical build.
+- Docs source is `docs/pages/`; `docs/site/` is **generated build output** (gitignored) — never edit it by hand, regenerate via the Zensical build.
 - Plugin version lives in `arciphant-gradle-plugin/build.gradle.kts` (`version = "0.1.9"`).
 - Commit messages: short imperative sentence ending with a period (e.g. "Fix docs.").

@@ -25,7 +25,7 @@ Always target a sub-build with `-p` when invoking Gradle from the repository roo
 
 The publication task writes to `arciphant-gradle-plugin/build/publishedPlugin`.
 
-Use the narrowest relevant verification while developing, then run the affected sub-build's `build` task before handing off substantial changes. Changes that can affect generated project structure or DSL behavior should also be verified against the demo project.
+Use the narrowest relevant verification while developing, then run the affected sub-build's `build` task before handing off substantial changes. Changes that can affect generated project structure or DSL behavior should also be verified against both demo projects.
 
 The JDK toolchain is 21, but the JVM target must remain 17 so the plugin works on Java 17 and newer. `jvmTargetValidationMode = ERROR`; do not raise the JVM target.
 
@@ -72,16 +72,20 @@ The plugin version is declared in `arciphant-gradle-plugin/build.gradle.kts`.
 
 ## Demo Project Constraints
 
-- Treat `arciphant-project-demo/settings.gradle.kts` as the canonical DSL example.
-- Convention plugins live in `arciphant-project-demo/build-logic/`. At least one must be declared with `apply false` in the settings `plugins` block so Gradle resolves them; see `docs/pages/using-plugins.md`.
-- Component directories normally have no `build.gradle.kts`; Arciphant configures them. Add one only when a component needs extra configuration or dependencies.
+Both demo projects implement the same "Online Learning Platform" module structure, one per component layout.
+
+- Treat `arciphant-project-demo/settings.gradle.kts` as the canonical DSL example for the project layout, and `arciphant-source-set-demo/settings.gradle.kts` as the canonical example for the source set layout (`sourceSetComponentLayout()`).
+- Convention plugins live in each demo's `build-logic/` included build. At least one must be declared with `apply false` in the settings `plugins` block so Gradle resolves them; see `docs/pages/using-plugins.md`.
+- In `arciphant-project-demo`, component directories normally have no `build.gradle.kts`; Arciphant configures them. Add one only when a component needs extra configuration or dependencies.
+- In `arciphant-source-set-demo`, components are source sets under `src/<component>/` of the module project, and component names use lowerCamelCase because they become source set names. Plugins cannot be applied per component; the root `build.gradle.kts` applies the `module` convention plugin and the Spring plugins to all projects. Module projects normally have no `build.gradle.kts`; add one only for module-specific configuration.
+- Keep the two demos structurally in sync: a change to the module structure of one demo should normally be mirrored in the other.
 - `compileKotlin` depends on `validatePackageStructure`, so demo builds validate package structure automatically.
 
 ## Documentation
 
 Documentation sources live in `docs/pages/`.
 
-`docs/site/` is checked-in generated output. Never edit it manually; regenerate it with Zensical.
+`docs/site/` is generated output and gitignored. Never edit it manually; regenerate it with Zensical.
 
 Docker is required for documentation commands:
 
