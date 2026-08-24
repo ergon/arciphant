@@ -1,5 +1,10 @@
-package ch.ergon.arciphant.core
+package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.CoreSettings
+import ch.ergon.arciphant.core.CoreSettingsRepository
+import ch.ergon.arciphant.core.GradleBundleModuleProjectConfig
+import ch.ergon.arciphant.core.GradleFunctionalModuleProjectConfig
+import ch.ergon.arciphant.core.GradleProjectPath
 import ch.ergon.arciphant.core.model.BundleModule
 import ch.ergon.arciphant.core.model.Component
 import ch.ergon.arciphant.core.model.ComponentReference
@@ -7,7 +12,6 @@ import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.FunctionalModule
 import ch.ergon.arciphant.core.model.ModuleReference
 import ch.ergon.arciphant.core.model.component
-import ch.ergon.arciphant.core.sourceset.sourceSets
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.util.projectDependencyConfigurations
 import org.assertj.core.api.Assertions.assertThat
@@ -16,7 +20,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class GradleProjectConfigApplicatorTest {
+class SourceSetLayoutConfigApplicatorTest {
 
     @Nested
     inner class SourceSetSettingsTest {
@@ -137,7 +141,7 @@ class GradleProjectConfigApplicatorTest {
                 plugin = null,
                 includes = setOf(module.reference),
             )
-            val applicator = GradleProjectConfigApplicator(
+            val applicator = SourceSetLayoutConfigApplicator(
                 settings(),
                 listOf(
                     GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("module")), module),
@@ -176,7 +180,7 @@ class GradleProjectConfigApplicatorTest {
     )
 
     private fun Project.applyModuleConfig(module: FunctionalModule, settings: CoreSettings) =
-        GradleProjectConfigApplicator(
+        SourceSetLayoutConfigApplicator(
             settings,
             listOf(GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf(name)), module)),
         ).applyConfig(this)

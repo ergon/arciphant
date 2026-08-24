@@ -39,7 +39,7 @@ Lifecycle:
 
 1. On apply, register the `arciphant { ... }` DSL extension.
 2. In `settingsEvaluated`, load the DSL into `ModuleRepository` and `CoreSettingsRepository`, convert it to `GradleProjectConfig` instances, create project directories, and call `include()` for each project.
-3. In `allprojects.beforeEvaluate`, use `GradleProjectConfigApplicator` to apply convention plugins and dependencies.
+3. In `allprojects.beforeEvaluate`, use `ConfigApplicator` to apply convention plugins and dependencies.
 4. In `projectsLoaded`, register the root tasks `validatePackageStructure` and `projectDependencies`.
 
 Packages below `ch.ergon.arciphant`:
