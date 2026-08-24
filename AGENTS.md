@@ -39,13 +39,13 @@ Lifecycle:
 
 1. On apply, register the `arciphant { ... }` DSL extension.
 2. In `settingsEvaluated`, load the DSL into `ModuleRepository` and `CoreSettingsRepository`, convert it to `GradleProjectConfig` instances, create project directories, and call `include()` for each project.
-3. In `allprojects.beforeEvaluate`, use `ConfigApplicator` to apply convention plugins and dependencies.
+3. Depending on the component layout, apply convention plugins and dependencies via `ProjectLayoutConfigApplicator` (in `allprojects.beforeEvaluate`) or `SourceSetLayoutConfigApplicator` (in `gradle.lifecycle.beforeProject`).
 4. In `projectsLoaded`, register the root tasks `validatePackageStructure` and `projectDependencies`.
 
 Packages below `ch.ergon.arciphant`:
 
 - `dsl`: public DSL surface, including `ArciphantDsl` and builders.
-- `core` and `core.model`: internal metamodel and Gradle wiring.
+- `core` and `core.model`: internal metamodel and Gradle wiring; layout-specific config applicators live in `core.project` and `core.sourceset`.
 - `sca`: package-structure validation and `validatePackageStructure`.
 - `analyze`: the `projectDependencies` task.
 - `util`: verification helpers; configuration errors start with `Arciphant configuration error: `.
