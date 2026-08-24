@@ -110,4 +110,4 @@ Component plugins cannot be configured in `SOURCE_SET` mode because Gradle plugi
 
 ## Demo project
 
-The sub-project `arciphant-source-set-demo` in the [Arciphant repository](https://github.com/ergon/arciphant){ target="_blank" } demonstrates a complete application using the source set layout. It mirrors the structure of the [demo project](demo-project.md) that uses the project layout.
+The sub-project `arciphant-source-set-demo` in the [Arciphant repository](https://github.com/ergon/arciphant){ target="_blank" } demonstrates a complete application using the source set layout. It mirrors the structure of the sibling demo project `arciphant-project-demo` that uses the project layout; see [Demo projects](demo-project.md).
