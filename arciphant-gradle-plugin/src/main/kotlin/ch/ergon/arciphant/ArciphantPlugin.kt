@@ -30,12 +30,19 @@ class ArciphantPlugin : Plugin<Settings> {
                 projectConfigs.map { it.path }.forEach { include(it.value) }
 
                 // apply plugins and add dependencies (during gradle configuration phase)
-                val configApplicator = when (settings.componentLayout) {
-                    ComponentLayout.PROJECT -> ProjectLayoutConfigApplicator(settings, projectConfigs)
-                    ComponentLayout.SOURCE_SET -> SourceSetLayoutConfigApplicator(settings, projectConfigs)
-                }
-                gradle.allprojects {
-                    beforeEvaluate { configApplicator.applyConfig(this) }
+                when (settings.componentLayout) {
+                    ComponentLayout.PROJECT -> {
+                        val configApplicator = ProjectLayoutConfigApplicator(settings, projectConfigs)
+                        gradle.allprojects {
+                            beforeEvaluate { configApplicator.applyConfig(this) }
+                        }
+                    }
+                    ComponentLayout.SOURCE_SET -> {
+                        val configApplicator = SourceSetLayoutConfigApplicator(settings, projectConfigs)
+                        gradle.lifecycle.beforeProject {
+                            configApplicator.applyConfig(this)
+                        }
+                    }
                 }
 
                 gradle.lifecycle.beforeProject {

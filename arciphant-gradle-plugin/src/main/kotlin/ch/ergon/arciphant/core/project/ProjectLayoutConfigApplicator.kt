@@ -17,7 +17,7 @@ import org.gradle.kotlin.dsl.project
 internal class ProjectLayoutConfigApplicator(
     settings: CoreSettings,
     private val projectConfigs: List<GradleProjectConfig>
-) : ConfigApplicator {
+) {
 
     private val projectComponentSettings = settings.projectComponentSettings
 
@@ -26,7 +26,7 @@ internal class ProjectLayoutConfigApplicator(
     private val libraryComponents = projectConfigs.filterIsInstance<GradleComponentProjectConfig>()
         .filter { it.module is LibraryModule }
 
-    override fun applyConfig(project: Project) {
+    fun applyConfig(project: Project) {
         projectConfigsByPath[project.path]?.let {
             when (it) {
                 is GradleBundleModuleProjectConfig -> it.applyBundleModuleConfig(project)

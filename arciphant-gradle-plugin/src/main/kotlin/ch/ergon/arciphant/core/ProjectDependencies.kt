@@ -6,10 +6,6 @@ import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
-internal interface ConfigApplicator {
-    fun applyConfig(project: Project)
-}
-
 internal fun Project.addMainDependency(type: DependencyType, path: GradleProjectPath) {
     logger.info("Add ${type.configurationName} dependency: $path -> ${path.value}")
     try {
