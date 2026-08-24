@@ -6,8 +6,10 @@ import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.LibraryModule
+import ch.ergon.arciphant.core.model.Plugin
 import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
+import org.gradle.kotlin.dsl.apply
 
 internal class ProjectLayoutConfigApplicator(
     settings: CoreSettings,
@@ -58,6 +60,8 @@ internal class ProjectLayoutConfigApplicator(
 
         configureArchiveBaseName(componentProject)
     }
+
+    private fun Plugin.applyTo(project: Project) = project.apply(plugin = id)
 
     private fun GradleComponentProjectConfig.configureArchiveBaseName(componentProject: Project) {
         if(!projectComponentSettings.disableQualifiedArchiveBaseName) {

@@ -12,8 +12,6 @@ internal interface ConfigApplicator {
     fun applyConfig(project: Project)
 }
 
-internal fun Plugin.applyTo(project: Project) = project.apply(plugin = id)
-
 internal fun Project.addDependency(
     type: DependencyType,
     path: GradleProjectPath,

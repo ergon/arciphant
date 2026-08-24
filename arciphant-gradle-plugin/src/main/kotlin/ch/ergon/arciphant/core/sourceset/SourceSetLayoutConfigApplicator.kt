@@ -31,8 +31,6 @@ internal class SourceSetLayoutConfigApplicator(
     }
 
     private fun GradleBundleModuleProjectConfig.applyBundleModuleConfig(bundleModuleProject: Project) {
-        module.plugin?.applyTo(bundleModuleProject)
-
         projectConfigs.filter { module.includes.contains(it.module.reference) }.forEach {
             when(it) {
                 is GradleFunctionalModuleProjectConfig -> {
