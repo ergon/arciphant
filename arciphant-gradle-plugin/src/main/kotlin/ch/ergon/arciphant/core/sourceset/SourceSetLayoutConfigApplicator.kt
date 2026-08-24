@@ -11,7 +11,7 @@ import org.gradle.api.Project
 internal class SourceSetLayoutConfigApplicator(
     settings: CoreSettings,
     private val projectConfigs: List<GradleProjectConfig>
-) : ConfigApplicator {
+) {
 
     private val sourceSetComponentSettings = settings.sourceSetComponentSettings
 
@@ -20,7 +20,7 @@ internal class SourceSetLayoutConfigApplicator(
     private val libraryModules = projectConfigs.filterIsInstance<GradleFunctionalModuleProjectConfig>()
         .filter { it.module is LibraryModule }
 
-    override fun applyConfig(project: Project) {
+    fun applyConfig(project: Project) {
         projectConfigsByPath[project.path]?.let {
             when (it) {
                 is GradleBundleModuleProjectConfig -> it.applyBundleModuleConfig(project)
