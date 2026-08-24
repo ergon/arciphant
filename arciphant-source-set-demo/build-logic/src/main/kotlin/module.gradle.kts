@@ -21,6 +21,12 @@ configurations.configureEach {
         dependencies.add(project.dependencies.create(dependencyNotation))
     }
 
+    // Arciphant creates the component configurations while the JVM plugin is being applied, which can
+    // be before the version catalog extension is registered — defer the lookup to dependency resolution.
+    fun addFromCatalog(dependencyNotation: () -> Any) {
+        dependencies.addLater(provider { project.dependencies.create(dependencyNotation()) })
+    }
+
     // dependencies of every production component (analog of 'spring-component')
     val isProductionImplementation = name == "implementation" || (
             name.endsWith("Implementation")
@@ -50,8 +56,8 @@ configurations.configureEach {
 
     // component-specific dependencies (analog of 'jooq-component', 'minio-component', 'spring-web-component')
     when (name) {
-        "dbImplementation" -> add(libs().findLibrary("jooq").get().get())
-        "filestoreImplementation" -> add(libs().findLibrary("minio").get().get())
+        "dbImplementation" -> addFromCatalog { libs().findLibrary("jooq").get().get() }
+        "filestoreImplementation" -> addFromCatalog { libs().findLibrary("minio").get().get() }
         "webImplementation", "webApiImplementation",
         "webTestFixturesImplementation", "webApiTestFixturesImplementation",
             -> add("org.springframework.boot:spring-boot-starter-web")

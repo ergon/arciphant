@@ -21,12 +21,22 @@ internal class SourceSetLayoutConfigApplicator(
         .filter { it.module is LibraryModule }
 
     fun applyConfig(project: Project) {
-        projectConfigsByPath[project.path]?.let {
-            when (it) {
-                is GradleBundleModuleProjectConfig -> it.applyBundleModuleConfig(project)
-                is GradleFunctionalModuleProjectConfig -> it.applyFunctionalModuleConfig(project)
-                is GradleComponentProjectConfig -> arcError(it.path)
+        val config = projectConfigsByPath[project.path] ?: return
+
+        // This runs in lifecycle.beforeProject, i.e. before any other configuration of the project —
+        // including the JVM plugin application that creates the source set container and the 'test'
+        // and 'classes' tasks (typically done in the root project's allprojects block). Defer until
+        // the java plugin (applied directly or through kotlin.jvm / java-library) is available.
+        project.pluginManager.withPlugin(JAVA_PLUGIN_ID) {
+            when (config) {
+                is GradleBundleModuleProjectConfig -> config.applyBundleModuleConfig(project)
+                is GradleFunctionalModuleProjectConfig -> config.applyFunctionalModuleConfig(project)
+                is GradleComponentProjectConfig -> arcError(config.path)
             }
+        }
+
+        project.afterEvaluate {
+            if (!project.pluginManager.hasPlugin(JAVA_PLUGIN_ID)) project.noJvmPluginError()
         }
     }
 
@@ -95,6 +105,8 @@ internal class SourceSetLayoutConfigApplicator(
         throw IllegalStateException("Arciphant error: unexpected component project '${path.value}' in component layout ${SOURCE_SET}.")
     }
 }
+
+private const val JAVA_PLUGIN_ID = "java"
 
 private fun Project.addSourceSetComponentDependency(path: GradleProjectPath, componentName: String) {
     dependencies.add(

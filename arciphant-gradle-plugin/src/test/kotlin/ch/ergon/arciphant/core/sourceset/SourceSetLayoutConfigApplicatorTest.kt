@@ -16,6 +16,7 @@ import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.util.projectDependencyConfigurations
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.api.Project
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -121,6 +122,24 @@ class SourceSetLayoutConfigApplicatorTest {
             assertThat(project.configurations.getByName("domainTestFixturesRuntimeElements").isCanBeConsumed).isTrue()
             assertThat(project.configurations.getByName("apiApiElements").isCanBeConsumed).isTrue()
             assertThat(project.configurations.getByName("apiRuntimeElements").isCanBeConsumed).isTrue()
+        }
+    }
+
+    @Nested
+    inner class DeferredConfigTest {
+
+        @Test
+        fun `it should defer the config until a JVM plugin is applied`() {
+            val project = ProjectBuilder.builder().withName("module")
+                .withParent(ProjectBuilder.builder().withName("root").build()).build()
+
+            project.applyModuleConfig(domainModule(component(ComponentReference("domain"))), settings())
+
+            assertThat(project.extensions.findByType(SourceSetContainer::class.java)).isNull()
+
+            project.pluginManager.apply("java-library")
+
+            assertThat(project.sourceSets().names).contains("domain")
         }
     }
 
