@@ -9,7 +9,7 @@ Arciphant is a Gradle **settings** plugin (plugin ID `ch.ergon.arciphant`) that 
 Three parts (the root is a composite build via `includeBuild`):
 
 - `arciphant-gradle-plugin/` — the plugin itself (Kotlin)
-- `arciphant-demo-project/` — example app "Online Learning Platform" (Kotlin + Spring Boot), reference for DSL usage
+- `arciphant-project-demo/` — example app "Online Learning Platform" (Kotlin + Spring Boot), reference for DSL usage
 - `docs/` — user documentation (Zensical, published to GitHub Pages)
 
 ## Build & Test Commands
@@ -19,7 +19,8 @@ The root build has **no tasks of its own** — always target a sub-build with `-
 ```bash
 ./gradlew -p arciphant-gradle-plugin build          # build + test the plugin
 ./gradlew -p arciphant-gradle-plugin test           # plugin tests only
-./gradlew -p arciphant-demo-project build           # build + test the demo project
+./gradlew -p arciphant-project-demo build           # build + test the demo project with component layout 'project'
+./gradlew -p arciphant-source-set-demo build        # build + test the demo project with component layout 'source set'
 ./gradlew -p arciphant-gradle-plugin :publishAllPublicationsToLocalRepository  # publish to build/publishedPlugin
 ```
 
@@ -44,8 +45,8 @@ Mapping rules: `dependsOn` → `implementation`, `dependsOnApi` → `api`; every
 
 ## Demo Project
 
-- `arciphant-demo-project/settings.gradle.kts` is the canonical DSL example.
-- Convention plugins live in `arciphant-demo-project/build-logic/` (included build). At least one of them must appear with `apply false` in the settings `plugins` block, otherwise Gradle does not resolve them (known workaround, see `docs/pages/using-plugins.md`).
+- `arciphant-project-demo/settings.gradle.kts` is the canonical DSL example.
+- Convention plugins live in `arciphant-project-demo/build-logic/` (included build). At least one of them must appear with `apply false` in the settings `plugins` block, otherwise Gradle does not resolve them (known workaround, see `docs/pages/using-plugins.md`).
 - Component folders normally have **no** `build.gradle.kts` — Arciphant configures them. Only components with extra dependencies have one (e.g. `course/domain/build.gradle.kts`).
 - `compileKotlin` depends on `validatePackageStructure`, so every build validates the package structure.
 
