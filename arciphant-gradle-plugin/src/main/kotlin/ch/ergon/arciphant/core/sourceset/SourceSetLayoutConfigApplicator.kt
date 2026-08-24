@@ -39,10 +39,9 @@ internal class SourceSetLayoutConfigApplicator(
                     }
                 }
                 is GradleBundleModuleProjectConfig -> {
-                    bundleModuleProject.addDependency(
+                    bundleModuleProject.addMainDependency(
                         type = IMPLEMENTATION,
                         path = it.path,
-                        withTestFixturesSourceSet = false,
                     )
                 }
                 is GradleComponentProjectConfig -> {
