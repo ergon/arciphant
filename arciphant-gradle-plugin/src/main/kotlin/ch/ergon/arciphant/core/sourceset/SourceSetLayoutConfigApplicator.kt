@@ -25,9 +25,7 @@ internal class SourceSetLayoutConfigApplicator(
             when (it) {
                 is GradleBundleModuleProjectConfig -> it.applyBundleModuleConfig(project)
                 is GradleFunctionalModuleProjectConfig -> it.applyFunctionalModuleConfig(project)
-                is GradleComponentProjectConfig -> throw IllegalStateException(
-                    "Arciphant error: unexpected component project '${project.path}' in component layout ${SOURCE_SET}."
-                )
+                is GradleComponentProjectConfig -> arcError(it.path)
             }
         }
     }
@@ -36,16 +34,22 @@ internal class SourceSetLayoutConfigApplicator(
         module.plugin?.applyTo(bundleModuleProject)
 
         projectConfigs.filter { module.includes.contains(it.module.reference) }.forEach {
-            if (it is GradleFunctionalModuleProjectConfig) {
-                it.module.components.forEach { component ->
-                    bundleModuleProject.addSourceSetComponentDependency(it.path, component.reference.name)
+            when(it) {
+                is GradleFunctionalModuleProjectConfig -> {
+                    it.module.components.forEach { component ->
+                        bundleModuleProject.addSourceSetComponentDependency(it.path, component.reference.name)
+                    }
                 }
-            } else {
-                bundleModuleProject.addDependency(
-                    type = IMPLEMENTATION,
-                    path = it.path,
-                    withTestFixturesSourceSet = false,
-                )
+                is GradleBundleModuleProjectConfig -> {
+                    bundleModuleProject.addDependency(
+                        type = IMPLEMENTATION,
+                        path = it.path,
+                        withTestFixturesSourceSet = false,
+                    )
+                }
+                is GradleComponentProjectConfig -> {
+                    arcError(it.path)
+                }
             }
         }
     }
@@ -90,6 +94,9 @@ internal class SourceSetLayoutConfigApplicator(
         }
     }
 
+    private fun arcError(path: GradleProjectPath) {
+        throw IllegalStateException("Arciphant error: unexpected component project '${path.value}' in component layout ${SOURCE_SET}.")
+    }
 }
 
 private fun Project.addSourceSetComponentDependency(path: GradleProjectPath, componentName: String) {

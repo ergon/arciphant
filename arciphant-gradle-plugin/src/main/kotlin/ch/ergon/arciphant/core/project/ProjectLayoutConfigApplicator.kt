@@ -1,17 +1,7 @@
 package ch.ergon.arciphant.core.project
 
-import ch.ergon.arciphant.core.ComponentLayout
+import ch.ergon.arciphant.core.*
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
-import ch.ergon.arciphant.core.ConfigApplicator
-import ch.ergon.arciphant.core.CoreSettings
-import ch.ergon.arciphant.core.GradleBundleModuleProjectConfig
-import ch.ergon.arciphant.core.GradleComponentProjectConfig
-import ch.ergon.arciphant.core.GradleFunctionalModuleProjectConfig
-import ch.ergon.arciphant.core.GradleProjectConfig
-import ch.ergon.arciphant.core.addDependency
-import ch.ergon.arciphant.core.applyTo
-import ch.ergon.arciphant.core.createQualifiedComponentName
-import ch.ergon.arciphant.core.gradleProjectPath
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.model.DomainModule
