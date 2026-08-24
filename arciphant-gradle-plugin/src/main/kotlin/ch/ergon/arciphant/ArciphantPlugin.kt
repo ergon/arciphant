@@ -2,6 +2,8 @@ package ch.ergon.arciphant
 
 import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
 import ch.ergon.arciphant.core.*
+import ch.ergon.arciphant.core.project.ProjectLayoutConfigApplicator
+import ch.ergon.arciphant.core.sourceset.SourceSetLayoutConfigApplicator
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.dsl.ArciphantProjectDsl
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
@@ -28,7 +30,10 @@ class ArciphantPlugin : Plugin<Settings> {
                 projectConfigs.map { it.path }.forEach { include(it.value) }
 
                 // apply plugins and add dependencies (during gradle configuration phase)
-                val configApplicator = GradleProjectConfigApplicator(settings, projectConfigs)
+                val configApplicator = when (settings.componentLayout) {
+                    ComponentLayout.PROJECT -> ProjectLayoutConfigApplicator(settings, projectConfigs)
+                    ComponentLayout.SOURCE_SET -> SourceSetLayoutConfigApplicator(settings, projectConfigs)
+                }
                 gradle.allprojects {
                     beforeEvaluate { configApplicator.applyConfig(this) }
                 }
