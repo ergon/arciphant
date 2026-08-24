@@ -20,8 +20,6 @@ plugins {
 arciphant {
     sourceSetComponentLayout()
 
-    // Component names use lowerCamelCase (no hyphens): they become source set names,
-    // from which Gradle derives configuration and task names.
     val commonModuleTemplate = template()
         .createComponent(name = "api") // the module's public contract, usable from other modules
         .createComponent(name = "domain", dependsOnApi = setOf("api"))
