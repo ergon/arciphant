@@ -517,6 +517,30 @@ class ArciphantPluginTest {
             .isEqualTo(TaskOutcome.SUCCESS)
     }
 
+    @Test
+    fun `test that source set folders are created according to configuration`() {
+        settingsFileWithArciphant(
+            """
+            sourceSetComponentLayout()
+            withTestFixturesSourceSet(false)
+
+            module("test")
+                .createComponent("domain", withTestFixturesSourceSet = true)
+                .createComponent("application", withTestSourceSet = false)
+            """
+        )
+        buildFileWithJvmPlugins()
+
+        gradleRunner.withArguments("-q", "projects").build()
+
+        assertThat(projectFolder.resolve("test/src/domain")).isDirectory()
+        assertThat(projectFolder.resolve("test/src/domainTest")).isDirectory()
+        assertThat(projectFolder.resolve("test/src/domainTestFixtures")).isDirectory()
+        assertThat(projectFolder.resolve("test/src/application")).isDirectory()
+        assertThat(projectFolder.resolve("test/src/applicationTest")).doesNotExist()
+        assertThat(projectFolder.resolve("test/src/applicationTestFixtures")).doesNotExist()
+    }
+
     private fun settingsFileWithArciphant(arciphantConfiguration: String) = settingsFile.write(
         """
                 plugins {
