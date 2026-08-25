@@ -1,6 +1,7 @@
 package ch.ergon.arciphant.core.sourceset
 
 import ch.ergon.arciphant.core.GradlePluginIds.IDEA
+import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.sourceSetComponentSettings
 import ch.ergon.arciphant.util.configuration
@@ -159,7 +160,8 @@ class SourceSetFactoryTest {
         val source = SourceSetFactory(module).createComponent(name = "application", settings = customSettings)
 
         module.sourceSetDependencies(customSettings) {
-            api(
+            addProjectDependency(
+                type = API,
                 sourceSet = source.production,
                 projectPath = ":library",
                 componentName = "domain",
@@ -188,7 +190,8 @@ class SourceSetFactoryTest {
         val source = SourceSetFactory(module).createComponent(name = "application", settings = settings)
 
         module.sourceSetDependencies(settings) {
-            api(
+            addProjectDependency(
+                type = API,
                 sourceSet = source.production,
                 projectPath = ":library",
                 componentName = "domain",
