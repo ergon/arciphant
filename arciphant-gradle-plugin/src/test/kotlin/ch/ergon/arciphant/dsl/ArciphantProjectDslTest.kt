@@ -2,7 +2,12 @@ package ch.ergon.arciphant.dsl
 
 import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
 import ch.ergon.arciphant.core.SourceSetComponentSettings
-import ch.ergon.arciphant.core.model.*
+import ch.ergon.arciphant.core.model.ComponentReference
+import ch.ergon.arciphant.core.model.Module
+import ch.ergon.arciphant.core.model.Component
+import ch.ergon.arciphant.core.model.component
+import ch.ergon.arciphant.core.model.DomainModule
+import ch.ergon.arciphant.core.model.ModuleReference
 import ch.ergon.arciphant.core.sourceSetComponentSettings
 import ch.ergon.arciphant.core.sourceset.SourceSetFactory
 import ch.ergon.arciphant.util.configuration
