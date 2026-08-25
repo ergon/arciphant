@@ -44,17 +44,4 @@ open class ArciphantProjectDsl internal constructor(
             )
         }
     }
-
-    fun createComponent(
-        name: String,
-        withTestSourceSet: Boolean? = null,
-        withTestFixturesSourceSet: Boolean? = null,
-        sourceSetDependencies: (SourceSetDependencyScope.(SourceSet) -> Unit)? = null,
-    ): SourceSet = SourceSetFactory(project).createComponent(
-        name = name,
-        settings = componentSettings,
-        withTestSourceSet = withTestSourceSet,
-        withTestFixturesSourceSet = withTestFixturesSourceSet,
-        sourceSetDependencies = sourceSetDependencies,
-    ).production
 }

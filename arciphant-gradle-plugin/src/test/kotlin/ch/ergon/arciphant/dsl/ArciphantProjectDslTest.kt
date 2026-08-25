@@ -3,177 +3,149 @@ package ch.ergon.arciphant.dsl
 import ch.ergon.arciphant.core.SourceSetComponentSettings
 import ch.ergon.arciphant.core.model.Component
 import ch.ergon.arciphant.core.model.ComponentReference
-import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.Module
 import ch.ergon.arciphant.core.model.ModuleReference
 import ch.ergon.arciphant.core.model.component
 import ch.ergon.arciphant.core.sourceSetComponentSettings
-import ch.ergon.arciphant.core.sourceset.sourceSets
+import ch.ergon.arciphant.core.sourceset.SourceSetFactory
 import ch.ergon.arciphant.util.configuration
-import ch.ergon.arciphant.util.hasFileDependencyOn
 import ch.ergon.arciphant.util.javaProject
 import ch.ergon.arciphant.util.projectDependencyConfigurations
 import ch.ergon.arciphant.util.projectDependencyPaths
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class ArciphantProjectDslTest {
 
-    @Nested
-    inner class CreateComponentTest {
+    private val root = ProjectBuilder.builder().withName("root").build()
+    private val project = javaProject(name = "certificate", parent = root)
+    private val defaultSettings = sourceSetComponentSettings()
 
-        @Test
-        fun `it should expose component utilities through project DSL`() {
-            val project = javaProject()
-            val settings = sourceSetComponentSettings(
-                testSourceSetName = { "${it}Spec" },
-                testFixturesSourceSetName = { "${it}Fixtures" },
-            )
-            val dsl = ArciphantProjectDsl(project, emptyList(), settings)
-
-            val domain = dsl.createComponent(name = "domain")
-            dsl.createComponent(
-                name = "application",
-                sourceSetDependencies = { application -> addLocalDependency(API, application, domain) },
-            )
-
-            assertThat(project.sourceSets().names)
-                .contains("application", "applicationSpec", "applicationFixtures")
-            assertThat(project.configuration("applicationApi").hasFileDependencyOn(domain)).isTrue()
-            assertThat(
-                project.configuration("applicationFixturesApi")
-                    .hasFileDependencyOn(project.sourceSets().getByName("domainFixtures"))
-            ).isTrue()
-        }
-
+    init {
+        javaProject(name = "exam", parent = root)
     }
 
-    @Nested
-    inner class ModuleDependencyTest {
+    @Test
+    fun `it should add an api dependency on a component of another module`() {
+        val dsl = dsl()
+        createComponent(name = "domain")
 
-        private val root = ProjectBuilder.builder().withName("root").build()
-        private val project = javaProject(name = "certificate", parent = root)
+        with(dsl) { component("domain").api(module = "exam", component = "api") }
 
-        init {
-            javaProject(name = "exam", parent = root)
-        }
-
-        @Test
-        fun `it should add an api dependency on a component of another module`() {
-            val dsl = dsl(modules = listOf(examModule(component(ComponentReference("api")))))
-            dsl.createComponent(name = "domain")
-
-            with(dsl) { component("domain").api(module = "exam", component = "api") }
-
-            assertThat(project.configuration("domainApi").projectDependencyPaths()).containsExactly(":exam")
-            assertThat(project.configuration("domainApi").projectDependencyConfigurations())
-                .containsExactly("apiApiElements")
-            assertThat(project.configuration("domainRuntimeOnly").projectDependencyConfigurations())
-                .containsExactly("apiRuntimeElements")
-        }
-
-        @Test
-        fun `it should add an implementation dependency on a component of another module`() {
-            val dsl = dsl(modules = listOf(examModule(component(ComponentReference("api")))))
-            dsl.createComponent(name = "domain")
-
-            with(dsl) { component("domain").implementation(module = "exam", component = "api") }
-
-            assertThat(project.configuration("domainImplementation").projectDependencyConfigurations())
-                .containsExactly("apiApiElements")
-            assertThat(project.configuration("domainApi").projectDependencyConfigurations()).isEmpty()
-        }
-
-        @Test
-        fun `it should link test fixtures when both source and target component have a test fixtures source set`() {
-            val dsl = dsl(modules = listOf(examModule(component(ComponentReference("api")))))
-            dsl.createComponent(name = "domain")
-
-            with(dsl) { component("domain").api(module = "exam", component = "api") }
-
-            assertThat(project.configuration("domainTestFixturesApi").projectDependencyPaths())
-                .containsExactly(":exam")
-            assertThat(project.configuration("domainTestFixturesApi").projectDependencyConfigurations())
-                .containsExactly("apiTestFixturesApiElements")
-        }
-
-        @Test
-        fun `it should not link test fixtures when the target component has no test fixtures source set`() {
-            val targetComponent = component(ComponentReference("api"), withTestFixturesSourceSet = false)
-            val dsl = dsl(modules = listOf(examModule(targetComponent)))
-            dsl.createComponent(name = "domain")
-
-            with(dsl) { component("domain").api(module = "exam", component = "api") }
-
-            assertThat(project.configuration("domainApi").projectDependencyConfigurations())
-                .containsExactly("apiApiElements")
-            assertThat(project.configuration("domainTestFixturesApi").projectDependencyConfigurations()).isEmpty()
-        }
-
-        @Test
-        fun `it should not link test fixtures when the source component has no test fixtures source set`() {
-            val dsl = dsl(modules = listOf(examModule(component(ComponentReference("api")))))
-            dsl.createComponent(name = "domain", withTestFixturesSourceSet = false)
-
-            with(dsl) { component("domain").api(module = "exam", component = "api") }
-
-            assertThat(project.configuration("domainApi").projectDependencyConfigurations())
-                .containsExactly("apiApiElements")
-        }
-
-        @Test
-        fun `it should fall back to the global test fixtures setting for the target component`() {
-            val dsl = dsl(
-                modules = listOf(examModule(component(ComponentReference("api")))),
-                settings = sourceSetComponentSettings(withTestFixturesSourceSet = false),
-            )
-            dsl.createComponent(name = "domain", withTestFixturesSourceSet = true)
-
-            with(dsl) { component("domain").api(module = "exam", component = "api") }
-
-            assertThat(project.configuration("domainTestFixturesApi").projectDependencyConfigurations()).isEmpty()
-        }
-
-        @Test
-        fun `it should reject an unknown target module`() {
-            val dsl = dsl(modules = listOf(examModule(component(ComponentReference("api")))))
-            dsl.createComponent(name = "domain")
-
-            assertThatThrownBy { with(dsl) { component("domain").api(module = "billing", component = "api") } }
-                .hasMessage("Arciphant configuration error: Module with name 'billing' does not exist.")
-        }
-
-        @Test
-        fun `it should reject an unknown component of the target module`() {
-            val dsl = dsl(modules = listOf(examModule(component(ComponentReference("api")))))
-            dsl.createComponent(name = "domain")
-
-            assertThatThrownBy { with(dsl) { component("domain").api(module = "exam", component = "db") } }
-                .hasMessage("Arciphant configuration error: Component with name 'db' does not exist in module 'exam'.")
-        }
-
-        @Test
-        fun `it should reject an unknown source component`() {
-            val dsl = dsl(modules = listOf(examModule(component(ComponentReference("api")))))
-
-            assertThatThrownBy { with(dsl) { component("domain").api(module = "exam", component = "api") } }
-                .hasMessage("Arciphant configuration error: Component with name 'domain' does not exist in project ':certificate'.")
-        }
-
-        private fun dsl(
-            modules: List<Module>,
-            settings: SourceSetComponentSettings = sourceSetComponentSettings(),
-        ) = ArciphantProjectDsl(project, modules, settings)
-
-        private fun examModule(vararg components: Component) = DomainModule(
-            reference = ModuleReference(name = "exam"),
-            components = components.toSet(),
-        )
-
+        assertThat(project.configuration("domainApi").projectDependencyPaths()).containsExactly(":exam")
+        assertThat(project.configuration("domainApi").projectDependencyConfigurations())
+            .containsExactly("apiApiElements")
+        assertThat(project.configuration("domainRuntimeOnly").projectDependencyConfigurations())
+            .containsExactly("apiRuntimeElements")
     }
+
+    @Test
+    fun `it should add an implementation dependency on a component of another module`() {
+        val dsl = dsl()
+        createComponent(name = "domain")
+
+        with(dsl) { component("domain").implementation(module = "exam", component = "api") }
+
+        assertThat(project.configuration("domainImplementation").projectDependencyConfigurations())
+            .containsExactly("apiApiElements")
+        assertThat(project.configuration("domainApi").projectDependencyConfigurations()).isEmpty()
+    }
+
+    @Test
+    fun `it should link test fixtures when both source and target component have a test fixtures source set`() {
+        val dsl = dsl()
+        createComponent(name = "domain")
+
+        with(dsl) { component("domain").api(module = "exam", component = "api") }
+
+        assertThat(project.configuration("domainTestFixturesApi").projectDependencyPaths())
+            .containsExactly(":exam")
+        assertThat(project.configuration("domainTestFixturesApi").projectDependencyConfigurations())
+            .containsExactly("apiTestFixturesApiElements")
+    }
+
+    @Test
+    fun `it should not link test fixtures when the target component has no test fixtures source set`() {
+        val targetComponent = component(ComponentReference("api"), withTestFixturesSourceSet = false)
+        val dsl = dsl(modules = listOf(examModule(targetComponent)))
+        createComponent(name = "domain")
+
+        with(dsl) { component("domain").api(module = "exam", component = "api") }
+
+        assertThat(project.configuration("domainApi").projectDependencyConfigurations())
+            .containsExactly("apiApiElements")
+        assertThat(project.configuration("domainTestFixturesApi").projectDependencyConfigurations()).isEmpty()
+    }
+
+    @Test
+    fun `it should not link test fixtures when the source component has no test fixtures source set`() {
+        val dsl = dsl()
+        createComponent(name = "domain", withTestFixturesSourceSet = false)
+
+        with(dsl) { component("domain").api(module = "exam", component = "api") }
+
+        assertThat(project.configuration("domainApi").projectDependencyConfigurations())
+            .containsExactly("apiApiElements")
+    }
+
+    @Test
+    fun `it should fall back to the global test fixtures setting for the target component`() {
+        val settings = sourceSetComponentSettings(withTestFixturesSourceSet = false)
+        val dsl = dsl(settings = settings)
+        createComponent(name = "domain", settings = settings, withTestFixturesSourceSet = true)
+
+        with(dsl) { component("domain").api(module = "exam", component = "api") }
+
+        assertThat(project.configuration("domainTestFixturesApi").projectDependencyConfigurations()).isEmpty()
+    }
+
+    @Test
+    fun `it should reject an unknown target module`() {
+        val dsl = dsl()
+        createComponent(name = "domain")
+
+        assertThatThrownBy { with(dsl) { component("domain").api(module = "billing", component = "api") } }
+            .hasMessage("Arciphant configuration error: Module with name 'billing' does not exist.")
+    }
+
+    @Test
+    fun `it should reject an unknown component of the target module`() {
+        val dsl = dsl()
+        createComponent(name = "domain")
+
+        assertThatThrownBy { with(dsl) { component("domain").api(module = "exam", component = "db") } }
+            .hasMessage("Arciphant configuration error: Component with name 'db' does not exist in module 'exam'.")
+    }
+
+    @Test
+    fun `it should reject an unknown source component`() {
+        val dsl = dsl()
+
+        assertThatThrownBy { with(dsl) { component("domain").api(module = "exam", component = "api") } }
+            .hasMessage("Arciphant configuration error: Component with name 'domain' does not exist in project ':certificate'.")
+    }
+
+    private fun dsl(
+        modules: List<Module> = listOf(examModule(component(ComponentReference("api")))),
+        settings: SourceSetComponentSettings = defaultSettings,
+    ) = ArciphantProjectDsl(project, modules, settings)
+
+    private fun createComponent(
+        name: String,
+        settings: SourceSetComponentSettings = defaultSettings,
+        withTestFixturesSourceSet: Boolean? = null,
+    ) = SourceSetFactory(project).createComponent(
+        name = name,
+        settings = settings,
+        withTestFixturesSourceSet = withTestFixturesSourceSet,
+    )
+
+    private fun examModule(vararg components: Component) = DomainModule(
+        reference = ModuleReference(name = "exam"),
+        components = components.toSet(),
+    )
 
 }
