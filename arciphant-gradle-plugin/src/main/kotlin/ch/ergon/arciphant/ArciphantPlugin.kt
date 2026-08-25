@@ -37,6 +37,7 @@ class ArciphantPlugin : Plugin<Settings> {
                             beforeEvaluate { configApplicator.applyConfig(this) }
                         }
                     }
+
                     ComponentLayout.SOURCE_SET -> {
                         val configApplicator = SourceSetLayoutConfigApplicator(settings, projectConfigs)
                         gradle.lifecycle.beforeProject {
@@ -46,7 +47,14 @@ class ArciphantPlugin : Plugin<Settings> {
                 }
 
                 gradle.lifecycle.beforeProject {
-                    extensions.create(ARCIPHANT_EXTENSION_NAME, ArciphantProjectDsl::class.java, this, modules, settings.sourceSetComponentSettings)
+                    extensions.create(
+                        ARCIPHANT_EXTENSION_NAME,
+                        ArciphantProjectDsl::class.java,
+                        this,
+                        modules,
+                        settings.componentLayout,
+                        settings.sourceSetComponentSettings
+                    )
                     registerValidatePackageStructureTask(packageStructureValidationSettings)
                 }
             }
