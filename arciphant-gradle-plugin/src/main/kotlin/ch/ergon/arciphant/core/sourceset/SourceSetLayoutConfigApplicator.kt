@@ -2,6 +2,7 @@ package ch.ergon.arciphant.core.sourceset
 
 import ch.ergon.arciphant.core.*
 import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
+import ch.ergon.arciphant.core.GradlePluginIds.JAVA
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.model.DomainModule
@@ -27,7 +28,7 @@ internal class SourceSetLayoutConfigApplicator(
         // including the JVM plugin application that creates the source set container and the 'test'
         // and 'classes' tasks (typically done in the root project's allprojects block). Defer until
         // the java plugin (applied directly or through kotlin.jvm / java-library) is available.
-        project.pluginManager.withPlugin(JAVA_PLUGIN_ID) {
+        project.pluginManager.withPlugin(JAVA) {
             when (config) {
                 is GradleBundleModuleProjectConfig -> config.applyBundleModuleConfig(project)
                 is GradleFunctionalModuleProjectConfig -> config.applyFunctionalModuleConfig(project)
@@ -36,7 +37,7 @@ internal class SourceSetLayoutConfigApplicator(
         }
 
         project.afterEvaluate {
-            if (!project.pluginManager.hasPlugin(JAVA_PLUGIN_ID)) project.noJvmPluginError()
+            if (!project.pluginManager.hasPlugin(JAVA)) project.noJvmPluginError()
         }
     }
 
@@ -105,8 +106,6 @@ internal class SourceSetLayoutConfigApplicator(
         throw IllegalStateException("Arciphant error: unexpected component project '${path.value}' in component layout ${SOURCE_SET}.")
     }
 }
-
-private const val JAVA_PLUGIN_ID = "java"
 
 private fun Project.addSourceSetComponentDependency(path: GradleProjectPath, componentName: String) {
     dependencies.add(

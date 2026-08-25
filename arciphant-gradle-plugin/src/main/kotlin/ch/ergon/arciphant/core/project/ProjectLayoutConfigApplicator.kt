@@ -2,6 +2,7 @@ package ch.ergon.arciphant.core.project
 
 import ch.ergon.arciphant.core.*
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
+import ch.ergon.arciphant.core.GradlePluginIds.JAVA_TEST_FIXTURES
 import ch.ergon.arciphant.core.model.DependencyType
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
@@ -72,7 +73,7 @@ internal class ProjectLayoutConfigApplicator(
     }
 
     private fun Project.addTestFixturesDependency(path: GradleProjectPath) {
-        pluginManager.withPlugin("java-test-fixtures") {
+        pluginManager.withPlugin(JAVA_TEST_FIXTURES) {
             dependencies { add("testFixturesApi", testFixtures(project(path.value))) }
         }
     }

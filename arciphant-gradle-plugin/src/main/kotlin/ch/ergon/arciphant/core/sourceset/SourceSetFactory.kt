@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.GradlePluginIds.IDEA
 import ch.ergon.arciphant.core.SourceSetComponentSettings
 import ch.ergon.arciphant.core.associateKotlinCompilations
 import org.gradle.api.Project
@@ -103,7 +104,7 @@ internal class SourceSetFactory(private val project: Project) {
     }
 
     private fun markAsTestSources(vararg sourceSets: SourceSet?) {
-        project.pluginManager.withPlugin("idea") {
+        project.pluginManager.withPlugin(IDEA) {
             val testSources = project.extensions.getByType(IdeaModel::class.java).module.testSources
             sourceSets.filterNotNull().forEach { testSources.from(it.allSource.srcDirs) }
         }
