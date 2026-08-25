@@ -83,6 +83,12 @@ class ArciphantProjectLayoutProjectDslTest {
     }
 
     @Test
+    fun `it should reject an unknown component of the target module`() {
+        assertThatThrownBy { dsl().api(module = "exam", component = "db") }
+            .hasMessage("Arciphant configuration error: Component with name 'db' does not exist in module 'exam'.")
+    }
+
+    @Test
     fun `it should require a JVM plugin`() {
         val projectWithoutJvmPlugin = subProject(name = "web", parent = root)
         val dsl = ArciphantProjectLayoutProjectDsl(projectWithoutJvmPlugin, examModules())
