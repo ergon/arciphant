@@ -75,31 +75,30 @@ internal class SourceSetLayoutConfigApplicator(
             )
         }
 
-        moduleProject.sourceSetDependencies(sourceSetComponentSettings) {
-            sourceSetsByComponent.forEach { (component, sourceSets) ->
-                component.dependsOn.forEach { dependency ->
-                    val target = sourceSetsByComponent.entries.singleOrNull {
-                        it.key.reference == dependency.component
-                    } ?: throw IllegalArgumentException(
-                        "Arciphant configuration error: Component '${component.reference.name}' depends on unknown component '${dependency.component.name}' in module '${module.reference.name}'."
-                    )
-                    addLocalDependency(dependency.type, sourceSets.production, target.value.production)
-                }
+        val dependencyFactory = SourceSetDependencyFactory(moduleProject, sourceSetComponentSettings)
+        sourceSetsByComponent.forEach { (component, sourceSets) ->
+            component.dependsOn.forEach { dependency ->
+                val target = sourceSetsByComponent.entries.singleOrNull {
+                    it.key.reference == dependency.component
+                } ?: throw IllegalArgumentException(
+                    "Arciphant configuration error: Component '${component.reference.name}' depends on unknown component '${dependency.component.name}' in module '${module.reference.name}'."
+                )
+                dependencyFactory.addLocalDependency(dependency.type, sourceSets.production, target.value.production)
+            }
 
-                if (module is DomainModule) {
-                    libraryModules.forEach { library ->
-                        library.module.components
-                            .filter { it.reference == component.reference }
-                            .forEach { libraryComponent ->
-                                addProjectDependency(
-                                    type = API,
-                                    sourceSet = sourceSets.production,
-                                    projectPath = library.path.value,
-                                    componentName = libraryComponent.reference.name,
-                                    withTestFixturesSourceSet = libraryComponent.withTestFixturesSourceSet,
-                                )
-                            }
-                    }
+            if (module is DomainModule) {
+                libraryModules.forEach { library ->
+                    library.module.components
+                        .filter { it.reference == component.reference }
+                        .forEach { libraryComponent ->
+                            dependencyFactory.addProjectDependency(
+                                type = API,
+                                sourceSet = sourceSets.production,
+                                projectPath = library.path.value,
+                                componentName = libraryComponent.reference.name,
+                                withTestFixturesSourceSet = libraryComponent.withTestFixturesSourceSet,
+                            )
+                        }
                 }
             }
         }
