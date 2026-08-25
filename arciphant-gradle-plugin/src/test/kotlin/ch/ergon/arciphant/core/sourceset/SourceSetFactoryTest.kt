@@ -120,8 +120,10 @@ class SourceSetFactoryTest {
         val project = javaProject()
         val factory = SourceSetFactory(project)
         val target = factory.createComponent(name = "domain", settings = settings)
-        val source = factory.createComponent(name = "application", settings = settings) { sourceSet ->
-            addLocalDependency(IMPLEMENTATION, sourceSet, target.production)
+        val source = factory.createComponent(name = "application", settings = settings)
+
+        project.sourceSetDependencies(settings) {
+            addLocalDependency(IMPLEMENTATION, source.production, target.production)
         }
 
         assertThat(project.configuration("applicationImplementation").hasFileDependencyOn(target.production)).isTrue()
@@ -139,8 +141,10 @@ class SourceSetFactoryTest {
         val project = javaProject()
         val factory = SourceSetFactory(project)
         val target = factory.createComponent(name = "domain", settings = customSettings)
-        val source = factory.createComponent(name = "application", settings = customSettings) { sourceSet ->
-            addLocalDependency(IMPLEMENTATION, sourceSet, target.production)
+        val source = factory.createComponent(name = "application", settings = customSettings)
+
+        project.sourceSetDependencies(customSettings) {
+            addLocalDependency(IMPLEMENTATION, source.production, target.production)
         }
 
         assertThat(target.testFixtures?.name).isEqualTo("domainFixtures")
