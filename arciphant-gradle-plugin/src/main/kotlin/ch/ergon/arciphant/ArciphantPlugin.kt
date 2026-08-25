@@ -1,11 +1,17 @@
 package ch.ergon.arciphant
 
 import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
-import ch.ergon.arciphant.core.*
+import ch.ergon.arciphant.core.ComponentLayout.PROJECT
+import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
+import ch.ergon.arciphant.core.CoreSettingsRepository
+import ch.ergon.arciphant.core.FolderCreator
+import ch.ergon.arciphant.core.ModuleRepository
+import ch.ergon.arciphant.core.project.ArciphantProjectLayoutProjectDsl
 import ch.ergon.arciphant.core.project.ProjectLayoutConfigApplicator
+import ch.ergon.arciphant.core.sourceset.ArciphantSourceSetLayoutProjectDsl
 import ch.ergon.arciphant.core.sourceset.SourceSetLayoutConfigApplicator
+import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
-import ch.ergon.arciphant.dsl.ArciphantProjectDsl
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
@@ -31,14 +37,14 @@ class ArciphantPlugin : Plugin<Settings> {
 
                 // apply plugins and add dependencies (during gradle configuration phase)
                 when (settings.componentLayout) {
-                    ComponentLayout.PROJECT -> {
+                    PROJECT -> {
                         val configApplicator = ProjectLayoutConfigApplicator(settings, projectConfigs)
                         gradle.allprojects {
                             beforeEvaluate { configApplicator.applyConfig(this) }
                         }
                     }
 
-                    ComponentLayout.SOURCE_SET -> {
+                    SOURCE_SET -> {
                         val configApplicator = SourceSetLayoutConfigApplicator(settings, projectConfigs)
                         gradle.lifecycle.beforeProject {
                             configApplicator.applyConfig(this)
@@ -47,14 +53,21 @@ class ArciphantPlugin : Plugin<Settings> {
                 }
 
                 gradle.lifecycle.beforeProject {
-                    extensions.create(
-                        ARCIPHANT_EXTENSION_NAME,
-                        ArciphantProjectDsl::class.java,
-                        this,
-                        modules,
-                        settings.componentLayout,
-                        settings.sourceSetComponentSettings
-                    )
+                    when(settings.componentLayout) {
+                        PROJECT -> extensions.create(
+                            ARCIPHANT_EXTENSION_NAME,
+                            ArciphantProjectLayoutProjectDsl::class.java,
+                            this,
+                            modules,
+                        )
+                        SOURCE_SET -> extensions.create(
+                            ARCIPHANT_EXTENSION_NAME,
+                            ArciphantSourceSetLayoutProjectDsl::class.java,
+                            this,
+                            modules,
+                            settings.sourceSetComponentSettings
+                        )
+                    }
                     registerValidatePackageStructureTask(packageStructureValidationSettings)
                 }
             }

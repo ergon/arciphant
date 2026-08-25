@@ -1,6 +1,5 @@
-package ch.ergon.arciphant.dsl
+package ch.ergon.arciphant.core.sourceset
 
-import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
 import ch.ergon.arciphant.core.SourceSetComponentSettings
 import ch.ergon.arciphant.core.model.ComponentReference
 import ch.ergon.arciphant.core.model.Module
@@ -9,7 +8,6 @@ import ch.ergon.arciphant.core.model.component
 import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.ModuleReference
 import ch.ergon.arciphant.core.sourceSetComponentSettings
-import ch.ergon.arciphant.core.sourceset.SourceSetFactory
 import ch.ergon.arciphant.util.configuration
 import ch.ergon.arciphant.util.javaProject
 import ch.ergon.arciphant.util.projectDependencyConfigurations
@@ -19,7 +17,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
-class ArciphantProjectDslTest {
+class ArciphantSourceSetLayoutProjectDslTest {
 
     private val root = ProjectBuilder.builder().withName("root").build()
     private val project = javaProject(name = "certificate", parent = root)
@@ -132,7 +130,7 @@ class ArciphantProjectDslTest {
     private fun dsl(
         modules: List<Module> = listOf(examModule(component(ComponentReference("api")))),
         settings: SourceSetComponentSettings = defaultSettings,
-    ) = ArciphantProjectDsl(project, modules, SOURCE_SET, settings)
+    ) = ArciphantSourceSetLayoutProjectDsl(project, modules, settings)
 
     private fun createComponent(
         name: String,
