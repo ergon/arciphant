@@ -70,7 +70,7 @@ internal class ProjectLayoutConfigApplicator(
 
     private fun Project.addDependency(type: DependencyType, path: GradleProjectPath) {
         addMainDependency(type, path)
-        addTestFixturesDependency(path)
+        addTestFixturesDependency(type, path)
     }
 
     private fun GradleComponentProjectConfig.configureArchiveBaseName(componentProject: Project) {
