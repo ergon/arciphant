@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.util.arciphantPreconditionError
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ProjectDependency
@@ -29,7 +30,7 @@ internal fun Project.sourceSets(): SourceSetContainer =
     extensions.findByType(SourceSetContainer::class.java) ?: noJvmPluginError()
 
 internal fun Project.noJvmPluginError(): Nothing =
-    throw IllegalArgumentException("Arciphant error: cannot access source sets in project '$path' because no compatible JVM plugin has been applied.")
+    arciphantPreconditionError("cannot access source sets in project '$path' because no compatible JVM plugin has been applied.")
 
 internal fun Project.getConfiguration(configurationName: String): Configuration =
     configurations.getByName(configurationName)
