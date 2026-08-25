@@ -3,7 +3,12 @@ package ch.ergon.arciphant.dsl
 import ch.ergon.arciphant.core.ComponentLayout
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
 import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
+import ch.ergon.arciphant.core.GradlePluginIds
+import ch.ergon.arciphant.core.GradlePluginIds.JAVA_TEST_FIXTURES
+import ch.ergon.arciphant.core.GradleProjectPath
 import ch.ergon.arciphant.core.SourceSetComponentSettings
+import ch.ergon.arciphant.core.addMainDependency
+import ch.ergon.arciphant.core.addTestFixturesDependency
 import ch.ergon.arciphant.core.gradleProjectPath
 import ch.ergon.arciphant.core.model.Component
 import ch.ergon.arciphant.core.model.ComponentReference
@@ -17,6 +22,7 @@ import ch.ergon.arciphant.core.sourceset.sourceSets
 import ch.ergon.arciphant.util.arciphantPrecondition
 import ch.ergon.arciphant.util.verify
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.DependencyHandlerScope
 
 open class ArciphantProjectDsl internal constructor(
     private val project: Project,
@@ -29,8 +35,13 @@ open class ArciphantProjectDsl internal constructor(
     fun implementation(module: String, component: String) = dependency(IMPLEMENTATION, module, component)
 
     private fun dependency(type: DependencyType, module: String, component: String) = requireComponentLayout(PROJECT) {
-        // TODO implement
+        val targetPath = getModule(module).gradleProjectPath(component)
+        project.addMainDependency(type, targetPath)
+        project.addTestFixturesDependency(targetPath)
     }
+
+    private fun FunctionalModule.gradleProjectPath(component: String) =
+        GradleProjectPath.of(gradleProjectPath().projectNames + component)
 
     fun component(name: String): ComponentReference = requireComponentLayout(SOURCE_SET) {
         ComponentReference(name)

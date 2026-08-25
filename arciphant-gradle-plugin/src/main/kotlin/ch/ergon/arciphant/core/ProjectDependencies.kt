@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core
 
+import ch.ergon.arciphant.core.GradlePluginIds.JAVA_TEST_FIXTURES
 import ch.ergon.arciphant.core.model.DependencyType
 import ch.ergon.arciphant.util.arciphantPreconditionError
 import org.gradle.api.Project
@@ -20,5 +21,11 @@ internal fun Project.addMainDependency(type: DependencyType, path: GradleProject
             """.trimIndent(),
             e,
         )
+    }
+}
+
+internal fun Project.addTestFixturesDependency(path: GradleProjectPath) {
+    pluginManager.withPlugin(JAVA_TEST_FIXTURES) {
+        dependencies { add("testFixturesApi", testFixtures(project(path.value))) }
     }
 }
