@@ -82,25 +82,15 @@ arciphant {
 }
 ```
 
-A component in another module can be referenced by project path and component name:
+A component in another module can be referenced by the module and component names of the Arciphant configuration:
 
 ``` kotlin title="build.gradle.kts"
-import org.gradle.api.tasks.SourceSetContainer
-
-val sourceSets = extensions.getByType<SourceSetContainer>()
-
 arciphant {
-    sourceSetDependencies {
-        implementation(
-            sourceSet = sourceSets.getByName("application"),
-            projectPath = ":contracts",
-            componentName = "api",
-        )
-    }
+    component("application").implementation(module = "contracts", component = "api")
 }
 ```
 
-The name of the target test-fixtures source set is derived from the global `testFixturesSourceSetName` setting, so it never has to be spelled out. Pass `withTestFixturesSourceSet = false` if the target component has no test fixtures.
+Arciphant resolves the target Gradle project path from the module configuration, so no project path has to be spelled out. If both the source and the target component have a test-fixtures source set, the dependency between the test-fixtures source sets is added automatically.
 
 ## Layout-specific restrictions
 

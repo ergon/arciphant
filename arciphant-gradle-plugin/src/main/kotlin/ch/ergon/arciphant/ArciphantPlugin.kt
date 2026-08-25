@@ -46,7 +46,7 @@ class ArciphantPlugin : Plugin<Settings> {
                 }
 
                 gradle.lifecycle.beforeProject {
-                    extensions.create(ARCIPHANT_EXTENSION_NAME, ArciphantProjectDsl::class.java, this, settings.sourceSetComponentSettings)
+                    extensions.create(ARCIPHANT_EXTENSION_NAME, ArciphantProjectDsl::class.java, this, modules, settings.sourceSetComponentSettings)
                     registerValidatePackageStructureTask(packageStructureValidationSettings)
                 }
             }

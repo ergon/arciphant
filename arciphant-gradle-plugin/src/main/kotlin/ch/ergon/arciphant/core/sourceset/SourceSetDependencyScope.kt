@@ -19,24 +19,6 @@ class SourceSetDependencyScope internal constructor(
     private val settings: SourceSetComponentSettings,
 ) {
 
-    fun implementation(
-        sourceSet: SourceSet,
-        projectPath: String,
-        componentName: String,
-        withTestFixturesSourceSet: Boolean? = null,
-    ) {
-        addProjectDependency(IMPLEMENTATION, sourceSet, projectPath, componentName, withTestFixturesSourceSet)
-    }
-
-    fun api(
-        sourceSet: SourceSet,
-        projectPath: String,
-        componentName: String,
-        withTestFixturesSourceSet: Boolean? = null,
-    ) {
-        addProjectDependency(API, sourceSet, projectPath, componentName, withTestFixturesSourceSet)
-    }
-
     internal fun addLocalDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
         addDependency(type, sourceSet, dependency)
 

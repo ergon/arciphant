@@ -357,13 +357,8 @@ class ArciphantPluginTest {
         buildFileWithJvmPlugins()
         projectFolder.resolve("consumer/build.gradle.kts").write(
             """
-            import org.gradle.api.tasks.SourceSetContainer
-
-            val sourceSets = extensions.getByType<SourceSetContainer>()
             arciphant {
-                sourceSetDependencies {
-                    implementation(sourceSets.getByName("application"), ":producer", "api")
-                }
+                component("application").implementation(module = "producer", component = "api")
             }
             """
         )
