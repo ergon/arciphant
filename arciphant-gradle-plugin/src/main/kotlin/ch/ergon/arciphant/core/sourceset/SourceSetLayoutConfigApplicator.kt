@@ -7,6 +7,7 @@ import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.LibraryModule
+import ch.ergon.arciphant.util.arciphantError
 import org.gradle.api.Project
 
 internal class SourceSetLayoutConfigApplicator(
@@ -32,7 +33,7 @@ internal class SourceSetLayoutConfigApplicator(
             when (config) {
                 is GradleBundleModuleProjectConfig -> config.applyBundleModuleConfig(project)
                 is GradleFunctionalModuleProjectConfig -> config.applyFunctionalModuleConfig(project)
-                is GradleComponentProjectConfig -> arcError(config.path)
+                is GradleComponentProjectConfig -> unexpectedComponentLayoutError(config.path)
             }
         }
 
@@ -43,20 +44,22 @@ internal class SourceSetLayoutConfigApplicator(
 
     private fun GradleBundleModuleProjectConfig.applyBundleModuleConfig(bundleModuleProject: Project) {
         projectConfigs.filter { module.includes.contains(it.module.reference) }.forEach {
-            when(it) {
+            when (it) {
                 is GradleFunctionalModuleProjectConfig -> {
                     it.module.components.forEach { component ->
                         bundleModuleProject.addSourceSetComponentDependency(it.path, component.reference.name)
                     }
                 }
+
                 is GradleBundleModuleProjectConfig -> {
                     bundleModuleProject.addMainDependency(
                         type = IMPLEMENTATION,
                         path = it.path,
                     )
                 }
+
                 is GradleComponentProjectConfig -> {
-                    arcError(it.path)
+                    unexpectedComponentLayoutError(it.path)
                 }
             }
         }
@@ -102,9 +105,8 @@ internal class SourceSetLayoutConfigApplicator(
         }
     }
 
-    private fun arcError(path: GradleProjectPath) {
-        throw IllegalStateException("Arciphant error: unexpected component project '${path.value}' in component layout ${SOURCE_SET}.")
-    }
+    private fun unexpectedComponentLayoutError(path: GradleProjectPath): Nothing =
+        arciphantError("unexpected component project ${path.value} in component layout ${SOURCE_SET}.")
 }
 
 private fun Project.addSourceSetComponentDependency(path: GradleProjectPath, componentName: String) {

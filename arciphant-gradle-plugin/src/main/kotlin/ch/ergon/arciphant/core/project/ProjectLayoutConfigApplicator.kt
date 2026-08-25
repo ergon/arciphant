@@ -9,6 +9,7 @@ import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.LibraryModule
 import ch.ergon.arciphant.core.model.Plugin
+import ch.ergon.arciphant.util.arciphantError
 import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
@@ -32,8 +33,8 @@ internal class ProjectLayoutConfigApplicator(
             when (it) {
                 is GradleBundleModuleProjectConfig -> it.applyBundleModuleConfig(project)
                 is GradleComponentProjectConfig -> it.applyComponentConfig(project)
-                is GradleFunctionalModuleProjectConfig -> throw IllegalStateException(
-                    "Arciphant error: unexpected functional module project '${project.path}' in component layout '${PROJECT}'."
+                is GradleFunctionalModuleProjectConfig -> arciphantError(
+                    "unexpected functional module project '${project.path}' in component layout '${PROJECT}'."
                 )
             }
         }
