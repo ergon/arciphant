@@ -7,14 +7,7 @@ import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 
-internal fun Project.sourceSetDependencies(
-    settings: SourceSetComponentSettings,
-    block: SourceSetDependencyScope.() -> Unit,
-) {
-    SourceSetDependencyScope(this, settings).block()
-}
-
-class SourceSetDependencyScope internal constructor(
+class SourceSetDependencyFactory internal constructor(
     private val project: Project,
     private val settings: SourceSetComponentSettings,
 ) {

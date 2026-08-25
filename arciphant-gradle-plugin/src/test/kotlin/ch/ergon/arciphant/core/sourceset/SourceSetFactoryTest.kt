@@ -52,7 +52,9 @@ class SourceSetFactoryTest {
 
         assertThat(withoutTestFixtures.testFixtures).isNull()
         assertThat(withoutTestFixtures.test).isNotNull()
-        assertThat(project.configuration("domainTestImplementation").hasFileDependencyOn(withoutTestFixtures.production)).isTrue()
+        assertThat(
+            project.configuration("domainTestImplementation").hasFileDependencyOn(withoutTestFixtures.production)
+        ).isTrue()
         assertThat(withoutTest.testFixtures).isNotNull()
         assertThat(withoutTest.test).isNull()
         assertThat(project.tasks.findByName("apiTest")).isNull()
@@ -100,7 +102,10 @@ class SourceSetFactoryTest {
         assertThat(classes.taskDependencies.getDependencies(classes))
             .contains(project.tasks.getByName("domainClasses"))
         assertThat(testClasses.taskDependencies.getDependencies(testClasses))
-            .contains(project.tasks.getByName("domainTestClasses"), project.tasks.getByName("domainTestFixturesClasses"))
+            .contains(
+                project.tasks.getByName("domainTestClasses"),
+                project.tasks.getByName("domainTestFixturesClasses")
+            )
     }
 
     @Test
@@ -122,12 +127,13 @@ class SourceSetFactoryTest {
         val target = factory.createComponent(name = "domain", settings = settings)
         val source = factory.createComponent(name = "application", settings = settings)
 
-        project.sourceSetDependencies(settings) {
-            addLocalDependency(IMPLEMENTATION, source.production, target.production)
-        }
+        SourceSetDependencyFactory(project, settings)
+            .addLocalDependency(IMPLEMENTATION, source.production, target.production)
 
         assertThat(project.configuration("applicationImplementation").hasFileDependencyOn(target.production)).isTrue()
-        assertThat(project.configuration("applicationTestFixturesImplementation").hasFileDependencyOn(target.testFixtures!!)).isTrue()
+        assertThat(
+            project.configuration("applicationTestFixturesImplementation").hasFileDependencyOn(target.testFixtures!!)
+        ).isTrue()
         assertThat(project.configuration("applicationTestImplementation").hasFileDependencyOn(target.test!!)).isFalse()
         assertThat(source.test).isNotNull()
     }
@@ -143,13 +149,14 @@ class SourceSetFactoryTest {
         val target = factory.createComponent(name = "domain", settings = customSettings)
         val source = factory.createComponent(name = "application", settings = customSettings)
 
-        project.sourceSetDependencies(customSettings) {
-            addLocalDependency(IMPLEMENTATION, source.production, target.production)
-        }
+        SourceSetDependencyFactory(project, customSettings)
+            .addLocalDependency(IMPLEMENTATION, source.production, target.production)
 
         assertThat(target.testFixtures?.name).isEqualTo("domainFixtures")
         assertThat(source.test?.name).isEqualTo("applicationSpec")
-        assertThat(project.configuration("applicationFixturesImplementation").hasFileDependencyOn(target.testFixtures!!)).isTrue()
+        assertThat(
+            project.configuration("applicationFixturesImplementation").hasFileDependencyOn(target.testFixtures!!)
+        ).isTrue()
     }
 
     @Test
@@ -163,14 +170,12 @@ class SourceSetFactoryTest {
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = customSettings)
 
-        module.sourceSetDependencies(customSettings) {
-            addProjectDependency(
-                type = API,
-                sourceSet = source.production,
-                projectPath = ":library",
-                componentName = "domain",
-            )
-        }
+        SourceSetDependencyFactory(module, customSettings).addProjectDependency(
+            type = API,
+            sourceSet = source.production,
+            projectPath = ":library",
+            componentName = "domain",
+        )
 
         assertThat(module.configuration("applicationApi").projectDependencyConfigurations())
             .containsExactly("domainApiElements")
@@ -193,15 +198,13 @@ class SourceSetFactoryTest {
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = settings)
 
-        module.sourceSetDependencies(settings) {
-            addProjectDependency(
-                type = API,
-                sourceSet = source.production,
-                projectPath = ":library",
-                componentName = "domain",
-                withTestFixturesSourceSet = false,
-            )
-        }
+        SourceSetDependencyFactory(module, settings).addProjectDependency(
+            type = API,
+            sourceSet = source.production,
+            projectPath = ":library",
+            componentName = "domain",
+            withTestFixturesSourceSet = false,
+        )
 
         assertThat(module.configuration("applicationApi").projectDependencyConfigurations())
             .containsExactly("domainApiElements")
