@@ -34,7 +34,7 @@ open class ArciphantSourceSetLayoutProjectDsl internal constructor(
         val sourceSet = project.sourceSets().findByName(name)
         verify(sourceSet != null) { "Component with name '$name' does not exist in project '${project.path}'." }
 
-        dependencyFactory.addProjectDependency(
+        dependencyFactory.addInterModuleDependency(
             type = type,
             sourceSet = sourceSet,
             projectPath = targetModule.gradleProjectPath().value,
