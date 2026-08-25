@@ -12,39 +12,39 @@ class SourceSetDependencyFactory internal constructor(
     private val settings: SourceSetComponentSettings,
 ) {
 
-    internal fun addLocalDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
-        addDependency(type, sourceSet, dependency)
+    internal fun addIntraModuleDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
+        doAddIntraModuleDependency(type, sourceSet, dependency)
 
         val sourceTestFixtures = sourceSet.testFixturesSourceSet()
         val dependencyTestFixtures = dependency.testFixturesSourceSet()
         if (sourceTestFixtures != null && dependencyTestFixtures != null) {
-            addDependency(type, sourceTestFixtures, dependencyTestFixtures)
+            doAddIntraModuleDependency(type, sourceTestFixtures, dependencyTestFixtures)
         }
     }
 
-    private fun addDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
+    private fun doAddIntraModuleDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
         val dependencyConfiguration = project.dependencyConfiguration(sourceSet, type)
         dependencyConfiguration.extendsFrom(project.apiConfiguration(dependency))
         project.dependencies.add(dependencyConfiguration.name, dependency.output)
         project.extendRuntimeOnly(sourceSet, dependency)
     }
 
-    internal fun addProjectDependency(
+    internal fun addInterModuleDependency(
         type: DependencyType,
         sourceSet: SourceSet,
         projectPath: String,
         componentName: String,
         withTestFixturesSourceSet: Boolean? = null,
     ) {
-        addDependency(type, sourceSet, projectPath, componentName)
+        doAddInterModuleDependency(type, sourceSet, projectPath, componentName)
 
         val sourceTestFixtures = sourceSet.testFixturesSourceSet()
         if (sourceTestFixtures != null && (withTestFixturesSourceSet ?: settings.withTestFixturesSourceSet)) {
-            addDependency(type, sourceTestFixtures, projectPath, settings.testFixturesSourceSetName(componentName))
+            doAddInterModuleDependency(type, sourceTestFixtures, projectPath, settings.testFixturesSourceSetName(componentName))
         }
     }
 
-    private fun addDependency(
+    private fun doAddInterModuleDependency(
         type: DependencyType,
         sourceSet: SourceSet,
         projectPath: String,

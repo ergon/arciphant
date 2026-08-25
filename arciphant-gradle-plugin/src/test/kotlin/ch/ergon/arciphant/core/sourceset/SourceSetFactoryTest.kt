@@ -128,7 +128,7 @@ class SourceSetFactoryTest {
         val source = factory.createComponent(name = "application", settings = settings)
 
         SourceSetDependencyFactory(project, settings)
-            .addLocalDependency(IMPLEMENTATION, source.production, target.production)
+            .addIntraModuleDependency(IMPLEMENTATION, source.production, target.production)
 
         assertThat(project.configuration("applicationImplementation").hasFileDependencyOn(target.production)).isTrue()
         assertThat(
@@ -150,7 +150,7 @@ class SourceSetFactoryTest {
         val source = factory.createComponent(name = "application", settings = customSettings)
 
         SourceSetDependencyFactory(project, customSettings)
-            .addLocalDependency(IMPLEMENTATION, source.production, target.production)
+            .addIntraModuleDependency(IMPLEMENTATION, source.production, target.production)
 
         assertThat(target.testFixtures?.name).isEqualTo("domainFixtures")
         assertThat(source.test?.name).isEqualTo("applicationSpec")
@@ -170,7 +170,7 @@ class SourceSetFactoryTest {
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = customSettings)
 
-        SourceSetDependencyFactory(module, customSettings).addProjectDependency(
+        SourceSetDependencyFactory(module, customSettings).addInterModuleDependency(
             type = API,
             sourceSet = source.production,
             projectPath = ":library",
@@ -198,7 +198,7 @@ class SourceSetFactoryTest {
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = settings)
 
-        SourceSetDependencyFactory(module, settings).addProjectDependency(
+        SourceSetDependencyFactory(module, settings).addInterModuleDependency(
             type = API,
             sourceSet = source.production,
             projectPath = ":library",
