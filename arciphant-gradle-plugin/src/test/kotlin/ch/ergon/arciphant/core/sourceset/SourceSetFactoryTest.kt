@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.GradlePluginIds.IDEA
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.sourceSetComponentSettings
 import ch.ergon.arciphant.util.configuration
@@ -103,7 +104,7 @@ class SourceSetFactoryTest {
 
     @Test
     fun `it should mark tests and test fixtures as IDEA test sources`() {
-        val project = javaProject().also { it.pluginManager.apply("idea") }
+        val project = javaProject().also { it.pluginManager.apply(IDEA) }
 
         val factory = SourceSetFactory(project)
         val component = factory.createComponent(name = "domain", settings = settings)

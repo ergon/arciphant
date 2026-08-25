@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core
 
+import ch.ergon.arciphant.core.GradlePluginIds.KOTLIN_JVM
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
@@ -14,7 +15,7 @@ import org.gradle.api.tasks.SourceSet
  * created later during the Kotlin plugin application.
  */
 internal fun Project.associateKotlinCompilations(sourceSet: SourceSet, dependency: SourceSet) {
-    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+    pluginManager.withPlugin(KOTLIN_JVM) {
         try {
             val compilations = kotlinCompilations()
             compilations.whenPresent(sourceSet.name) { sourceCompilation ->
