@@ -22,6 +22,13 @@ class SourceSetDependencyFactory internal constructor(
         }
     }
 
+    private fun addDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
+        val dependencyConfiguration = project.dependencyConfiguration(sourceSet, type)
+        dependencyConfiguration.extendsFrom(project.apiConfiguration(dependency))
+        project.dependencies.add(dependencyConfiguration.name, dependency.output)
+        project.extendRuntimeOnly(sourceSet, dependency)
+    }
+
     internal fun addProjectDependency(
         type: DependencyType,
         sourceSet: SourceSet,
@@ -35,13 +42,6 @@ class SourceSetDependencyFactory internal constructor(
         if (sourceTestFixtures != null && (withTestFixturesSourceSet ?: settings.withTestFixturesSourceSet)) {
             addDependency(type, sourceTestFixtures, projectPath, settings.testFixturesSourceSetName(componentName))
         }
-    }
-
-    private fun addDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
-        val dependencyConfiguration = project.dependencyConfiguration(sourceSet, type)
-        dependencyConfiguration.extendsFrom(project.apiConfiguration(dependency))
-        project.dependencies.add(dependencyConfiguration.name, dependency.output)
-        project.extendRuntimeOnly(sourceSet, dependency)
     }
 
     private fun addDependency(
