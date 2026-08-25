@@ -18,7 +18,6 @@ internal class SourceSetFactory(private val project: Project) {
         settings: SourceSetComponentSettings,
         withTestSourceSet: Boolean? = null,
         withTestFixturesSourceSet: Boolean? = null,
-        sourceSetDependencies: (SourceSetDependencyScope.(SourceSet) -> Unit)? = null,
     ): ComponentSourceSets {
         val sourceSets = project.sourceSets()
         val production = sourceSets.create(name)
@@ -44,8 +43,6 @@ internal class SourceSetFactory(private val project: Project) {
 
         createConsumableConfigurations(production)
         testFixtures?.let { createConsumableConfigurations(it) }
-
-        sourceSetDependencies?.let { block -> project.sourceSetDependencies(settings) { block(production) } }
 
         attachToLifecycleTasks(production, testFixtures, test)
         markAsTestSources(testFixtures, test)
