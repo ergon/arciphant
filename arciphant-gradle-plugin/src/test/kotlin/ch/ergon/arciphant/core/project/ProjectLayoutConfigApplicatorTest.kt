@@ -8,6 +8,7 @@ import ch.ergon.arciphant.core.model.BundleModule
 import ch.ergon.arciphant.core.model.Component
 import ch.ergon.arciphant.core.model.ComponentReference
 import ch.ergon.arciphant.core.model.Dependency
+import ch.ergon.arciphant.core.model.DependencyType
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.model.DomainModule
@@ -133,14 +134,8 @@ class ProjectLayoutConfigApplicatorTest {
     inner class TestFixturesTest {
 
         @Test
-        fun `it should add a test fixtures dependency for each component dependency`() {
-            val module = domainModule(
-                component(ComponentReference("api")),
-                component(
-                    reference = ComponentReference("domain"),
-                    dependsOn = setOf(Dependency(component = ComponentReference("api"), type = IMPLEMENTATION)),
-                ),
-            )
+        fun `it should mirror an api component dependency to the api scope of the test fixtures`() {
+            val module = moduleWithDomainDependingOnApi(type = API)
             val domainProject = javaProject(":module:domain")
             domainProject.pluginManager.apply("java-test-fixtures")
             project(":module:api")
@@ -148,30 +143,62 @@ class ProjectLayoutConfigApplicatorTest {
             applicator(module).applyConfig(domainProject)
 
             assertThat(domainProject.configuration("testFixturesApi").projectDependencyPaths())
+                .contains(":module:api")
+            assertThat(domainProject.configuration("testFixturesImplementation").projectDependencyPaths())
+                .doesNotContain(":module:api")
+        }
+
+        @Test
+        fun `it should mirror an implementation component dependency to the implementation scope of the test fixtures`() {
+            val module = moduleWithDomainDependingOnApi(type = IMPLEMENTATION)
+            val domainProject = javaProject(":module:domain")
+            domainProject.pluginManager.apply("java-test-fixtures")
+            project(":module:api")
+
+            applicator(module).applyConfig(domainProject)
+
+            assertThat(domainProject.configuration("testFixturesImplementation").projectDependencyPaths())
+                .contains(":module:api")
+            assertThat(domainProject.configuration("testFixturesApi").projectDependencyPaths())
+                .doesNotContain(":module:api")
+        }
+
+        @Test
+        fun `it should give the tests access to the fixtures of an implementation component dependency`() {
+            val module = moduleWithDomainDependingOnApi(type = IMPLEMENTATION)
+            val domainProject = javaProject(":module:domain")
+            domainProject.pluginManager.apply("java-test-fixtures")
+            project(":module:api")
+
+            applicator(module).applyConfig(domainProject)
+
+            assertThat(domainProject.configuration("testImplementation").projectDependencyPaths())
                 .contains(":module:api")
         }
 
         @Test
         fun `it should defer the test fixtures dependency until the java-test-fixtures plugin is applied`() {
-            val module = domainModule(
-                component(ComponentReference("api")),
-                component(
-                    reference = ComponentReference("domain"),
-                    dependsOn = setOf(Dependency(component = ComponentReference("api"), type = IMPLEMENTATION)),
-                ),
-            )
+            val module = moduleWithDomainDependingOnApi(type = IMPLEMENTATION)
             val domainProject = javaProject(":module:domain")
             project(":module:api")
 
             applicator(module).applyConfig(domainProject)
 
-            assertThat(domainProject.configurations.findByName("testFixturesApi")).isNull()
+            assertThat(domainProject.configurations.findByName("testFixturesImplementation")).isNull()
 
             domainProject.pluginManager.apply("java-test-fixtures")
 
-            assertThat(domainProject.configuration("testFixturesApi").projectDependencyPaths())
+            assertThat(domainProject.configuration("testFixturesImplementation").projectDependencyPaths())
                 .contains(":module:api")
         }
+
+        private fun moduleWithDomainDependingOnApi(type: DependencyType) = domainModule(
+            component(ComponentReference("api")),
+            component(
+                reference = ComponentReference("domain"),
+                dependsOn = setOf(Dependency(component = ComponentReference("api"), type = type)),
+            ),
+        )
     }
 
     @Nested

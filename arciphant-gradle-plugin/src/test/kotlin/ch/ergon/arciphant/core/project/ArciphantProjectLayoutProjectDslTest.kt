@@ -56,13 +56,27 @@ class ArciphantProjectLayoutProjectDslTest {
     }
 
     @Test
-    fun `it should add a test fixtures dependency when the java-test-fixtures plugin is applied`() {
+    fun `it should mirror an api dependency to the api scope of the test fixtures`() {
         project.pluginManager.apply("java-test-fixtures")
 
         dsl().api(module = "exam", component = "api")
 
         // besides the self-dependency added by the java-test-fixtures plugin itself
         assertThat(project.configuration("testFixturesApi").projectDependencyPaths()).contains(":exam:api")
+        assertThat(project.configuration("testFixturesImplementation").projectDependencyPaths())
+            .doesNotContain(":exam:api")
+    }
+
+    @Test
+    fun `it should mirror an implementation dependency to the implementation scope of the test fixtures`() {
+        project.pluginManager.apply("java-test-fixtures")
+
+        dsl().implementation(module = "exam", component = "api")
+
+        assertThat(project.configuration("testFixturesImplementation").projectDependencyPaths())
+            .contains(":exam:api")
+        assertThat(project.configuration("testImplementation").projectDependencyPaths()).contains(":exam:api")
+        assertThat(project.configuration("testFixturesApi").projectDependencyPaths()).doesNotContain(":exam:api")
     }
 
     @Test

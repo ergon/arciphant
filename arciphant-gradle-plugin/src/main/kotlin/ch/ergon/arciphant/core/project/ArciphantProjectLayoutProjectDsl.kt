@@ -25,7 +25,7 @@ open class ArciphantProjectLayoutProjectDsl internal constructor(
         val targetComponent = targetModule.getComponent(component)
         val targetPath = targetModule.gradleProjectPath(targetComponent.reference)
         project.addMainDependency(type, targetPath)
-        project.addTestFixturesDependency(targetPath)
+        project.addTestFixturesDependency(type, targetPath)
     }
 
 }

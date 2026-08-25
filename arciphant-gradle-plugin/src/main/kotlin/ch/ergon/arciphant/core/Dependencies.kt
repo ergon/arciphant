@@ -2,6 +2,8 @@ package ch.ergon.arciphant.core
 
 import ch.ergon.arciphant.core.GradlePluginIds.JAVA_TEST_FIXTURES
 import ch.ergon.arciphant.core.model.DependencyType
+import ch.ergon.arciphant.core.model.DependencyType.API
+import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.util.arciphantPreconditionError
 import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
@@ -24,8 +26,19 @@ internal fun Project.addMainDependency(type: DependencyType, path: GradleProject
     }
 }
 
-internal fun Project.addTestFixturesDependency(path: GradleProjectPath) {
+internal fun Project.addTestFixturesDependency(type: DependencyType, path: GradleProjectPath) {
     pluginManager.withPlugin(JAVA_TEST_FIXTURES) {
-        dependencies { add("testFixturesApi", testFixtures(project(path.value))) }
+        dependencies {
+            add(type.testFixturesConfigurationName, testFixtures(project(path.value)))
+            if (type == IMPLEMENTATION) {
+                add("testImplementation", testFixtures(project(path.value)))
+            }
+        }
     }
 }
+
+private val DependencyType.testFixturesConfigurationName
+    get() = when (this) {
+        API -> "testFixturesApi"
+        IMPLEMENTATION -> "testFixturesImplementation"
+    }
