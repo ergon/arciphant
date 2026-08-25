@@ -73,12 +73,6 @@ internal class ProjectLayoutConfigApplicator(
         addTestFixturesDependency(path)
     }
 
-    private fun Project.addTestFixturesDependency(path: GradleProjectPath) {
-        pluginManager.withPlugin(JAVA_TEST_FIXTURES) {
-            dependencies { add("testFixturesApi", testFixtures(project(path.value))) }
-        }
-    }
-
     private fun GradleComponentProjectConfig.configureArchiveBaseName(componentProject: Project) {
         if(!projectComponentSettings.disableQualifiedArchiveBaseName) {
             componentProject.tasks.withType(Jar::class.java).configureEach {
