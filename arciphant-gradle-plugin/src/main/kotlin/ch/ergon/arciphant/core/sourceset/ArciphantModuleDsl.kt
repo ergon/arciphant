@@ -5,8 +5,10 @@ import ch.ergon.arciphant.core.gradleProjectPath
 import ch.ergon.arciphant.core.model.*
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.core.sourceset.ArciphantModuleDsl.Companion.ARCIPHANT_MODULE_EXTENSION_NAME
 import ch.ergon.arciphant.util.verify
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionContainer
 
 /**
  * The [ArciphantModuleDsl] is used together with [ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET].
@@ -14,7 +16,7 @@ import org.gradle.api.Project
 open class ArciphantModuleDsl internal constructor(
     private val project: Project,
     private val modules: List<Module>,
-    componentSettings: SourceSetComponentSettings
+    componentSettings: SourceSetComponentSettings,
 ) {
 
     private val dependencyFactory = SourceSetDependencyFactory(project, componentSettings)
@@ -41,4 +43,25 @@ open class ArciphantModuleDsl internal constructor(
             withTestFixturesSourceSet = targetComponent.withTestFixturesSourceSet,
         )
     }
+
+    companion object {
+        internal const val ARCIPHANT_MODULE_EXTENSION_NAME = "arciphantModule"
+    }
+}
+
+/**
+ * Keep parameters of this method in sync with constructor of [ArciphantModuleDsl].
+ */
+internal fun ExtensionContainer.createArciphantModuleDsl(
+    project: Project,
+    modules: List<Module>,
+    componentSettings: SourceSetComponentSettings
+) {
+    create(
+        ARCIPHANT_MODULE_EXTENSION_NAME,
+        ArciphantModuleDsl::class.java,
+        project,
+        modules,
+        componentSettings,
+    )
 }

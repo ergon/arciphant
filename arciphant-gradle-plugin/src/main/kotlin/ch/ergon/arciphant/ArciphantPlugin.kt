@@ -8,8 +8,10 @@ import ch.ergon.arciphant.core.FolderCreator
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.project.ArciphantComponentDsl
 import ch.ergon.arciphant.core.project.ProjectLayoutConfigApplicator
+import ch.ergon.arciphant.core.project.createArciphantComponentDsl
 import ch.ergon.arciphant.core.sourceset.ArciphantModuleDsl
 import ch.ergon.arciphant.core.sourceset.SourceSetLayoutConfigApplicator
+import ch.ergon.arciphant.core.sourceset.createArciphantModuleDsl
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
@@ -54,18 +56,14 @@ class ArciphantPlugin : Plugin<Settings> {
 
                 gradle.lifecycle.beforeProject {
                     when(settings.componentLayout) {
-                        PROJECT -> extensions.create(
-                            ARCIPHANT_COMPONENT_EXTENSION_NAME,
-                            ArciphantComponentDsl::class.java,
-                            this,
-                            modules,
+                        PROJECT -> extensions.createArciphantComponentDsl(
+                            project = this,
+                            modules = modules,
                         )
-                        SOURCE_SET -> extensions.create(
-                            ARCIPHANT_MODULE_EXTENSION_NAME,
-                            ArciphantModuleDsl::class.java,
-                            this,
-                            modules,
-                            settings.sourceSetComponentSettings
+                        SOURCE_SET -> extensions.createArciphantModuleDsl(
+                            project = this,
+                            modules = modules,
+                            componentSettings = settings.sourceSetComponentSettings,
                         )
                     }
                     registerValidatePackageStructureTask(packageStructureValidationSettings)
