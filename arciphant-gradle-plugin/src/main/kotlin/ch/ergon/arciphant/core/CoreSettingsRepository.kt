@@ -2,6 +2,7 @@ package ch.ergon.arciphant.core
 
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
 import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
+import ch.ergon.arciphant.core.SourceSetComponentSettings.Companion.DEFAULT_SETTINGS
 import ch.ergon.arciphant.dsl.ArciphantDsl
 
 internal class CoreSettingsRepository(private val dsl: ArciphantDsl) {
@@ -15,10 +16,10 @@ internal class CoreSettingsRepository(private val dsl: ArciphantDsl) {
                 disableQualifiedArchiveBaseName = dsl.disableQualifiedArchiveBaseName ?: false,
             ),
             sourceSetComponentSettings = SourceSetComponentSettings(
-                withTestSourceSet = dsl.withTestSourceSet ?: true,
-                withTestFixturesSourceSet = dsl.withTestFixturesSourceSet ?: true,
-                testSourceSetName = dsl.testSourceSetName ?: { "${it}Test" },
-                testFixturesSourceSetName = dsl.testFixturesSourceSetName ?: { "${it}TestFixtures" },
+                withTestSourceSet = dsl.withTestSourceSet ?: DEFAULT_SETTINGS.withTestSourceSet,
+                withTestFixturesSourceSet = dsl.withTestFixturesSourceSet ?: DEFAULT_SETTINGS.withTestFixturesSourceSet,
+                testSourceSetName = dsl.testSourceSetName ?: DEFAULT_SETTINGS.testSourceSetName,
+                testFixturesSourceSetName = dsl.testFixturesSourceSetName ?: DEFAULT_SETTINGS.testFixturesSourceSetName,
             ),
         )
     }
