@@ -357,7 +357,7 @@ class ArciphantPluginTest {
         buildFileWithJvmPlugins()
         projectFolder.resolve("consumer/build.gradle.kts").write(
             """
-            arciphant {
+            arciphantModule {
                 component("application").implementation(module = "producer", component = "api")
             }
             """

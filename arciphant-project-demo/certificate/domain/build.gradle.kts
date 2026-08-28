@@ -1,3 +1,3 @@
-arciphant {
+arciphantComponent {
     api("exam", "api")
 }
