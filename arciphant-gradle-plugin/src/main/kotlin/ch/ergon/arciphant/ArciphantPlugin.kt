@@ -55,13 +55,13 @@ class ArciphantPlugin : Plugin<Settings> {
                 gradle.lifecycle.beforeProject {
                     when(settings.componentLayout) {
                         PROJECT -> extensions.create(
-                            ARCIPHANT_EXTENSION_NAME,
+                            ARCIPHANT_COMPONENT_EXTENSION_NAME,
                             ArciphantComponentDsl::class.java,
                             this,
                             modules,
                         )
                         SOURCE_SET -> extensions.create(
-                            ARCIPHANT_EXTENSION_NAME,
+                            ARCIPHANT_MODULE_EXTENSION_NAME,
                             ArciphantModuleDsl::class.java,
                             this,
                             modules,
@@ -81,6 +81,8 @@ class ArciphantPlugin : Plugin<Settings> {
 
     companion object {
         private const val ARCIPHANT_EXTENSION_NAME = "arciphant"
+        private const val ARCIPHANT_COMPONENT_EXTENSION_NAME = "arciphantComponent"
+        private const val ARCIPHANT_MODULE_EXTENSION_NAME = "arciphantModule"
 
         internal val logger = Logging.getLogger(ArciphantPlugin::class.java)
     }
