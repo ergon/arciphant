@@ -11,7 +11,10 @@ import ch.ergon.arciphant.core.model.getByName
 import ch.ergon.arciphant.core.model.getComponent
 import org.gradle.api.Project
 
-open class ArciphantProjectLayoutProjectDsl internal constructor(
+/**
+ * The [ArciphantComponentDsl] is used together with [ch.ergon.arciphant.core.ComponentLayout.PROJECT].
+ */
+open class ArciphantComponentDsl internal constructor(
     private val project: Project,
     private val modules: List<Module>,
 ) {

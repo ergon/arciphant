@@ -14,7 +14,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
-class ArciphantProjectLayoutProjectDslTest {
+class ArciphantComponentDslTest {
 
     private val root = ProjectBuilder.builder().withName("root").build()
     private val project = javaProject(name = "domain", parent = root)
@@ -105,13 +105,13 @@ class ArciphantProjectLayoutProjectDslTest {
     @Test
     fun `it should require a JVM plugin`() {
         val projectWithoutJvmPlugin = subProject(name = "web", parent = root)
-        val dsl = ArciphantProjectLayoutProjectDsl(projectWithoutJvmPlugin, examModules())
+        val dsl = ArciphantComponentDsl(projectWithoutJvmPlugin, examModules())
 
         assertThatThrownBy { dsl.api(module = "exam", component = "api") }
             .hasMessageStartingWith("Arciphant error: configuration 'api' does not exist")
     }
 
-    private fun dsl(modules: List<Module> = examModules()) = ArciphantProjectLayoutProjectDsl(project, modules)
+    private fun dsl(modules: List<Module> = examModules()) = ArciphantComponentDsl(project, modules)
 
     private fun examModules(): List<Module> = listOf(
         DomainModule(

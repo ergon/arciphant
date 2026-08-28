@@ -17,7 +17,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
-class ArciphantSourceSetLayoutProjectDslTest {
+class ArciphantModuleDslTest {
 
     private val root = ProjectBuilder.builder().withName("root").build()
     private val project = javaProject(name = "certificate", parent = root)
@@ -130,7 +130,7 @@ class ArciphantSourceSetLayoutProjectDslTest {
     private fun dsl(
         modules: List<Module> = listOf(examModule(component(ComponentReference("api")))),
         settings: SourceSetComponentSettings = defaultSettings,
-    ) = ArciphantSourceSetLayoutProjectDsl(project, modules, settings)
+    ) = ArciphantModuleDsl(project, modules, settings)
 
     private fun createComponent(
         name: String,
