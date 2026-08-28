@@ -6,9 +6,9 @@ import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
 import ch.ergon.arciphant.core.CoreSettingsRepository
 import ch.ergon.arciphant.core.FolderCreator
 import ch.ergon.arciphant.core.ModuleRepository
-import ch.ergon.arciphant.core.project.ArciphantProjectLayoutProjectDsl
+import ch.ergon.arciphant.core.project.ArciphantComponentDsl
 import ch.ergon.arciphant.core.project.ProjectLayoutConfigApplicator
-import ch.ergon.arciphant.core.sourceset.ArciphantSourceSetLayoutProjectDsl
+import ch.ergon.arciphant.core.sourceset.ArciphantModuleDsl
 import ch.ergon.arciphant.core.sourceset.SourceSetLayoutConfigApplicator
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
@@ -56,13 +56,13 @@ class ArciphantPlugin : Plugin<Settings> {
                     when(settings.componentLayout) {
                         PROJECT -> extensions.create(
                             ARCIPHANT_EXTENSION_NAME,
-                            ArciphantProjectLayoutProjectDsl::class.java,
+                            ArciphantComponentDsl::class.java,
                             this,
                             modules,
                         )
                         SOURCE_SET -> extensions.create(
                             ARCIPHANT_EXTENSION_NAME,
-                            ArciphantSourceSetLayoutProjectDsl::class.java,
+                            ArciphantModuleDsl::class.java,
                             this,
                             modules,
                             settings.sourceSetComponentSettings

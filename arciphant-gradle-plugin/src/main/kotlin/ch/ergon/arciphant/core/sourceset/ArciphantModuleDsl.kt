@@ -2,17 +2,16 @@ package ch.ergon.arciphant.core.sourceset
 
 import ch.ergon.arciphant.core.SourceSetComponentSettings
 import ch.ergon.arciphant.core.gradleProjectPath
-import ch.ergon.arciphant.core.model.ComponentReference
-import ch.ergon.arciphant.core.model.DependencyType
+import ch.ergon.arciphant.core.model.*
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
-import ch.ergon.arciphant.core.model.Module
-import ch.ergon.arciphant.core.model.getByName
-import ch.ergon.arciphant.core.model.getComponent
 import ch.ergon.arciphant.util.verify
 import org.gradle.api.Project
 
-open class ArciphantSourceSetLayoutProjectDsl internal constructor(
+/**
+ * The [ArciphantModuleDsl] is used together with [ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET].
+ */
+open class ArciphantModuleDsl internal constructor(
     private val project: Project,
     private val modules: List<Module>,
     componentSettings: SourceSetComponentSettings
