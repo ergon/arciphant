@@ -9,7 +9,9 @@ import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.core.model.Module
 import ch.ergon.arciphant.core.model.getByName
 import ch.ergon.arciphant.core.model.getComponent
+import ch.ergon.arciphant.core.project.ArciphantComponentDsl.Companion.ARCIPHANT_COMPONENT_EXTENSION_NAME
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionContainer
 
 /**
  * The [ArciphantComponentDsl] is used together with [ch.ergon.arciphant.core.ComponentLayout.PROJECT].
@@ -31,4 +33,22 @@ open class ArciphantComponentDsl internal constructor(
         project.addTestFixturesDependency(type, targetPath)
     }
 
+    companion object {
+        internal const val ARCIPHANT_COMPONENT_EXTENSION_NAME = "arciphantComponent"
+    }
+}
+
+/**
+ * Keep parameters of this method in sync with constructor of [ArciphantComponentDsl].
+ */
+internal fun ExtensionContainer.createArciphantComponentDsl(
+    project: Project,
+    modules: List<Module>,
+) {
+    create(
+        ARCIPHANT_COMPONENT_EXTENSION_NAME,
+        ArciphantComponentDsl::class.java,
+        project,
+        modules,
+    )
 }
