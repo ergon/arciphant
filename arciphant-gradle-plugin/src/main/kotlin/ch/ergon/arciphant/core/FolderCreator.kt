@@ -48,8 +48,7 @@ internal class FolderCreator(
     private val GradleProjectPath.folderPath get() = projectNames.joinToString("/")
 
     private fun File.createDirectoryIfNotExists() {
-        if (!exists()) {
-            mkdirs()
+        if (mkdirs()) {
             logger.info("Created folder $absolutePath")
         }
     }
