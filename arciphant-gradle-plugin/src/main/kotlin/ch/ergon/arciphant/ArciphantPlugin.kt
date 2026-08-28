@@ -80,7 +80,7 @@ class ArciphantPlugin : Plugin<Settings> {
     }
 
     companion object {
-        private val ARCIPHANT_EXTENSION_NAME = "arciphant"
+        private const val ARCIPHANT_EXTENSION_NAME = "arciphant"
 
         internal val logger = Logging.getLogger(ArciphantPlugin::class.java)
     }
