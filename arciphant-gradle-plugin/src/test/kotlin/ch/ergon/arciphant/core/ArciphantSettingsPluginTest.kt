@@ -11,7 +11,7 @@ import java.io.File
  * Before running this test with IntelliJ, the project should be built using Gradle.
  * See https://jdriven.com/blog/2021/01/gradlerunner-tests-intellij
  */
-class ArciphantPluginTest {
+class ArciphantSettingsPluginTest {
 
     @TempDir
     private lateinit var projectFolder: File

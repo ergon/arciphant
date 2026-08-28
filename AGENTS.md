@@ -29,7 +29,7 @@ Use the narrowest relevant verification while developing, then run the affected 
 
 The JDK toolchain is 21, but the JVM target must remain 17 so the plugin works on Java 17 and newer. `jvmTargetValidationMode = ERROR`; do not raise the JVM target.
 
-`ArciphantPluginTest` is a Gradle TestKit functional test. Build the plugin project before running this test from IntelliJ.
+`ArciphantSettingsPluginTest` is a Gradle TestKit functional test. Build the plugin project before running this test from IntelliJ.
 
 ## Plugin Architecture
 
