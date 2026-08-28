@@ -18,4 +18,13 @@ internal data class SourceSetComponentSettings(
     val withTestFixturesSourceSet: Boolean,
     val testSourceSetName: (String) -> String,
     val testFixturesSourceSetName: (String) -> String,
-) : ComponentSettings
+) : ComponentSettings {
+    companion object {
+        internal val DEFAULT_SETTINGS = SourceSetComponentSettings(
+            withTestSourceSet = true,
+            withTestFixturesSourceSet = true,
+            testSourceSetName = { "${it}Test" },
+            testFixturesSourceSetName = { "${it}TestFixtures" },
+        )
+    }
+}
