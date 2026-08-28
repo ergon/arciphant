@@ -57,7 +57,7 @@ Both demos implement the same "Online Learning Platform" module structure, once 
 ## Conventions & Gotchas
 
 - Tests: JUnit 5 + AssertJ; test names are backtick strings (`` `it should …` ``), grouped with `@Nested` inner classes; parameterized tests use the `dynamicTest` helper in `src/test/kotlin/ch/ergon/arciphant/util/DynamicTestExtension.kt`.
-- `ArciphantPluginTest` is a functional test using Gradle TestKit (`GradleRunner`); build the project with Gradle before running it from IntelliJ.
+- `ArciphantSettingsPluginTest` is a functional test using Gradle TestKit (`GradleRunner`); build the project with Gradle before running it from IntelliJ.
 - Code style: `internal` by default outside the DSL, extension functions instead of utility classes, named arguments in DSL calls.
 - Docs source is `docs/pages/`; `docs/site/` is **generated build output** (gitignored) — never edit it by hand, regenerate via the Zensical build.
 - Plugin version lives in `arciphant-gradle-plugin/build.gradle.kts` (`version = "0.1.9"`).
