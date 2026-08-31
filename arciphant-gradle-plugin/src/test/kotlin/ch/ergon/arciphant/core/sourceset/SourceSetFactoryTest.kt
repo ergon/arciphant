@@ -91,6 +91,57 @@ class SourceSetFactoryTest {
     }
 
     @Test
+    fun `it should extend the shared dependency configurations`() {
+        val project = javaProject()
+
+        SourceSetFactory(project).createComponent(name = "domain", settings = settings)
+
+        fun assertExtendsFrom(configuration: String, sharedConfiguration: String) =
+            assertThat(project.configuration(configuration).extendsFrom)
+                .contains(project.configuration(sharedConfiguration))
+
+        assertExtendsFrom("domainApi", "api")
+        assertExtendsFrom("domainImplementation", "implementation")
+        assertExtendsFrom("domainCompileOnly", "compileOnly")
+        assertExtendsFrom("domainRuntimeOnly", "runtimeOnly")
+        assertExtendsFrom("domainTestImplementation", "testImplementation")
+        assertExtendsFrom("domainTestCompileOnly", "testCompileOnly")
+        assertExtendsFrom("domainTestRuntimeOnly", "testRuntimeOnly")
+        assertExtendsFrom("domainTestFixturesApi", "testFixturesApi")
+        assertExtendsFrom("domainTestFixturesImplementation", "testFixturesImplementation")
+        assertExtendsFrom("domainTestFixturesCompileOnly", "testFixturesCompileOnly")
+        assertExtendsFrom("domainTestFixturesRuntimeOnly", "testFixturesRuntimeOnly")
+    }
+
+    @Test
+    fun `it should create the shared test fixtures dependency configurations`() {
+        val project = ProjectBuilder.builder().build().also { it.pluginManager.apply("java") }
+
+        SourceSetFactory(project).createComponent(name = "domain", settings = settings)
+
+        assertThat(project.configuration("testFixturesImplementation").isCanBeConsumed).isFalse()
+        assertThat(project.configuration("testFixturesImplementation").isCanBeResolved).isFalse()
+        assertThat(project.configurations.names).contains("testFixturesCompileOnly", "testFixturesRuntimeOnly")
+    }
+
+    @Test
+    fun `it should only provide the shared api configurations with the java-library plugin`() {
+        // plain java plugin: neither 'api' nor 'testFixturesApi' exist
+        val project = ProjectBuilder.builder().build().also { it.pluginManager.apply("java") }
+
+        SourceSetFactory(project).createComponent(name = "domain", settings = settings)
+
+        assertThat(project.configurations.names).doesNotContain("api", "testFixturesApi")
+
+        project.pluginManager.apply("java-library")
+
+        assertThat(project.configuration("domainApi").extendsFrom).contains(project.configuration("api"))
+        assertThat(project.configuration("domainTestFixturesApi").extendsFrom)
+            .contains(project.configuration("testFixturesApi"))
+        assertThat(project.configuration("testFixturesApi").isCanBeConsumed).isFalse()
+    }
+
+    @Test
     fun `it should attach component source sets to the lifecycle tasks`() {
         val project = javaProject()
 

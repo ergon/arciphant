@@ -126,6 +126,74 @@ class SourceSetLayoutConfigApplicatorTest {
     }
 
     @Nested
+    inner class SharedConfigurationsTest {
+
+        @Test
+        fun `it should create the shared configurations in functional module projects`() {
+            val project = javaProject()
+
+            project.applyModuleConfig(domainModule(component(ComponentReference("domain"))), settings())
+
+            assertThat(project.configurations.names).contains(
+                "testFixturesApi",
+                "testFixturesImplementation",
+                "testFixturesCompileOnly",
+                "testFixturesRuntimeOnly",
+            )
+        }
+
+        @Test
+        fun `it should create the shared configurations in bundle module projects`() {
+            val project = javaProject(name = "bundle")
+            val bundle = BundleModule(
+                reference = ModuleReference(name = "bundle"),
+                plugin = null,
+                includes = emptySet(),
+            )
+
+            SourceSetLayoutConfigApplicator(
+                settings(),
+                listOf(GradleBundleModuleProjectConfig(GradleProjectPath.of(listOf("bundle")), bundle)),
+            ).applyConfig(project)
+
+            assertThat(project.configurations.names)
+                .contains("testFixturesApi", "testFixturesImplementation")
+        }
+
+        @Test
+        fun `it should not create the shared configurations in other projects`() {
+            val project = javaProject(name = "not-an-arciphant-module")
+
+            SourceSetLayoutConfigApplicator(settings(), emptyList()).applyConfig(project)
+
+            assertThat(project.configurations.names).doesNotContain(
+                "testFixturesApi",
+                "testFixturesImplementation",
+                "testFixturesCompileOnly",
+                "testFixturesRuntimeOnly",
+            )
+        }
+
+        @Test
+        fun `it should extend the shared configurations for renamed test source sets`() {
+            val project = javaProject()
+            val settings = settings {
+                testSourceSetName { "test-$it" }
+                testFixturesSourceSetName { "fixtures-$it" }
+            }
+
+            project.applyModuleConfig(domainModule(component(ComponentReference("domain"))), settings)
+
+            val test = project.sourceSets().getByName("test-domain")
+            val testFixtures = project.sourceSets().getByName("fixtures-domain")
+            assertThat(project.configurations.getByName(test.implementationConfigurationName).extendsFrom)
+                .contains(project.configurations.getByName("testImplementation"))
+            assertThat(project.configurations.getByName(testFixtures.implementationConfigurationName).extendsFrom)
+                .contains(project.configurations.getByName("testFixturesImplementation"))
+        }
+    }
+
+    @Nested
     inner class DeferredConfigTest {
 
         @Test

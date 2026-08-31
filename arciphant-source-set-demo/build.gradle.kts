@@ -4,7 +4,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7" apply false
 }
 
-allprojects {
+subprojects {
     plugins.apply("module")
     plugins.apply("org.jetbrains.kotlin.plugin.spring")
     plugins.apply("org.springframework.boot")
@@ -12,8 +12,8 @@ allprojects {
 
     tasks.named("bootJar") { enabled = false }
     tasks.named("jar") { enabled = true }
-}
 
-tasks.named("compileKotlin") {
-    dependsOn("validatePackageStructure")
+    tasks.named("compileKotlin") {
+        dependsOn("validatePackageStructure")
+    }
 }
