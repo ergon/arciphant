@@ -9,8 +9,6 @@ import ch.ergon.arciphant.example.shared.web.IsolatedWebMvcTest
 import ch.ergon.arciphant.example.shared.web.deserializeList
 import ch.ergon.arciphant.example.shared.web.responseBodyAsString
 import ch.ergon.arciphant.example.shared.webapi.DisciplineDto
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
