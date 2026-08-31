@@ -83,7 +83,7 @@ dependencies {
 }
 ```
 
-This also works from a convention plugin, which replaces per-component convention plugins in this layout. Since the `testFixtures*` configurations only exist in module projects, apply such a convention plugin only to module projects — selectively, or via `subprojects` if every subproject is an Arciphant module (bundle modules included). Platforms (BOMs) declared this way apply to every component as well. Dependencies of a single component are still declared on its own configurations (e.g. `"domainImplementation"(...)`).
+This also works from a convention plugin, which replaces per-component convention plugins in this layout. Prefer applying such a convention plugin in the `build.gradle.kts` of each module project: its script body then runs during the configuration of that project, where the component configurations and the version catalog are available. Applying it from the root project's `subprojects` block also works, but the plugin body then runs before the subproject is configured — the version catalog extension does not exist yet at that point, and the `testFixtures*` configurations only exist in module projects. Platforms (BOMs) declared this way apply to every component as well. Dependencies of a single component are still declared on its own configurations (e.g. `"domainImplementation"(...)`).
 
 Since the standard configurations of the `main` and `test` source sets are reused, dependencies cannot be declared for only the (typically unused) `main` source set of a module project.
 
