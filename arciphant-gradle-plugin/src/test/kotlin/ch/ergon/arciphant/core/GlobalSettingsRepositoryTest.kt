@@ -6,15 +6,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
 import kotlin.booleanArrayOf
 
-class CoreSettingsRepositoryTest {
+class GlobalSettingsRepositoryTest {
 
     @Test
     fun `it should use project layout by default`() {
-        val settings = CoreSettingsRepository(ArciphantDsl()).load()
+        val settings = GlobalSettingsRepository(ArciphantDsl()).load()
 
         assertThat(settings.componentLayout).isEqualTo(ComponentLayout.PROJECT)
     }
@@ -23,7 +22,7 @@ class CoreSettingsRepositoryTest {
     fun `it should use source set defaults`() {
         val dsl = ArciphantDsl().apply { sourceSetComponentLayout() }
 
-        val settings = CoreSettingsRepository(dsl).load()
+        val settings = GlobalSettingsRepository(dsl).load()
 
         assertThat(settings.sourceSetComponentSettings.withTestSourceSet).isTrue()
         assertThat(settings.sourceSetComponentSettings.withTestFixturesSourceSet).isTrue()
@@ -41,7 +40,7 @@ class CoreSettingsRepositoryTest {
             testFixturesSourceSetName { "fixtures-$it" }
         }
 
-        val settings = CoreSettingsRepository(dsl).load()
+        val settings = GlobalSettingsRepository(dsl).load()
 
         assertThat(settings.sourceSetComponentSettings.withTestSourceSet).isFalse()
         assertThat(settings.sourceSetComponentSettings.withTestFixturesSourceSet).isFalse()
@@ -57,7 +56,7 @@ class CoreSettingsRepositoryTest {
             withTestSourceSet(value)
         }
 
-        val settings = CoreSettingsRepository(dsl).load()
+        val settings = GlobalSettingsRepository(dsl).load()
 
         assertThat(settings.sourceSetComponentSettings.withTestSourceSet).isEqualTo(value)
         assertThat(settings.sourceSetComponentSettings.withTestFixturesSourceSet).isTrue()
@@ -68,7 +67,7 @@ class CoreSettingsRepositoryTest {
     fun `it should reject 'withTestSourceSet' for project layout`(value: Boolean) {
         val dsl = ArciphantDsl().apply { withTestSourceSet(value) }
 
-        val exception = assertThrows<IllegalArgumentException> { CoreSettingsRepository(dsl).load() }
+        val exception = assertThrows<IllegalArgumentException> { GlobalSettingsRepository(dsl).load() }
 
         assertThat(exception.message).isEqualTo(
             "Arciphant configuration error: 'withTestSourceSet' cannot be configured for component layout 'PROJECT'"
@@ -80,7 +79,7 @@ class CoreSettingsRepositoryTest {
     fun `it should reject 'withTestFixturesSourceSet' for project layout`(value: Boolean) {
         val dsl = ArciphantDsl().apply { withTestFixturesSourceSet(value) }
 
-        val exception = assertThrows<IllegalArgumentException> { CoreSettingsRepository(dsl).load() }
+        val exception = assertThrows<IllegalArgumentException> { GlobalSettingsRepository(dsl).load() }
 
         assertThat(exception.message).isEqualTo(
             "Arciphant configuration error: 'withTestFixturesSourceSet' cannot be configured for component layout 'PROJECT'"
@@ -91,7 +90,7 @@ class CoreSettingsRepositoryTest {
     fun `it should reject 'testSourceSetName' for project layout`() {
         val dsl = ArciphantDsl().apply { testSourceSetName { "foo" } }
 
-        val exception = assertThrows<IllegalArgumentException> { CoreSettingsRepository(dsl).load() }
+        val exception = assertThrows<IllegalArgumentException> { GlobalSettingsRepository(dsl).load() }
 
         assertThat(exception.message).isEqualTo(
             "Arciphant configuration error: 'testSourceSetName' cannot be configured for component layout 'PROJECT'"
@@ -102,7 +101,7 @@ class CoreSettingsRepositoryTest {
     fun `it should reject 'testFixturesSourceSetName' for project layout`() {
         val dsl = ArciphantDsl().apply { testFixturesSourceSetName { "foo" } }
 
-        val exception = assertThrows<IllegalArgumentException> { CoreSettingsRepository(dsl).load() }
+        val exception = assertThrows<IllegalArgumentException> { GlobalSettingsRepository(dsl).load() }
 
         assertThat(exception.message).isEqualTo(
             "Arciphant configuration error: 'testFixturesSourceSetName' cannot be configured for component layout 'PROJECT'"
@@ -116,7 +115,7 @@ class CoreSettingsRepositoryTest {
             disableQualifiedArchiveBaseName()
         }
 
-        val exception = assertThrows<IllegalArgumentException> { CoreSettingsRepository(dsl).load() }
+        val exception = assertThrows<IllegalArgumentException> { GlobalSettingsRepository(dsl).load() }
 
         assertThat(exception.message).isEqualTo(
             "Arciphant configuration error: 'disableQualifiedArchiveBaseName' cannot be configured for component layout 'SOURCE_SET'"
@@ -129,7 +128,7 @@ class CoreSettingsRepositoryTest {
             projectSetComponentLayout()
         }
         assertDoesNotThrow {
-            CoreSettingsRepository(dsl).load()
+            GlobalSettingsRepository(dsl).load()
         }
     }
 
@@ -139,7 +138,7 @@ class CoreSettingsRepositoryTest {
             sourceSetComponentLayout()
         }
         assertDoesNotThrow {
-            CoreSettingsRepository(dsl).load()
+            GlobalSettingsRepository(dsl).load()
         }
     }
 }

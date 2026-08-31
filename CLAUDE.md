@@ -32,7 +32,7 @@ The root build has **no tasks of its own** — always target a sub-build with `-
 
 Entry point: `arciphant-gradle-plugin/src/main/kotlin/ch/ergon/arciphant/ArciphantPlugin.kt` — a `Plugin<Settings>`, applied in `settings.gradle.kts` (not `build.gradle.kts`).
 
-Flow: the `arciphant { … }` DSL extension is registered on apply → in `settingsEvaluated`, the DSL is loaded into the internal model (`ModuleRepository`, `CoreSettingsRepository`), converted to `GradleProjectConfig`s, project folders are created, and each project is `include()`d → depending on the component layout, `ProjectLayoutConfigApplicator` (in `allprojects.beforeEvaluate`) or `SourceSetLayoutConfigApplicator` (in `gradle.lifecycle.beforeProject`) applies convention plugins and dependencies to each project → in `projectsLoaded`, the root tasks `validatePackageStructure` and `projectDependencies` are registered.
+Flow: the `arciphant { … }` DSL extension is registered on apply → in `settingsEvaluated`, the DSL is loaded into the internal model (`ModuleRepository`, `GlobalSettingsRepository`), converted to `GradleProjectConfig`s, project folders are created, and each project is `include()`d → depending on the component layout, `ProjectLayoutConfigApplicator` (in `allprojects.beforeEvaluate`) or `SourceSetLayoutConfigApplicator` (in `gradle.lifecycle.beforeProject`) applies convention plugins and dependencies to each project → in `projectsLoaded`, the root tasks `validatePackageStructure` and `projectDependencies` are registered.
 
 Packages under `ch.ergon.arciphant`:
 

@@ -1,7 +1,7 @@
 package ch.ergon.arciphant.core.sourceset
 
-import ch.ergon.arciphant.core.CoreSettings
-import ch.ergon.arciphant.core.CoreSettingsRepository
+import ch.ergon.arciphant.core.GlobalSettings
+import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.GradleBundleModuleProjectConfig
 import ch.ergon.arciphant.core.GradleFunctionalModuleProjectConfig
 import ch.ergon.arciphant.core.GradleProjectPath
@@ -186,7 +186,7 @@ class SourceSetLayoutConfigApplicatorTest {
             .also { it.pluginManager.apply("java-library") }
     }
 
-    private fun settings(configure: ArciphantDsl.() -> Unit = {}) = CoreSettingsRepository(
+    private fun settings(configure: ArciphantDsl.() -> Unit = {}) = GlobalSettingsRepository(
         ArciphantDsl().apply {
             sourceSetComponentLayout()
             configure()
@@ -198,7 +198,7 @@ class SourceSetLayoutConfigApplicatorTest {
         components = components.toSet(),
     )
 
-    private fun Project.applyModuleConfig(module: FunctionalModule, settings: CoreSettings) =
+    private fun Project.applyModuleConfig(module: FunctionalModule, settings: GlobalSettings) =
         SourceSetLayoutConfigApplicator(
             settings,
             listOf(GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf(name)), module)),

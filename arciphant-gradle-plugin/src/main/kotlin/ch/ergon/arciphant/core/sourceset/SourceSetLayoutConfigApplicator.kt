@@ -11,7 +11,7 @@ import ch.ergon.arciphant.util.arciphantError
 import org.gradle.api.Project
 
 internal class SourceSetLayoutConfigApplicator(
-    settings: CoreSettings,
+    settings: GlobalSettings,
     private val projectConfigs: List<GradleProjectConfig>
 ) {
 

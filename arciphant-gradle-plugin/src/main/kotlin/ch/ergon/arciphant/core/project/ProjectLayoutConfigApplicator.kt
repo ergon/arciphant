@@ -2,7 +2,6 @@ package ch.ergon.arciphant.core.project
 
 import ch.ergon.arciphant.core.*
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
-import ch.ergon.arciphant.core.GradlePluginIds.JAVA_TEST_FIXTURES
 import ch.ergon.arciphant.core.model.DependencyType
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
@@ -13,11 +12,9 @@ import ch.ergon.arciphant.util.arciphantError
 import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.project
 
 internal class ProjectLayoutConfigApplicator(
-    settings: CoreSettings,
+    settings: GlobalSettings,
     private val projectConfigs: List<GradleProjectConfig>
 ) {
 

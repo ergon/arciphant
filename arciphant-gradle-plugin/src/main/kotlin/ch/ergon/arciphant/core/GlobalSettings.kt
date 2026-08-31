@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.core
 
-internal data class CoreSettings(
+internal data class GlobalSettings(
     val disableFolderCreation: Boolean,
     val componentLayout: ComponentLayout,
     val projectComponentSettings: ProjectComponentSettings,

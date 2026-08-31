@@ -38,7 +38,7 @@ The entry point is `arciphant-gradle-plugin/src/main/kotlin/ch/ergon/arciphant/A
 Lifecycle:
 
 1. On apply, register the `arciphant { ... }` DSL extension.
-2. In `settingsEvaluated`, load the DSL into `ModuleRepository` and `CoreSettingsRepository`, convert it to `GradleProjectConfig` instances, create project directories, and call `include()` for each project.
+2. In `settingsEvaluated`, load the DSL into `ModuleRepository` and `GlobalSettingsRepository`, convert it to `GradleProjectConfig` instances, create project directories, and call `include()` for each project.
 3. Depending on the component layout, apply convention plugins and dependencies via `ProjectLayoutConfigApplicator` (in `allprojects.beforeEvaluate`) or `SourceSetLayoutConfigApplicator` (in `gradle.lifecycle.beforeProject`).
 4. In `projectsLoaded`, register the root tasks `validatePackageStructure` and `projectDependencies`.
 
