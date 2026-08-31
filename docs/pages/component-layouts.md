@@ -66,6 +66,27 @@ The component parameters override the global flags.
 
 Source-set settings and component source-set options are rejected in `PROJECT` mode rather than being silently ignored.
 
+## Shared dependency configurations
+
+External dependencies can be declared once for all component source sets of the same kind. In every Arciphant module project, each component configuration extends the corresponding standard configuration:
+
+* `implementation`, `compileOnly` and `runtimeOnly` reach **all production** source sets.
+* `testImplementation`, `testCompileOnly` and `testRuntimeOnly` reach **all test** source sets.
+* `testFixturesImplementation`, `testFixturesCompileOnly` and `testFixturesRuntimeOnly` (created by Arciphant) reach **all test fixtures** source sets.
+* With the `java-library` plugin applied, `api` reaches all production source sets and `testFixturesApi` (created by Arciphant) all test fixtures source sets.
+
+``` kotlin title="build.gradle.kts"
+dependencies {
+    implementation("org.springframework:spring-context")
+    "testFixturesApi"("org.assertj:assertj-core:3.27.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+}
+```
+
+This also works from a convention plugin, which replaces per-component convention plugins in this layout. Since the `testFixtures*` configurations only exist in module projects, apply such a convention plugin only to module projects — selectively, or via `subprojects` if every subproject is an Arciphant module (bundle modules included). Platforms (BOMs) declared this way apply to every component as well. Dependencies of a single component are still declared on its own configurations (e.g. `"domainImplementation"(...)`).
+
+Since the standard configurations of the `main` and `test` source sets are reused, dependencies cannot be declared for only the (typically unused) `main` source set of a module project.
+
 ## Project-level utility DSL
 
 The same source-set creation and dependency functions used internally by Arciphant are available through the `arciphant` extension in `build.gradle.kts` files:

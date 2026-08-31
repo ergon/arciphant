@@ -44,6 +44,7 @@ internal class SourceSetFactory(private val project: Project) {
         createConsumableConfigurations(production)
         testFixtures?.let { createConsumableConfigurations(it) }
 
+        extendSharedConfigurations(production, testFixtures, test)
         attachToLifecycleTasks(production, testFixtures, test)
         markAsTestSources(testFixtures, test)
 
@@ -71,6 +72,12 @@ internal class SourceSetFactory(private val project: Project) {
             this.description = description
             extendsFrom(*superConfigurations.toTypedArray())
         }
+    }
+
+    private fun extendSharedConfigurations(production: SourceSet, testFixtures: SourceSet?, test: SourceSet?) {
+        project.extendSharedProductionConfigurations(production)
+        testFixtures?.let { project.extendSharedTestFixturesConfigurations(it) }
+        test?.let { project.extendSharedTestConfigurations(it) }
     }
 
     private fun associate(sourceSet: SourceSet, dependency: SourceSet) {

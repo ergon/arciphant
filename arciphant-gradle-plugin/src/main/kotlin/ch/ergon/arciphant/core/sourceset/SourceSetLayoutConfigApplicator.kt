@@ -30,6 +30,10 @@ internal class SourceSetLayoutConfigApplicator(
         // and 'classes' tasks (typically done in the root project's allprojects block). Defer until
         // the java plugin (applied directly or through kotlin.jvm / java-library) is available.
         project.pluginManager.withPlugin(JAVA) {
+            // created in every Arciphant module project (also bundle modules, not only functional modules containing components),
+            // so convention plugins applied to all subprojects projects can declare dependencies on them unconditionally
+            project.createSharedConfigurations()
+
             when (config) {
                 is GradleBundleModuleProjectConfig -> config.applyBundleModuleConfig(project)
                 is GradleFunctionalModuleProjectConfig -> config.applyFunctionalModuleConfig(project)
