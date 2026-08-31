@@ -8,7 +8,8 @@ icon: lucide/monitor-cog
 
 ### Java or Kotlin plugin
 
-To use Arciphant in your Gradle build, you have to apply either the *Java* or *Kotlin JVM* plugin to all projects in the project hierarchy:
+To use Arciphant in your Gradle build, you have to apply either the *Java* or *Kotlin JVM* plugin to all projects in the
+project hierarchy:
 
 ``` kotlin hl_lines="2 6"
 plugins {
@@ -20,7 +21,8 @@ subprojects {
 }
 ```
 
-This is necessary since Arciphant uses the JVM-specific configurations *api* and *implementation* registered by these plugins.
+This is necessary since Arciphant uses the JVM-specific configurations *api* and *implementation* registered by these
+plugins.
 
 ## Include Arciphant in your build
 
@@ -36,4 +38,5 @@ arciphant {
 }
 ```
 
-Arciphant is a Gradle *settings* plugin. A *settings* plugin is different to normal plugins in that it is applied in the `settings.gradle.kts` file and *NOT* in `build.gradle.kts`.
+Arciphant is a Gradle *settings* plugin. A *settings* plugin is different to normal plugins in that it is applied in the
+`settings.gradle.kts` file and *NOT* in `build.gradle.kts`.

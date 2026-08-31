@@ -87,7 +87,11 @@ internal class SourceSetLayoutConfigApplicator(
                 } ?: throw IllegalArgumentException(
                     "Arciphant configuration error: Component '${component.reference.name}' depends on unknown component '${dependency.component.name}' in module '${module.reference.name}'."
                 )
-                dependencyFactory.addIntraModuleDependency(dependency.type, sourceSets.production, target.value.production)
+                dependencyFactory.addIntraModuleDependency(
+                    type = dependency.type,
+                    sourceSet = sourceSets.production,
+                    dependency = target.value.production
+                )
             }
 
             if (module is DomainModule) {

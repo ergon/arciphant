@@ -11,13 +11,13 @@
 nav = [
     "index.md",
     "setup.md",
-    {"Declare Structure" = "declare-structure.md"},
-    {"Component Layouts" = "component-layouts.md"},
+    { "Declare Structure" = "declare-structure.md" },
+    { "Component Layouts" = "component-layouts.md" },
     "additional-settings.md",
-    {"Using Plugins" = "using-plugins.md"},
+    { "Using Plugins" = "using-plugins.md" },
     "verify-project-structure.md",
     "demo-project.md",
-    {"Metamodel" = "metamodel.md"},
+    { "Metamodel" = "metamodel.md" },
 ]
 
 docs_dir = "pages"
@@ -134,7 +134,6 @@ features = [
     # dismiss it then they have read the announcement.
     # https://zensical.org/docs/setup/header/#announcement-bar
     "announce.dismiss",
-
     # If you have a repository configured and turn feature this on, Zensical
     # will generate an edit button for the page. This works for common
     # repository hosting services.
@@ -151,31 +150,25 @@ features = [
     # code blocks to provide explanations at crucial points.
     # https://zensical.org/docs/authoring/code-blocks/#code-annotations
     "content.code.annotate",
-
     # This feature turns on a button in code blocks that allow users to
     # copy the content to their clipboard without first selecting it.
     # https://zensical.org/docs/authoring/code-blocks/#code-copy-button
     "content.code.copy",
-
     # Code blocks can include a button to allow for the selection of line
     # ranges by the user.
     # https://zensical.org/docs/authoring/code-blocks/#code-selection-button
     "content.code.select",
-
     # Zensical can render footnotes as inline tooltips, so the user can read
     # the footnote without leaving the context of the document.
     # https://zensical.org/docs/authoring/footnotes/#footnote-tooltips
     "content.footnote.tooltips",
-
     # If you have many content tabs that have the same titles (e.g., "Python",
     # "JavaScript", "Cobol"), this feature causes all of them to switch to
     # at the same time when the user chooses their language in one.
     # https://zensical.org/docs/authoring/content-tabs/#linked-content-tabs
     "content.tabs.link",
-
     # https://zensical.org/docs/authoring/tooltips/#improved-tooltips
     "content.tooltips",
-
     # With this feature enabled, Zensical will automatically hide parts
     # of the header when the user scrolls past a certain point.
     # https://zensical.org/docs/setup/header/#automatic-hiding
@@ -190,23 +183,19 @@ features = [
     # user to navigate to a next or previous page.
     # https://zensical.org/docs/setup/footer/#navigation
     "navigation.footer",
-
     # When section index pages are enabled, documents can be directly attached
     # to sections, which is particularly useful for providing overview pages.
     # https://zensical.org/docs/setup/navigation/#section-index-pages
     "navigation.indexes",
-
     # When instant navigation is enabled, clicks on all internal links will be
     # intercepted and dispatched via XHR without fully reloading the page.
     # https://zensical.org/docs/setup/navigation/#instant-navigation
     "navigation.instant",
-
     # With instant prefetching, your site will start to fetch a page once the
     # user hovers over a link. This will reduce the perceived loading time
     # for the user.
     # https://zensical.org/docs/setup/navigation/#instant-prefetching
     "navigation.instant.prefetch",
-
     # In order to provide a better user experience on slow connections when
     # using instant navigation, a progress indicator can be enabled.
     # https://zensical.org/docs/setup/navigation/#progress-indicator
@@ -216,7 +205,6 @@ features = [
     # above the title of each page
     # https://zensical.org/docs/setup/navigation/#navigation-path
     "navigation.path",
-
     # When pruning is enabled, only the visible navigation items are included
     # in the rendered HTML, reducing the size of the built site by 33% or more.
     # https://zensical.org/docs/setup/navigation/#navigation-pruning
@@ -226,7 +214,6 @@ features = [
     # the sidebar for viewports above 1220px, but remain as-is on mobile.
     # https://zensical.org/docs/setup/navigation/#navigation-sections
     "navigation.sections",
-
     # When tabs are enabled, top-level sections are rendered in a menu layer
     # below the header for viewports above 1220px, but remain as-is on mobile.
     # https://zensical.org/docs/setup/navigation/#navigation-tabs
@@ -241,7 +228,6 @@ features = [
     # starts to scroll up again.
     # https://zensical.org/docs/setup/navigation/#back-to-top-button
     "navigation.top",
-
     # When anchor tracking is enabled, the URL in the address bar is
     # automatically updated with the active anchor as highlighted in the table
     # of contents.
@@ -252,7 +238,6 @@ features = [
     # Zensical will highlight all occurrences after following the link.
     # https://zensical.org/docs/setup/search/#search-highlighting
     "search.highlight",
-
     # When anchor following for the table of contents is enabled, the sidebar
     # is automatically scrolled so that the active anchor is always visible.
     # https://zensical.org/docs/setup/navigation/#anchor-following

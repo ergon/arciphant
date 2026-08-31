@@ -66,7 +66,7 @@ internal class PackageStructureValidationBuilder : PackageStructureValidationDsl
             relativePackagePathsByProjectName = relativePackagesByProjectName.mapValues { it.value.packageToFolderPath() },
             absolutePackagePathsByProjectPath = absolutePackagesByProjectPath.mapValues { it.value.packageToFolderPath() },
             excludedProjectPaths = excludedProjectPaths,
-            excludedSourceFolders = excludedSrcFolders + listOfNotNull(if(excludeResourcesFolder) "*/resources" else null)
+            excludedSourceFolders = excludedSrcFolders + listOfNotNull(if (excludeResourcesFolder) "*/resources" else null)
         )
     }
 

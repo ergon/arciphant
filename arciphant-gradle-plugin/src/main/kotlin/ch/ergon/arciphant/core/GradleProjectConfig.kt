@@ -39,6 +39,7 @@ private fun BundleModule.gradleProjectPath() = GradleProjectPath.of(reference.pa
 
 internal fun FunctionalModule.gradleProjectPath(component: Component) = gradleProjectPath(component.reference)
 
-internal fun FunctionalModule.gradleProjectPath(component: ComponentReference) = GradleProjectPath.of(reference.path + component.name)
+internal fun FunctionalModule.gradleProjectPath(component: ComponentReference) =
+    GradleProjectPath.of(reference.path + component.name)
 
 internal fun FunctionalModule.gradleProjectPath() = GradleProjectPath.of(reference.path)

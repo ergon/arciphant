@@ -133,7 +133,8 @@ internal class ComponentsBuilder {
     private fun mapDependencies(apiDependencies: Set<String>, implementationDependencies: Set<String>) =
         apiDependencies.toDependencies(API) + implementationDependencies.toDependencies(IMPLEMENTATION)
 
-    private fun Set<String>.toDependencies(type: DependencyType) = map { Dependency(ComponentReference(it), type) }.toSet()
+    private fun Set<String>.toDependencies(type: DependencyType) =
+        map { Dependency(ComponentReference(it), type) }.toSet()
 }
 
 sealed class ModuleBuilder(internal val name: String, internal val basePath: String?)

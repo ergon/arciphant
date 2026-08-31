@@ -99,7 +99,7 @@ internal class ModuleRepository(private val dsl: ArciphantDsl) {
     }
 
     private fun ModuleBuilder.reference() = ModuleReference(
-        parentProjectPath = (basePath ?: dsl.globalBasePath) ?.split(":", "/").orEmpty(),
+        parentProjectPath = (basePath ?: dsl.globalBasePath)?.split(":", "/").orEmpty(),
         name = name
     )
 

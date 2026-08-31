@@ -4,7 +4,8 @@ icon: lucide/layout-panel-top
 
 # Arciphant metamodel
 
-The following diagram shows the conceptual metamodel of Arciphant. See [Declare Structure](declare-structure.md) for how modules and components can be created.
+The following diagram shows the conceptual metamodel of Arciphant. See [Declare Structure](declare-structure.md) for how
+modules and components can be created.
 
 ``` mermaid
 ---    

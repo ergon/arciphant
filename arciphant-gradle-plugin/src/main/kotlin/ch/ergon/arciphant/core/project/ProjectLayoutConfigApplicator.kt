@@ -71,7 +71,7 @@ internal class ProjectLayoutConfigApplicator(
     }
 
     private fun GradleComponentProjectConfig.configureArchiveBaseName(componentProject: Project) {
-        if(!projectComponentSettings.disableQualifiedArchiveBaseName) {
+        if (!projectComponentSettings.disableQualifiedArchiveBaseName) {
             componentProject.tasks.withType(Jar::class.java).configureEach {
                 this.archiveBaseName.set(module.createQualifiedComponentName(component))
             }

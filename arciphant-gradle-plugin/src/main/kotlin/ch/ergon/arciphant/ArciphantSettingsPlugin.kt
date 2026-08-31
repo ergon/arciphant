@@ -51,11 +51,11 @@ class ArciphantSettingsPlugin {
                 }
 
                 gradle.lifecycle.beforeProject {
-                    when(settings.componentLayout) {
+                    when (settings.componentLayout) {
                         PROJECT -> extensions.createArciphantComponentDsl(
                             project = this,
                             modules = modules,
-                            )
+                        )
                         SOURCE_SET -> extensions.createArciphantModuleDsl(
                             project = this,
                             modules = modules,
