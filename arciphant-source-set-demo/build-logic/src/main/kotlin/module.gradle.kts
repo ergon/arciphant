@@ -6,7 +6,6 @@ import org.gradle.kotlin.dsl.withType
 
 plugins {
     kotlin("jvm")
-    id("ch.ergon.arciphant")
 }
 
 // resolved lazily: the version catalog extension does not exist yet when this plugin
