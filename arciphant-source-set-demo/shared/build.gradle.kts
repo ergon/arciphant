@@ -1,7 +1,3 @@
 plugins {
-    `module`
-}
-
-dependencies {
-    "filestoreImplementation"(libs.minio)
+    `filestore-module`
 }
