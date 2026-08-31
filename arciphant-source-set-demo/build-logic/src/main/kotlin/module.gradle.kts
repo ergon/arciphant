@@ -8,9 +8,15 @@ plugins {
     kotlin("jvm")
 }
 
-// resolved lazily: the version catalog extension does not exist yet when this plugin
-// is applied from the root project's subprojects block
-fun libs() = extensions.getByType<VersionCatalogsExtension>().named("libs")
+val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+fun lib(alias: String) = libs.findLibrary(alias).get().get()
+
+tasks.named("bootJar") { enabled = false }
+tasks.named("jar") { enabled = true }
+
+tasks.named("compileKotlin") {
+    dependsOn("validatePackageStructure")
+}
 
 // Arciphant makes the component configurations extend the shared dependency configurations:
 // 'implementation'/… reach all production source sets, 'testImplementation'/… all test source
@@ -32,30 +38,16 @@ dependencies {
     "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
     // webflux is required to use WebTestClient
     "testRuntimeOnly"("org.springframework.boot:spring-boot-starter-webflux")
-}
 
-// component-specific dependencies (analog of 'jooq-component', 'minio-component', 'spring-web-component').
-// In the SOURCE_SET component layout, components are source sets inside the module project, so per-component
-// convention plugins cannot be applied. Instead, dependencies are assigned to the component configurations by
-// name. configurations.configureEach is lazy, so it also covers the configurations Arciphant creates later.
-configurations.configureEach {
-    fun add(dependencyNotation: Any) {
-        dependencies.add(project.dependencies.create(dependencyNotation))
-    }
-
-    // Arciphant creates the component configurations while the JVM plugin is being applied, which can
-    // be before the version catalog extension is registered — defer the lookup to dependency resolution.
-    fun addFromCatalog(dependencyNotation: () -> Any) {
-        dependencies.addLater(provider { project.dependencies.create(dependencyNotation()) })
-    }
-
-    when (name) {
-        "dbImplementation" -> addFromCatalog { libs().findLibrary("jooq").get().get() }
-        "filestoreImplementation" -> addFromCatalog { libs().findLibrary("minio").get().get() }
-        "webImplementation", "webApiImplementation",
-        "webTestFixturesImplementation", "webApiTestFixturesImplementation",
-            -> add("org.springframework.boot:spring-boot-starter-web")
-    }
+    // component-specific dependencies (analog of 'jooq-component' and 'spring-web-component' in the
+    // PROJECT layout — components are source sets here, so plugins cannot be applied per component).
+    // Every functional module has the 'db', 'webApi' and 'web' components; the 'filestore' component
+    // only exists in some modules, so its dependency is declared in their build.gradle.kts instead.
+    "dbImplementation"(lib("jooq"))
+    "webImplementation"("org.springframework.boot:spring-boot-starter-web")
+    "webApiImplementation"("org.springframework.boot:spring-boot-starter-web")
+    "webTestFixturesImplementation"("org.springframework.boot:spring-boot-starter-web")
+    "webApiTestFixturesImplementation"("org.springframework.boot:spring-boot-starter-web")
 }
 
 tasks.withType<Test>().configureEach {
