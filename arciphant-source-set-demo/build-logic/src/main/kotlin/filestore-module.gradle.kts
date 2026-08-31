@@ -8,5 +8,5 @@ plugins {
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 dependencies {
-    "filestoreImplementation"(libs.findLibrary("minio").get().get())
+    "filestoreImplementation"(libs.findLibrary("minio").get())
 }
