@@ -3,7 +3,7 @@ package ch.ergon.arciphant
 import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
 import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
-import ch.ergon.arciphant.core.CoreSettingsRepository
+import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.FolderCreator
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.project.ProjectLayoutConfigApplicator
@@ -13,7 +13,6 @@ import ch.ergon.arciphant.core.sourceset.createArciphantModuleDsl
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
-import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 
 class ArciphantSettingsPlugin {
@@ -23,7 +22,7 @@ class ArciphantSettingsPlugin {
             val dsl = extensions.create(ARCIPHANT_EXTENSION_NAME, ArciphantDsl::class.java)
 
             gradle.settingsEvaluated {
-                val settings = CoreSettingsRepository(dsl).load()
+                val settings = GlobalSettingsRepository(dsl).load()
                 val modules = ModuleRepository(dsl).load()
                 val projectConfigs = modules.flatMap { it.toProjectConfigs(settings.componentLayout) }
                 val packageStructureValidationSettings = dsl.packageStructureValidation.build()

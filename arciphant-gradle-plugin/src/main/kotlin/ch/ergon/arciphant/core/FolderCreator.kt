@@ -7,7 +7,7 @@ import org.gradle.api.initialization.ProjectDescriptor
 import java.io.File
 
 internal class FolderCreator(
-    private val settings: CoreSettings,
+    private val settings: GlobalSettings,
     private val rootProject: ProjectDescriptor
 ) {
 

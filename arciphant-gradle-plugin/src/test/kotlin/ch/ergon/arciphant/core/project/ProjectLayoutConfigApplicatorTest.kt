@@ -1,7 +1,7 @@
 package ch.ergon.arciphant.core.project
 
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
-import ch.ergon.arciphant.core.CoreSettingsRepository
+import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.GradleFunctionalModuleProjectConfig
 import ch.ergon.arciphant.core.GradleProjectPath
 import ch.ergon.arciphant.core.model.BundleModule
@@ -302,7 +302,7 @@ class ProjectLayoutConfigApplicatorTest {
         ProjectLayoutConfigApplicator(settings(configure), modules.flatMap { it.toProjectConfigs(PROJECT) })
 
     private fun settings(configure: ArciphantDsl.() -> Unit = {}) =
-        CoreSettingsRepository(ArciphantDsl().apply(configure)).load()
+        GlobalSettingsRepository(ArciphantDsl().apply(configure)).load()
 
     private fun domainModule(vararg components: Component, name: String = "module") = DomainModule(
         reference = ModuleReference(name = name),

@@ -5,11 +5,11 @@ import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
 import ch.ergon.arciphant.core.SourceSetComponentSettings.Companion.DEFAULT_SETTINGS
 import ch.ergon.arciphant.dsl.ArciphantDsl
 
-internal class CoreSettingsRepository(private val dsl: ArciphantDsl) {
+internal class GlobalSettingsRepository(private val dsl: ArciphantDsl) {
 
-    fun load(): CoreSettings {
+    fun load(): GlobalSettings {
         validateComponentLayoutSpecificSettings()
-        return CoreSettings(
+        return GlobalSettings(
             disableFolderCreation = dsl.disableFolderCreation,
             componentLayout = dsl.componentLayout,
             projectComponentSettings = ProjectComponentSettings(
