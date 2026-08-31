@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    testFixturesImplementation("org.springframework.boot:spring-boot-starter-web")
+    implementation(lib("spring-boot-starter-web"))
+    testFixturesImplementation(lib("spring-boot-starter-web"))
 }
