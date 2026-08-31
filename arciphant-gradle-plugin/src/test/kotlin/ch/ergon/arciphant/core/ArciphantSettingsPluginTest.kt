@@ -155,8 +155,9 @@ class ArciphantSettingsPluginTest {
             }
             """
         )
-        projectFolder.resolve("test/src/applicationTestFixtures/java/example/application/ApplicationFixtures.java").write(
-            """
+        projectFolder.resolve("test/src/applicationTestFixtures/java/example/application/ApplicationFixtures.java")
+            .write(
+                """
             package example.application;
 
             import example.domain.DomainFixtures;
@@ -168,7 +169,7 @@ class ArciphantSettingsPluginTest {
                 }
             }
             """
-        )
+            )
         projectFolder.resolve("test/src/applicationTest/java/example/application/ApplicationTest.java").write(
             """
             package example.application;
@@ -387,8 +388,9 @@ class ArciphantSettingsPluginTest {
             public class Application extends Api {}
             """
         )
-        projectFolder.resolve("consumer/src/applicationTestFixtures/java/example/consumer/ApplicationFixtures.java").write(
-            """
+        projectFolder.resolve("consumer/src/applicationTestFixtures/java/example/consumer/ApplicationFixtures.java")
+            .write(
+                """
             package example.consumer;
 
             import example.producer.ApiFixtures;
@@ -400,7 +402,7 @@ class ArciphantSettingsPluginTest {
                 }
             }
             """
-        )
+            )
 
         val result = gradleRunner.withArguments(":consumer:compileApplicationTestFixturesJava").build()
 
@@ -490,8 +492,9 @@ class ArciphantSettingsPluginTest {
             class Application
             """
         )
-        projectFolder.resolve("module/src/applicationTestFixtures/kotlin/example/application/ApplicationFixtures.kt").write(
-            """
+        projectFolder.resolve("module/src/applicationTestFixtures/kotlin/example/application/ApplicationFixtures.kt")
+            .write(
+                """
             package example.application
 
             import example.domain.createDomain
@@ -501,7 +504,7 @@ class ArciphantSettingsPluginTest {
                 return Application()
             }
             """
-        )
+            )
 
         val result = gradleRunner.withArguments(":module:compileApplicationTestFixturesKotlin").build()
 

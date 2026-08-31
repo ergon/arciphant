@@ -9,8 +9,11 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.project
 
 internal fun Project.apiConfiguration(sourceSet: SourceSet) = getConfiguration(sourceSet.apiConfigurationName)
-internal fun Project.implementationConfiguration(sourceSet: SourceSet) = getConfiguration(sourceSet.implementationConfigurationName)
-internal fun Project.runtimeConfiguration(sourceSet: SourceSet) = getConfiguration(sourceSet.runtimeOnlyConfigurationName)
+internal fun Project.implementationConfiguration(sourceSet: SourceSet) =
+    getConfiguration(sourceSet.implementationConfigurationName)
+
+internal fun Project.runtimeConfiguration(sourceSet: SourceSet) =
+    getConfiguration(sourceSet.runtimeOnlyConfigurationName)
 
 internal fun Project.runtimeConfigurations(sourceSet: SourceSet): List<Configuration> = listOf(
     implementationConfiguration(sourceSet),

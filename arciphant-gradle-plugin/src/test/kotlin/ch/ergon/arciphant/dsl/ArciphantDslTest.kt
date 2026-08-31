@@ -328,7 +328,7 @@ class ArciphantDslTest {
     inner class CompleteExampleTest {
         private val path = emptyList<String>()
 
-        private val sharedModuleRef = ModuleReference(name =  "shared")
+        private val sharedModuleRef = ModuleReference(name = "shared")
         private val customerModuleRef = ModuleReference(name = "customer")
         private val orderModuleRef = ModuleReference(name = "order")
         private val inventoryModuleRef = ModuleReference(name = "inventory")

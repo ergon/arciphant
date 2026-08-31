@@ -4,7 +4,8 @@ internal data class GradleProjectPath private constructor(val projectNames: List
 
     init {
         require(projectNames.none { it.isEmpty() }) {
-                "Cannot create ${GradleProjectPath::class.simpleName} with empty project names: $projectNames" }
+            "Cannot create ${GradleProjectPath::class.simpleName} with empty project names: $projectNames"
+        }
     }
 
     val value by lazy { projectNames.joinToString(separator = ":", prefix = ":") }

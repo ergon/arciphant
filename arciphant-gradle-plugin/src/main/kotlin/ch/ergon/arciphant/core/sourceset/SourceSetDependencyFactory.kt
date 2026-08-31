@@ -40,7 +40,12 @@ class SourceSetDependencyFactory internal constructor(
 
         val sourceTestFixtures = sourceSet.testFixturesSourceSet()
         if (sourceTestFixtures != null && (withTestFixturesSourceSet ?: settings.withTestFixturesSourceSet)) {
-            doAddInterModuleDependency(type, sourceTestFixtures, projectPath, settings.testFixturesSourceSetName(componentName))
+            doAddInterModuleDependency(
+                type,
+                sourceTestFixtures,
+                projectPath,
+                settings.testFixturesSourceSetName(componentName)
+            )
         }
     }
 

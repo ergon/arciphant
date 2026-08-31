@@ -34,6 +34,7 @@ class GradleProjectPathTest {
         assertThat(exception.message).isEqualTo("Cannot create ${GradleProjectPath::class.simpleName} with empty project names: [a, , b]")
     }
 
-    private fun GradleProjectPath.Companion.of(vararg projectNames: String) = GradleProjectPath.of(projectNames.toList())
+    private fun GradleProjectPath.Companion.of(vararg projectNames: String) =
+        GradleProjectPath.of(projectNames.toList())
 
 }

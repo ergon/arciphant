@@ -47,8 +47,8 @@ private fun Any.invokeAssociateWith(dependencyCompilation: Any) {
     javaClass.methods
         .first { method ->
             method.name == "associateWith" &&
-                method.parameterCount == 1 &&
-                method.parameterTypes.single().isInstance(dependencyCompilation)
+                    method.parameterCount == 1 &&
+                    method.parameterTypes.single().isInstance(dependencyCompilation)
         }
         .invoke(this, dependencyCompilation)
 }

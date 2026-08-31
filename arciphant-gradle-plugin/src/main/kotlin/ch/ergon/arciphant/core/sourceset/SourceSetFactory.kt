@@ -65,7 +65,11 @@ internal class SourceSetFactory(private val project: Project) {
         listOf(apiElements, runtimeElements).forEach { project.dependencies.add(it.name, sourceSet.output) }
     }
 
-    private fun createConsumableConfiguration(name: String, description: String, superConfigurations: List<Configuration>): Configuration {
+    private fun createConsumableConfiguration(
+        name: String,
+        description: String,
+        superConfigurations: List<Configuration>
+    ): Configuration {
         return project.configurations.create(name) {
             isCanBeConsumed = true
             isCanBeResolved = false
@@ -124,9 +128,11 @@ internal class SourceSetFactory(private val project: Project) {
         }
     }
 
-    private fun runtimeConfigurations(sourceSet: SourceSet): List<Configuration> = project.runtimeConfigurations(sourceSet)
+    private fun runtimeConfigurations(sourceSet: SourceSet): List<Configuration> =
+        project.runtimeConfigurations(sourceSet)
 
-    private fun extendRuntimeOnly(sourceSet: SourceSet, dependency: SourceSet) = project.extendRuntimeOnly(sourceSet, dependency)
+    private fun extendRuntimeOnly(sourceSet: SourceSet, dependency: SourceSet) =
+        project.extendRuntimeOnly(sourceSet, dependency)
 
     private fun SourceSet.apiConfiguration() = getConfiguration(apiConfigurationName)
     private fun SourceSet.implementationConfiguration() = getConfiguration(implementationConfigurationName)
