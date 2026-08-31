@@ -1,7 +1,5 @@
-import org.gradle.kotlin.dsl.kotlin
-
 plugins {
-    kotlin("jvm")
+    id("module")
 }
 
 dependencies {
@@ -10,7 +8,3 @@ dependencies {
 
 tasks.named("jar") { enabled = false }
 tasks.named("bootJar") { enabled = true }
-
-tasks.named("compileKotlin") {
-    dependsOn("validatePackageStructure")
-}
