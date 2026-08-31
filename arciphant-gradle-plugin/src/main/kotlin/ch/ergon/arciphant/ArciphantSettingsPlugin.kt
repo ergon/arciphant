@@ -3,8 +3,8 @@ package ch.ergon.arciphant
 import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
 import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
-import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.FolderCreator
+import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.project.ProjectLayoutConfigApplicator
 import ch.ergon.arciphant.core.project.createArciphantComponentDsl

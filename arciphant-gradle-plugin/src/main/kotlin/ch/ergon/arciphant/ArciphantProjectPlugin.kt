@@ -2,14 +2,11 @@ package ch.ergon.arciphant
 
 import ch.ergon.arciphant.ArciphantPlugin.Companion.logger
 import ch.ergon.arciphant.core.SourceSetComponentSettings
-import ch.ergon.arciphant.core.project.ArciphantComponentDsl
 import ch.ergon.arciphant.core.project.ArciphantComponentDsl.Companion.ARCIPHANT_COMPONENT_EXTENSION_NAME
 import ch.ergon.arciphant.core.project.createArciphantComponentDsl
-import ch.ergon.arciphant.core.sourceset.ArciphantModuleDsl
 import ch.ergon.arciphant.core.sourceset.ArciphantModuleDsl.Companion.ARCIPHANT_MODULE_EXTENSION_NAME
 import ch.ergon.arciphant.core.sourceset.createArciphantModuleDsl
 import org.gradle.api.Project
-import kotlin.reflect.KClass
 
 /**
  * Solely used to make arciphant extensions available in precompiled script plugins by applying the plugin
