@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    "filestoreImplementation"(libs.findLibrary("minio").get())
+    "filestoreImplementation"(lib("minio"))
 }
