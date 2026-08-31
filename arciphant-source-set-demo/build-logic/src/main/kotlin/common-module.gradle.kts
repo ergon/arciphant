@@ -8,7 +8,6 @@ plugins {
 }
 
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
-fun lib(alias: String) = libs.findLibrary(alias).get().get()
 
 tasks.named("bootJar") { enabled = false }
 tasks.named("jar") { enabled = true }
@@ -28,7 +27,7 @@ dependencies {
     // webflux is required to use WebTestClient
     "testRuntimeOnly"("org.springframework.boot:spring-boot-starter-webflux")
 
-    "dbImplementation"(lib("jooq"))
+    "dbImplementation"(libs.findLibrary("jooq").get())
     "webImplementation"("org.springframework.boot:spring-boot-starter-web")
     "webApiImplementation"("org.springframework.boot:spring-boot-starter-web")
     "webTestFixturesImplementation"("org.springframework.boot:spring-boot-starter-web")
