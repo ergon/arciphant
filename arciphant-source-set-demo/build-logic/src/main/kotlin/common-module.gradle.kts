@@ -1,13 +1,9 @@
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 
 plugins {
     id("module")
 }
-
-val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 tasks.named("bootJar") { enabled = false }
 tasks.named("jar") { enabled = true }
