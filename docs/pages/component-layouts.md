@@ -122,17 +122,22 @@ arciphant {
 }
 ```
 
-A component in another module can be referenced by the module and component names of the Arciphant configuration:
+A component in another module can be referenced by the module and component names of the Arciphant configuration,
+directly in the `dependencies` block — in the same style as external dependencies. The `component` extension registered
+by Arciphant creates the dependency notation:
 
 ``` kotlin title="build.gradle.kts"
-arciphant {
-    component("application").implementation(module = "contracts", component = "api")
+dependencies {
+    "applicationImplementation"(component(module = "contracts", component = "api"))
 }
 ```
 
 Arciphant resolves the target Gradle project path from the module configuration, so no project path has to be spelled
-out. If both the source and the target component have a test-fixtures source set, the dependency between the
-test-fixtures source sets is added automatically.
+out, and completes the dependency automatically: the runtime dependency is added to the source set's `runtimeOnly`
+configuration, and if both the source and the target component have a test-fixtures source set, the dependency between
+the test-fixtures source sets is added as well. The completion only applies to notations created by `component(...)`
+and only when they are declared eagerly (not via `addLater`); a hand-written `project(path, configuration)` dependency
+is left untouched.
 
 ## Layout-specific restrictions
 

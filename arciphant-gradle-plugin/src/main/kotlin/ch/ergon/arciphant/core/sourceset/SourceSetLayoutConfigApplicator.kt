@@ -79,7 +79,19 @@ internal class SourceSetLayoutConfigApplicator(
             )
         }
 
-        val dependencyFactory = SourceSetDependencyFactory(moduleProject, sourceSetComponentSettings)
+        // completes inter-module component dependencies (runtime + test fixtures legs) declared through
+        // the 'component' dependency notation — in a dependencies block or by Arciphant itself below.
+        // The 'component' extension holding the registry is created by the ArciphantSettingsPlugin in a
+        // beforeProject callback registered before this applicator's, so it exists whenever this code runs.
+        val registry = moduleProject.componentDependencyRegistry()
+        val dependencyMirror = InterModuleDependencyMirror(
+            project = moduleProject,
+            settings = sourceSetComponentSettings,
+            registry = registry,
+        )
+        sourceSetsByComponent.values.forEach { dependencyMirror.register(it) }
+
+        val dependencyFactory = SourceSetDependencyFactory(moduleProject, sourceSetComponentSettings, registry)
         sourceSetsByComponent.forEach { (component, sourceSets) ->
             component.dependsOn.forEach { dependency ->
                 val target = sourceSetsByComponent.entries.singleOrNull {
@@ -103,8 +115,7 @@ internal class SourceSetLayoutConfigApplicator(
                                 type = API,
                                 sourceSet = sourceSets.production,
                                 projectPath = library.path.value,
-                                componentName = libraryComponent.reference.name,
-                                withTestFixturesSourceSet = libraryComponent.withTestFixturesSourceSet,
+                                component = libraryComponent,
                             )
                         }
                 }

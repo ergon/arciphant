@@ -1,5 +1,8 @@
 package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.model.DependencyType
+import ch.ergon.arciphant.core.model.DependencyType.API
+import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import ch.ergon.arciphant.util.arciphantPreconditionError
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -14,6 +17,11 @@ internal fun Project.implementationConfiguration(sourceSet: SourceSet) =
 
 internal fun Project.runtimeConfiguration(sourceSet: SourceSet) =
     getConfiguration(sourceSet.runtimeOnlyConfigurationName)
+
+internal fun Project.dependencyConfiguration(sourceSet: SourceSet, type: DependencyType) = when (type) {
+    API -> apiConfiguration(sourceSet)
+    IMPLEMENTATION -> implementationConfiguration(sourceSet)
+}
 
 internal fun Project.runtimeConfigurations(sourceSet: SourceSet): List<Configuration> = listOf(
     implementationConfiguration(sourceSet),

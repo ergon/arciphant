@@ -1,8 +1,10 @@
 package ch.ergon.arciphant.core.sourceset
 
 import ch.ergon.arciphant.core.GradlePluginIds.IDEA
+import ch.ergon.arciphant.core.model.ComponentReference
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.core.model.component
 import ch.ergon.arciphant.core.sourceSetComponentSettings
 import ch.ergon.arciphant.util.configuration
 import ch.ergon.arciphant.util.hasFileDependencyOn
@@ -196,7 +198,7 @@ class SourceSetFactoryTest {
         val target = factory.createComponent(name = "domain", settings = settings)
         val source = factory.createComponent(name = "application", settings = settings)
 
-        SourceSetDependencyFactory(project, settings)
+        SourceSetDependencyFactory(project, settings, ComponentDependencyRegistry())
             .addIntraModuleDependency(IMPLEMENTATION, source.production, target.production)
 
         assertThat(project.configuration("applicationImplementation").hasFileDependencyOn(target.production)).isTrue()
@@ -218,7 +220,7 @@ class SourceSetFactoryTest {
         val target = factory.createComponent(name = "domain", settings = customSettings)
         val source = factory.createComponent(name = "application", settings = customSettings)
 
-        SourceSetDependencyFactory(project, customSettings)
+        SourceSetDependencyFactory(project, customSettings, ComponentDependencyRegistry())
             .addIntraModuleDependency(IMPLEMENTATION, source.production, target.production)
 
         assertThat(target.testFixtures?.name).isEqualTo("domainFixtures")
@@ -238,12 +240,14 @@ class SourceSetFactoryTest {
         )
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = customSettings)
+        val registry = ComponentDependencyRegistry()
+        InterModuleDependencyMirror(module, customSettings, registry).register(source)
 
-        SourceSetDependencyFactory(module, customSettings).addInterModuleDependency(
+        SourceSetDependencyFactory(module, customSettings, registry).addInterModuleDependency(
             type = API,
             sourceSet = source.production,
             projectPath = ":library",
-            componentName = "domain",
+            component = component(ComponentReference("domain")),
         )
 
         assertThat(module.configuration("applicationApi").projectDependencyConfigurations())
@@ -266,13 +270,14 @@ class SourceSetFactoryTest {
         )
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = settings)
+        val registry = ComponentDependencyRegistry()
+        InterModuleDependencyMirror(module, settings, registry).register(source)
 
-        SourceSetDependencyFactory(module, settings).addInterModuleDependency(
+        SourceSetDependencyFactory(module, settings, registry).addInterModuleDependency(
             type = API,
             sourceSet = source.production,
             projectPath = ":library",
-            componentName = "domain",
-            withTestFixturesSourceSet = false,
+            component = component(ComponentReference("domain"), withTestFixturesSourceSet = false),
         )
 
         assertThat(module.configuration("applicationApi").projectDependencyConfigurations())
