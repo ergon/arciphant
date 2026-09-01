@@ -57,8 +57,8 @@ class ArciphantProjectPluginTest {
                 `java-library`
             }
 
-            arciphantModule {
-                component("application").implementation(module = "producer", component = "api")
+            dependencies {
+                "applicationImplementation"(component(module = "producer", component = "api"))
             }
             """
         )

@@ -10,6 +10,7 @@ import ch.ergon.arciphant.core.model.Component
 import ch.ergon.arciphant.core.model.ComponentReference
 import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.FunctionalModule
+import ch.ergon.arciphant.core.model.Module
 import ch.ergon.arciphant.core.model.ModuleReference
 import ch.ergon.arciphant.core.model.component
 import ch.ergon.arciphant.dsl.ArciphantDsl
@@ -17,6 +18,7 @@ import ch.ergon.arciphant.util.projectDependencyConfigurations
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.kotlin.dsl.project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -200,6 +202,7 @@ class SourceSetLayoutConfigApplicatorTest {
         fun `it should defer the config until a JVM plugin is applied`() {
             val project = ProjectBuilder.builder().withName("module")
                 .withParent(ProjectBuilder.builder().withName("root").build()).build()
+                .also { it.createComponentExtension() }
 
             project.applyModuleConfig(domainModule(component(ComponentReference("domain"))), settings())
 
@@ -209,6 +212,68 @@ class SourceSetLayoutConfigApplicatorTest {
 
             assertThat(project.sourceSets().names).contains("domain")
         }
+    }
+
+    @Nested
+    inner class InterModuleDependencyTest {
+
+        @Test
+        fun `it should complete component dependencies declared in the dependencies block`() {
+            val moduleProject = applyExamAndModuleConfig()
+
+            moduleProject.dependencies.add(
+                "domainApi",
+                moduleProject.componentDependencyNotation(module = "exam", component = "api"),
+            )
+
+            assertThat(moduleProject.configurations.getByName("domainRuntimeOnly").projectDependencyConfigurations())
+                .containsExactly("apiRuntimeElements")
+            assertThat(moduleProject.configurations.getByName("domainTestFixturesApi").projectDependencyConfigurations())
+                .containsExactly("apiTestFixturesApiElements")
+            assertThat(moduleProject.configurations.getByName("domainTestFixturesRuntimeOnly").projectDependencyConfigurations())
+                .containsExactly("apiTestFixturesRuntimeElements")
+        }
+
+        @Test
+        fun `it should not complete hand-written project dependencies`() {
+            val moduleProject = applyExamAndModuleConfig()
+
+            moduleProject.dependencies.add(
+                "domainApi",
+                moduleProject.dependencies.project(":exam", "apiApiElements"),
+            )
+
+            assertThat(moduleProject.configurations.getByName("domainApi").projectDependencyConfigurations())
+                .containsExactly("apiApiElements")
+            assertThat(moduleProject.configurations.getByName("domainRuntimeOnly").projectDependencyConfigurations())
+                .isEmpty()
+            assertThat(moduleProject.configurations.getByName("domainTestFixturesApi").projectDependencyConfigurations())
+                .isEmpty()
+        }
+
+        private fun applyExamAndModuleConfig(): Project {
+            val root = ProjectBuilder.builder().withName("root").build()
+            val module = domainModule(component(ComponentReference("domain")))
+            val exam = DomainModule(
+                reference = ModuleReference(name = "exam"),
+                components = setOf(component(ComponentReference("api"))),
+            )
+            val moduleProject = javaProject(root = root, modules = listOf(module, exam))
+            val examProject = javaProject(name = "exam", root = root)
+            val applicator = SourceSetLayoutConfigApplicator(
+                settings(),
+                listOf(
+                    GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("module")), module),
+                    GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("exam")), exam),
+                ),
+            )
+            applicator.applyConfig(moduleProject)
+            applicator.applyConfig(examProject)
+            return moduleProject
+        }
+
+        private fun Project.componentDependencyNotation(module: String, component: String) =
+            extensions.getByType(ComponentDependencyFactory::class.java).invoke(module = module, component = component)
     }
 
     @Nested
@@ -249,10 +314,19 @@ class SourceSetLayoutConfigApplicatorTest {
     private fun javaProject(
         name: String = "module",
         root: Project = ProjectBuilder.builder().withName("root").build(),
+        modules: List<Module> = emptyList(),
     ): Project {
         return ProjectBuilder.builder().withName(name).withParent(root).build()
+            .also { it.createComponentExtension(modules) }
             .also { it.pluginManager.apply("java-library") }
     }
+
+    /**
+     * The 'component' extension (holding the dependency registry) is created by the ArciphantSettingsPlugin
+     * in lifecycle.beforeProject, i.e. before the applicator's configuration can run.
+     */
+    private fun Project.createComponentExtension(modules: List<Module> = emptyList()) =
+        extensions.createComponentDependencyFactory(project = this, modules = modules)
 
     private fun settings(configure: ArciphantDsl.() -> Unit = {}) = GlobalSettingsRepository(
         ArciphantDsl().apply {

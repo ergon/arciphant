@@ -1,15 +1,15 @@
 package ch.ergon.arciphant.core.sourceset
 
 import ch.ergon.arciphant.core.SourceSetComponentSettings
+import ch.ergon.arciphant.core.model.Component
 import ch.ergon.arciphant.core.model.DependencyType
-import ch.ergon.arciphant.core.model.DependencyType.API
-import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 
 class SourceSetDependencyFactory internal constructor(
     private val project: Project,
     private val settings: SourceSetComponentSettings,
+    private val registry: ComponentDependencyRegistry,
 ) {
 
     internal fun addIntraModuleDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
@@ -29,45 +29,15 @@ class SourceSetDependencyFactory internal constructor(
         project.extendRuntimeOnly(sourceSet, dependency)
     }
 
-    internal fun addInterModuleDependency(
-        type: DependencyType,
-        sourceSet: SourceSet,
-        projectPath: String,
-        componentName: String,
-        withTestFixturesSourceSet: Boolean? = null,
-    ) {
-        doAddInterModuleDependency(type, sourceSet, projectPath, componentName)
-
-        val sourceTestFixtures = sourceSet.testFixturesSourceSet()
-        if (sourceTestFixtures != null && (withTestFixturesSourceSet ?: settings.withTestFixturesSourceSet)) {
-            doAddInterModuleDependency(
-                type,
-                sourceTestFixtures,
-                projectPath,
-                settings.testFixturesSourceSetName(componentName)
-            )
-        }
-    }
-
-    private fun doAddInterModuleDependency(
-        type: DependencyType,
-        sourceSet: SourceSet,
-        projectPath: String,
-        dependencySourceSetName: String,
-    ) {
-        project.dependencies.add(
-            project.dependencyConfiguration(sourceSet, type).name,
-            project.projectDependency(projectPath, dependencySourceSetName.apiElementsConfigurationName()),
-        )
-        project.dependencies.add(
-            sourceSet.runtimeOnlyConfigurationName,
-            project.projectDependency(projectPath, dependencySourceSetName.runtimeElementsConfigurationName()),
-        )
-    }
-
-    private fun Project.dependencyConfiguration(sourceSet: SourceSet, type: DependencyType) = when (type) {
-        API -> apiConfiguration(sourceSet)
-        IMPLEMENTATION -> implementationConfiguration(sourceSet)
+    /**
+     * Adds the dependency on the target component's `…ApiElements` configuration. The runtime dependency
+     * and the test fixtures mirroring are added by the [InterModuleDependencyMirror] registered on the
+     * component configurations, which recognizes the dependency through the [ComponentDependencyRegistry].
+     */
+    internal fun addInterModuleDependency(type: DependencyType, sourceSet: SourceSet, projectPath: String, component: Component) {
+        val dependency = project.projectDependency(projectPath, component.reference.name.apiElementsConfigurationName())
+        registry.register(dependency, component)
+        project.dependencies.add(project.dependencyConfiguration(sourceSet, type).name, dependency)
     }
 
     private fun SourceSet.testFixturesSourceSet(): SourceSet? =
