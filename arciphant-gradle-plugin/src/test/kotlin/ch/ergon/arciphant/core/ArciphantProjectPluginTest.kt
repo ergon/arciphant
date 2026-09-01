@@ -58,7 +58,7 @@ class ArciphantProjectPluginTest {
             }
 
             arciphantModule {
-                component("application").implementation(module = "producer", component = "api")
+                "applicationImplementation"(component(module = "producer", component = "api"))
             }
             """
         )

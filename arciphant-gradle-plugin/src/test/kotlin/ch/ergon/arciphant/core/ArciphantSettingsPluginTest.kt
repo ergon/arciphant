@@ -359,7 +359,7 @@ class ArciphantSettingsPluginTest {
         projectFolder.resolve("consumer/build.gradle.kts").write(
             """
             arciphantModule {
-                component("application").implementation(module = "producer", component = "api")
+                "applicationImplementation"(component(module = "producer", component = "api"))
             }
             """
         )
