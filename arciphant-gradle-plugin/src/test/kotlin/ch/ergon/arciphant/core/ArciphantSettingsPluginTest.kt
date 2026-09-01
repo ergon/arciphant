@@ -516,6 +516,54 @@ class ArciphantSettingsPluginTest {
     }
 
     @Test
+    fun `test that default Kotlin compile tasks compile the component source sets`() {
+        settingsFileWithArciphant(
+            """
+            sourceSetComponentLayout()
+
+            module("module").createComponent("domain")
+            """
+        )
+        buildFile.write(
+            """
+            plugins {
+                kotlin("jvm") version "2.2.0" apply false
+            }
+
+            allprojects {
+                pluginManager.apply("org.jetbrains.kotlin.jvm")
+                pluginManager.apply("java-library")
+                repositories { mavenCentral() }
+            }
+            """
+        )
+        projectFolder.resolve("module/src/domain/kotlin/example/domain/Domain.kt").write(
+            """
+            package example.domain
+
+            class Domain
+            """
+        )
+        projectFolder.resolve("module/src/domainTest/kotlin/example/domain/DomainTest.kt").write(
+            """
+            package example.domain
+
+            class DomainTest {
+                fun createsDomain(): Domain = Domain()
+            }
+            """
+        )
+
+        val mainResult = gradleRunner.withArguments(":module:compileKotlin").build()
+        val testResult = gradleRunner.withArguments(":module:compileTestKotlin").build()
+
+        assertThat(mainResult.task(":module:compileDomainKotlin")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(testResult.task(":module:compileDomainTestKotlin")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(testResult.task(":module:compileDomainTestFixturesKotlin")?.outcome)
+            .isEqualTo(TaskOutcome.NO_SOURCE)
+    }
+
+    @Test
     fun `test that source set folders are created according to configuration`() {
         settingsFileWithArciphant(
             """

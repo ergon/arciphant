@@ -1,6 +1,7 @@
 package ch.ergon.arciphant.core.sourceset
 
 import ch.ergon.arciphant.core.GradlePluginIds.IDEA
+import ch.ergon.arciphant.core.GradlePluginIds.KOTLIN_JVM
 import ch.ergon.arciphant.core.SourceSetComponentSettings
 import ch.ergon.arciphant.core.associateKotlinCompilations
 import org.gradle.api.Project
@@ -104,12 +105,34 @@ internal class SourceSetFactory(private val project: Project) {
 
     private fun attachToLifecycleTasks(production: SourceSet, testFixtures: SourceSet?, test: SourceSet?) {
         attachToLifecycleTask(JavaPlugin.CLASSES_TASK_NAME, production)
-        listOfNotNull(testFixtures, test).forEach { attachToLifecycleTask(JavaPlugin.TEST_CLASSES_TASK_NAME, it) }
+        attachToKotlinCompileTask(SourceSet.MAIN_SOURCE_SET_NAME, production)
+        listOfNotNull(testFixtures, test).forEach {
+            attachToLifecycleTask(JavaPlugin.TEST_CLASSES_TASK_NAME, it)
+            attachToKotlinCompileTask(SourceSet.TEST_SOURCE_SET_NAME, it)
+        }
     }
 
     private fun attachToLifecycleTask(lifecycleTaskName: String, sourceSet: SourceSet) {
         project.tasks.named(lifecycleTaskName).configure { dependsOn(sourceSet.classesTaskName) }
     }
+
+    /**
+     * Makes the Kotlin compile task of the default source set ('compileKotlin'/'compileTestKotlin') depend on the
+     * component source set's Kotlin compile task, so that these familiar entry points compile the component sources
+     * even though the default source sets are usually empty in the source set layout. The lazy 'matching' lookup is
+     * required because the Kotlin compile tasks may not be registered yet when the Kotlin plugin callback fires
+     * (see [associateKotlinCompilations]).
+     */
+    private fun attachToKotlinCompileTask(defaultSourceSetName: String, sourceSet: SourceSet) {
+        project.pluginManager.withPlugin(KOTLIN_JVM) {
+            val compileTaskName = project.sourceSets().getByName(defaultSourceSetName).getKotlinCompileTaskName()
+            project.tasks.matching { it.name == compileTaskName }.configureEach {
+                dependsOn(sourceSet.getKotlinCompileTaskName())
+            }
+        }
+    }
+
+    private fun SourceSet.getKotlinCompileTaskName() = getCompileTaskName("kotlin")
 
     private fun markAsTestSources(vararg sourceSets: SourceSet?) {
         project.pluginManager.withPlugin(IDEA) {
