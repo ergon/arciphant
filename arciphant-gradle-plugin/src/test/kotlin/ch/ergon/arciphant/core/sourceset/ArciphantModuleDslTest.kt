@@ -32,7 +32,7 @@ class ArciphantModuleDslTest {
         val dsl = dsl()
         createComponent(name = "domain")
 
-        with(dsl) { component("domain").api(module = "exam", component = "api") }
+        with(dsl) { "domainApi"(component(module = "exam", component = "api")) }
 
         assertThat(project.configuration("domainApi").projectDependencyPaths()).containsExactly(":exam")
         assertThat(project.configuration("domainApi").projectDependencyConfigurations())
@@ -46,7 +46,7 @@ class ArciphantModuleDslTest {
         val dsl = dsl()
         createComponent(name = "domain")
 
-        with(dsl) { component("domain").implementation(module = "exam", component = "api") }
+        with(dsl) { "domainImplementation"(component(module = "exam", component = "api")) }
 
         assertThat(project.configuration("domainImplementation").projectDependencyConfigurations())
             .containsExactly("apiApiElements")
@@ -58,7 +58,7 @@ class ArciphantModuleDslTest {
         val dsl = dsl()
         createComponent(name = "domain")
 
-        with(dsl) { component("domain").api(module = "exam", component = "api") }
+        with(dsl) { "domainApi"(component(module = "exam", component = "api")) }
 
         assertThat(project.configuration("domainTestFixturesApi").projectDependencyPaths())
             .containsExactly(":exam")
@@ -72,7 +72,7 @@ class ArciphantModuleDslTest {
         val dsl = dsl(modules = listOf(examModule(targetComponent)))
         createComponent(name = "domain")
 
-        with(dsl) { component("domain").api(module = "exam", component = "api") }
+        with(dsl) { "domainApi"(component(module = "exam", component = "api")) }
 
         assertThat(project.configuration("domainApi").projectDependencyConfigurations())
             .containsExactly("apiApiElements")
@@ -84,7 +84,7 @@ class ArciphantModuleDslTest {
         val dsl = dsl()
         createComponent(name = "domain", withTestFixturesSourceSet = false)
 
-        with(dsl) { component("domain").api(module = "exam", component = "api") }
+        with(dsl) { "domainApi"(component(module = "exam", component = "api")) }
 
         assertThat(project.configuration("domainApi").projectDependencyConfigurations())
             .containsExactly("apiApiElements")
@@ -96,7 +96,7 @@ class ArciphantModuleDslTest {
         val dsl = dsl(settings = settings)
         createComponent(name = "domain", settings = settings, withTestFixturesSourceSet = true)
 
-        with(dsl) { component("domain").api(module = "exam", component = "api") }
+        with(dsl) { "domainApi"(component(module = "exam", component = "api")) }
 
         assertThat(project.configuration("domainTestFixturesApi").projectDependencyConfigurations()).isEmpty()
     }
@@ -106,7 +106,7 @@ class ArciphantModuleDslTest {
         val dsl = dsl()
         createComponent(name = "domain")
 
-        assertThatThrownBy { with(dsl) { component("domain").api(module = "billing", component = "api") } }
+        assertThatThrownBy { with(dsl) { "domainApi"(component(module = "billing", component = "api")) } }
             .hasMessage("Arciphant configuration error: Module with name 'billing' does not exist.")
     }
 
@@ -115,16 +115,19 @@ class ArciphantModuleDslTest {
         val dsl = dsl()
         createComponent(name = "domain")
 
-        assertThatThrownBy { with(dsl) { component("domain").api(module = "exam", component = "db") } }
+        assertThatThrownBy { with(dsl) { "domainApi"(component(module = "exam", component = "db")) } }
             .hasMessage("Arciphant configuration error: Component with name 'db' does not exist in module 'exam'.")
     }
 
     @Test
-    fun `it should reject an unknown source component`() {
+    fun `it should reject an unknown dependency configuration`() {
         val dsl = dsl()
 
-        assertThatThrownBy { with(dsl) { component("domain").api(module = "exam", component = "api") } }
-            .hasMessage("Arciphant configuration error: Component with name 'domain' does not exist in project ':certificate'.")
+        assertThatThrownBy { with(dsl) { "domainApi"(component(module = "exam", component = "api")) } }
+            .hasMessage(
+                "Arciphant configuration error: Configuration 'domainApi' is not an api or implementation " +
+                        "configuration of a source set in project ':certificate'."
+            )
     }
 
     private fun dsl(
