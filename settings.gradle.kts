@@ -1,2 +1,3 @@
 includeBuild("./arciphant-gradle-plugin")
-includeBuild("./arciphant-demo-project")
+includeBuild("./arciphant-project-demo")
+includeBuild("./arciphant-source-set-demo")

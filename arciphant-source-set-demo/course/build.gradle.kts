@@ -1,0 +1,3 @@
+plugins {
+    `common-module`
+}

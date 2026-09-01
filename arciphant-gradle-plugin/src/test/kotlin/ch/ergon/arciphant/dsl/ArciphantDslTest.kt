@@ -2,19 +2,15 @@ package ch.ergon.arciphant.dsl
 
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.model.*
-import ch.ergon.arciphant.core.model.BundleModule
-import ch.ergon.arciphant.core.model.Component
-import ch.ergon.arciphant.core.model.Dependency
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
-import ch.ergon.arciphant.core.model.DomainModule
-import ch.ergon.arciphant.core.model.LibraryModule
-import ch.ergon.arciphant.core.model.Plugin
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 class ArciphantDslTest {
 
@@ -282,10 +278,57 @@ class ArciphantDslTest {
     }
 
     @Nested
+    inner class SourceSetConfigurationTest {
+
+        @Test
+        fun `it should reject 'plugin' for source set layout`() {
+            with(dsl) {
+                sourceSetComponentLayout()
+                module(name = "module").createComponent(name = "domain", plugin = "java-library")
+            }
+
+            val exception = assertThrows<IllegalArgumentException> { moduleRepository.load() }
+
+            assertThat(exception.message).isEqualTo(
+                "Arciphant configuration error: 'plugin' cannot be configured for component layout 'SOURCE_SET'"
+            )
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = [true, false])
+        fun `it should reject 'withTestSourceSet' for project layout`(value: Boolean) {
+            with(dsl) {
+                module(name = "module").createComponent(name = "domain", withTestSourceSet = value)
+            }
+
+            val exception = assertThrows<IllegalArgumentException> { moduleRepository.load() }
+
+            assertThat(exception.message).isEqualTo(
+                "Arciphant configuration error: 'withTestSourceSet' cannot be configured for component layout 'PROJECT'"
+            )
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = [true, false])
+        fun `it should reject 'withTestFixturesSourceSet' for project layout`(value: Boolean) {
+            with(dsl) {
+                module(name = "module").createComponent(name = "domain", withTestFixturesSourceSet = value)
+            }
+
+            val exception = assertThrows<IllegalArgumentException> { moduleRepository.load() }
+
+            assertThat(exception.message).isEqualTo(
+                "Arciphant configuration error: 'withTestFixturesSourceSet' cannot be configured for component layout 'PROJECT'"
+            )
+        }
+
+    }
+
+    @Nested
     inner class CompleteExampleTest {
         private val path = emptyList<String>()
 
-        private val sharedModuleRef = ModuleReference(name =  "shared")
+        private val sharedModuleRef = ModuleReference(name = "shared")
         private val customerModuleRef = ModuleReference(name = "customer")
         private val orderModuleRef = ModuleReference(name = "order")
         private val inventoryModuleRef = ModuleReference(name = "inventory")
@@ -328,30 +371,24 @@ class ArciphantDslTest {
 
             val modules = moduleRepository.load()
 
-            val domainComponent = Component(
+            val domainComponent = component(
                 reference = domainComponentRef,
                 plugin = domainPlugin,
-                dependsOn = emptySet(),
             )
-            val dbComponent = Component(
+            val dbComponent = component(
                 reference = dbComponentRef,
                 plugin = dbPlugin,
                 dependsOn = setOf(Dependency(component = domainComponentRef, type = IMPLEMENTATION)),
             )
-            val webApiComponent = Component(
+            val webApiComponent = component(
                 reference = webApiComponentRef,
-                plugin = null,
-                dependsOn = emptySet(),
             )
-            val webComponent = Component(
+            val webComponent = component(
                 reference = webComponentRef,
-                plugin = null,
                 dependsOn = setOf(Dependency(component = webApiComponentRef, type = API)),
             )
-            val externalApiComponent = Component(
+            val externalApiComponent = component(
                 reference = externalApiComponentRef,
-                plugin = null,
-                dependsOn = emptySet(),
             )
 
             assertThat(modules).containsExactlyInAnyOrder(
@@ -368,11 +405,7 @@ class ArciphantDslTest {
                                     Dependency(component = baseComponentRef, type = IMPLEMENTATION),
                                 )
                         ),
-                        Component(
-                            reference = baseComponentRef,
-                            plugin = null,
-                            dependsOn = emptySet(),
-                        ),
+                        component(reference = baseComponentRef),
                     ),
                 ),
                 DomainModule(
@@ -391,13 +424,7 @@ class ArciphantDslTest {
                 ),
                 DomainModule(
                     reference = inventoryModuleRef,
-                    components = setOf(
-                        Component(
-                            reference = ComponentReference("main"),
-                            plugin = null,
-                            dependsOn = emptySet(),
-                        )
-                    ),
+                    components = setOf(component(reference = ComponentReference("main"))),
                 ),
                 BundleModule(
                     reference = orderingModuleRef,

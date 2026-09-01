@@ -1,5 +1,7 @@
 package ch.ergon.arciphant.core.model
 
+import ch.ergon.arciphant.util.verify
+
 internal sealed interface Module {
     val reference: ModuleReference
 }
@@ -28,6 +30,8 @@ internal data class Component(
     val reference: ComponentReference,
     val plugin: Plugin?,
     val dependsOn: Set<Dependency>,
+    val withTestSourceSet: Boolean?,
+    val withTestFixturesSourceSet: Boolean?,
 )
 
 internal data class Dependency(val component: ComponentReference, val type: DependencyType)
@@ -38,3 +42,15 @@ internal enum class DependencyType(val configurationName: String) {
 }
 
 internal data class Plugin(val id: String)
+
+internal fun List<Module>.getByName(moduleName: String): FunctionalModule {
+    val module = filterIsInstance<FunctionalModule>().singleOrNull { it.reference.name == moduleName }
+    verify(module != null) { "Module with name '$moduleName' does not exist." }
+    return module
+}
+
+internal fun FunctionalModule.getComponent(componentName: String): Component {
+    val component = components.singleOrNull { it.reference.name == componentName }
+    verify(component != null) { "Component with name '$componentName' does not exist in module '${this.reference.name}'." }
+    return component
+}

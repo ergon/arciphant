@@ -1,54 +1,22 @@
 package ch.ergon.arciphant
 
-import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
-import ch.ergon.arciphant.core.*
-import ch.ergon.arciphant.dsl.ArciphantDsl
-import ch.ergon.arciphant.dsl.ArciphantProjectDsl
-import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
 import org.gradle.api.Plugin
+import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.api.logging.Logging
+import org.gradle.api.plugins.PluginAware
 
-class ArciphantPlugin : Plugin<Settings> {
+class ArciphantPlugin : Plugin<PluginAware> {
 
-    override fun apply(settings: Settings) {
-        with(settings) {
-            val dsl = extensions.create(ARCIPHANT_EXTENSION_NAME, ArciphantDsl::class.java)
-
-            gradle.settingsEvaluated {
-                val settings = CoreSettingsRepository(dsl).load()
-                val modules = ModuleRepository(dsl).load()
-                val projectConfigs = modules.flatMap { it.toProjectConfigs() }
-                val packageStructureValidationSettings = dsl.packageStructureValidation.build()
-
-                // create project folders that do not yet exist
-                FolderCreator(settings, rootProject).createFoldersIfNotExists(projectConfigs)
-
-                // create project structure (during gradle initialization phase)
-                projectConfigs.map { it.path }.forEach { include(it.value) }
-
-                // apply plugins and add dependencies (during gradle configuration phase)
-                val configApplicator = GradleProjectConfigApplicator(settings, projectConfigs)
-                gradle.allprojects {
-                    beforeEvaluate { configApplicator.applyConfig(this) }
-                }
-
-                gradle.lifecycle.beforeProject {
-                    extensions.create(ARCIPHANT_EXTENSION_NAME, ArciphantProjectDsl::class.java)
-                    registerValidatePackageStructureTask(packageStructureValidationSettings)
-                }
-            }
-
-            gradle.projectsLoaded {
-                rootProject.registerProjectDependenciesTask()
-            }
+    override fun apply(context: PluginAware) {
+        when (context) {
+            is Settings -> ArciphantSettingsPlugin().apply(context)
+            is Project -> ArciphantProjectPlugin().apply(context)
+            else -> error("Cannot apply ${ArciphantPlugin::class.simpleName} to ${context::class.simpleName}")
         }
-
     }
 
     companion object {
-        private val ARCIPHANT_EXTENSION_NAME = "arciphant"
-
         internal val logger = Logging.getLogger(ArciphantPlugin::class.java)
     }
 }

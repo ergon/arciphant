@@ -1,0 +1,3 @@
+arciphantComponent {
+    api("exam", "api")
+}
