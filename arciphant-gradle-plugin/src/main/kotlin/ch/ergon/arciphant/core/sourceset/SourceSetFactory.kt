@@ -1,6 +1,7 @@
 package ch.ergon.arciphant.core.sourceset
 
 import ch.ergon.arciphant.core.GradlePluginIds.IDEA
+import ch.ergon.arciphant.core.GradlePluginIds.JAVA
 import ch.ergon.arciphant.core.GradlePluginIds.KOTLIN_JVM
 import ch.ergon.arciphant.core.SourceSetComponentSettings
 import ch.ergon.arciphant.core.associateKotlinCompilations
@@ -105,10 +106,10 @@ internal class SourceSetFactory(private val project: Project) {
 
     private fun attachToLifecycleTasks(production: SourceSet, testFixtures: SourceSet?, test: SourceSet?) {
         attachToLifecycleTask(JavaPlugin.CLASSES_TASK_NAME, production)
-        attachToKotlinCompileTask(SourceSet.MAIN_SOURCE_SET_NAME, production)
+        attachToCompileTasks(SourceSet.MAIN_SOURCE_SET_NAME, production)
         listOfNotNull(testFixtures, test).forEach {
             attachToLifecycleTask(JavaPlugin.TEST_CLASSES_TASK_NAME, it)
-            attachToKotlinCompileTask(SourceSet.TEST_SOURCE_SET_NAME, it)
+            attachToCompileTasks(SourceSet.TEST_SOURCE_SET_NAME, it)
         }
     }
 
@@ -117,11 +118,26 @@ internal class SourceSetFactory(private val project: Project) {
     }
 
     /**
-     * Makes the Kotlin compile task of the default source set ('compileKotlin'/'compileTestKotlin') depend on the
-     * component source set's Kotlin compile task, so that these familiar entry points compile the component sources
-     * even though the default source sets are usually empty in the source set layout. The lazy 'matching' lookup is
-     * required because the Kotlin compile tasks may not be registered yet when the Kotlin plugin callback fires
-     * (see [associateKotlinCompilations]).
+     * Makes the compile tasks of the default source set ('compileJava'/'compileTestJava' and
+     * 'compileKotlin'/'compileTestKotlin') depend on the component source set's compile tasks, so that these familiar
+     * entry points compile the component sources even though the default source sets are usually empty in the source
+     * set layout.
+     */
+    private fun attachToCompileTasks(defaultSourceSetName: String, sourceSet: SourceSet) {
+        attachToJavaCompileTask(defaultSourceSetName, sourceSet)
+        attachToKotlinCompileTask(defaultSourceSetName, sourceSet)
+    }
+
+    private fun attachToJavaCompileTask(defaultSourceSetName: String, sourceSet: SourceSet) {
+        project.pluginManager.withPlugin(JAVA) {
+            val compileTaskName = project.sourceSets().getByName(defaultSourceSetName).compileJavaTaskName
+            project.tasks.named(compileTaskName).configure { dependsOn(sourceSet.compileJavaTaskName) }
+        }
+    }
+
+    /**
+     * The lazy 'matching' lookup is required because the Kotlin compile tasks may not be registered yet when the
+     * Kotlin plugin callback fires (see [associateKotlinCompilations]).
      */
     private fun attachToKotlinCompileTask(defaultSourceSetName: String, sourceSet: SourceSet) {
         project.pluginManager.withPlugin(KOTLIN_JVM) {
