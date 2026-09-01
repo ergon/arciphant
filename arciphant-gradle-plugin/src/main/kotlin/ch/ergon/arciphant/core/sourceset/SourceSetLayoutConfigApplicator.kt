@@ -79,6 +79,15 @@ internal class SourceSetLayoutConfigApplicator(
             )
         }
 
+        // completes inter-module component dependencies (runtime + test fixtures legs), regardless of
+        // whether they are declared through the ArciphantModuleDsl, in a dependencies block, or below
+        val dependencyMirror = InterModuleDependencyMirror(
+            project = moduleProject,
+            settings = sourceSetComponentSettings,
+            modules = projectConfigs.map { it.module },
+        )
+        sourceSetsByComponent.values.forEach { dependencyMirror.register(it) }
+
         val dependencyFactory = SourceSetDependencyFactory(moduleProject, sourceSetComponentSettings)
         sourceSetsByComponent.forEach { (component, sourceSets) ->
             component.dependsOn.forEach { dependency ->
@@ -104,7 +113,6 @@ internal class SourceSetLayoutConfigApplicator(
                                 sourceSet = sourceSets.production,
                                 projectPath = library.path.value,
                                 componentName = libraryComponent.reference.name,
-                                withTestFixturesSourceSet = libraryComponent.withTestFixturesSourceSet,
                             )
                         }
                 }

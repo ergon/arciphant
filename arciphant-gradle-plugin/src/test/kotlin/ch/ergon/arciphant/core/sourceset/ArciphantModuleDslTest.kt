@@ -67,10 +67,28 @@ class ArciphantModuleDslTest {
     }
 
     @Test
+    fun `it should create a dependency notation for the dependencies block`() {
+        val dsl = dsl()
+        createComponent(name = "domain")
+
+        project.dependencies.add("domainImplementation", dsl.component(module = "exam", component = "api"))
+
+        assertThat(project.configuration("domainImplementation").projectDependencyConfigurations())
+            .containsExactly("apiApiElements")
+        assertThat(project.configuration("domainRuntimeOnly").projectDependencyConfigurations())
+            .containsExactly("apiRuntimeElements")
+        assertThat(project.configuration("domainTestFixturesImplementation").projectDependencyConfigurations())
+            .containsExactly("apiTestFixturesApiElements")
+        assertThat(project.configuration("domainTestFixturesRuntimeOnly").projectDependencyConfigurations())
+            .containsExactly("apiTestFixturesRuntimeElements")
+    }
+
+    @Test
     fun `it should not link test fixtures when the target component has no test fixtures source set`() {
         val targetComponent = component(ComponentReference("api"), withTestFixturesSourceSet = false)
-        val dsl = dsl(modules = listOf(examModule(targetComponent)))
-        createComponent(name = "domain")
+        val modules = listOf(examModule(targetComponent))
+        val dsl = dsl(modules = modules)
+        createComponent(name = "domain", modules = modules)
 
         with(dsl) { component("domain").api(module = "exam", component = "api") }
 
@@ -127,8 +145,10 @@ class ArciphantModuleDslTest {
             .hasMessage("Arciphant configuration error: Component with name 'domain' does not exist in project ':certificate'.")
     }
 
+    private val defaultModules = listOf(examModule(component(ComponentReference("api"))))
+
     private fun dsl(
-        modules: List<Module> = listOf(examModule(component(ComponentReference("api")))),
+        modules: List<Module> = defaultModules,
         settings: SourceSetComponentSettings = defaultSettings,
     ) = ArciphantModuleDsl(project, modules, settings)
 
@@ -136,11 +156,12 @@ class ArciphantModuleDslTest {
         name: String,
         settings: SourceSetComponentSettings = defaultSettings,
         withTestFixturesSourceSet: Boolean? = null,
+        modules: List<Module> = defaultModules,
     ) = SourceSetFactory(project).createComponent(
         name = name,
         settings = settings,
         withTestFixturesSourceSet = withTestFixturesSourceSet,
-    )
+    ).also { InterModuleDependencyMirror(project, settings, modules).register(it) }
 
     private fun examModule(vararg components: Component) = DomainModule(
         reference = ModuleReference(name = "exam"),

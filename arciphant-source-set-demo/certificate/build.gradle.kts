@@ -2,7 +2,7 @@ plugins {
     `filestore-module`
 }
 
-arciphantModule {
+dependencies {
     // the certificate domain uses the exam module's public API
-    component("domain").api("exam", "api")
+    "domainApi"(arciphantModule.component(module = "exam", component = "api"))
 }

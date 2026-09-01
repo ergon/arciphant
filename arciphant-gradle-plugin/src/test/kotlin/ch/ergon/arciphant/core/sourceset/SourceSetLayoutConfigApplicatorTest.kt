@@ -17,6 +17,7 @@ import ch.ergon.arciphant.util.projectDependencyConfigurations
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.kotlin.dsl.project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -208,6 +209,43 @@ class SourceSetLayoutConfigApplicatorTest {
             project.pluginManager.apply("java-library")
 
             assertThat(project.sourceSets().names).contains("domain")
+        }
+    }
+
+    @Nested
+    inner class InterModuleDependencyTest {
+
+        @Test
+        fun `it should complete component dependencies declared in the dependencies block`() {
+            val root = ProjectBuilder.builder().withName("root").build()
+            val moduleProject = javaProject(root = root)
+            val examProject = javaProject(name = "exam", root = root)
+            val module = domainModule(component(ComponentReference("domain")))
+            val exam = DomainModule(
+                reference = ModuleReference(name = "exam"),
+                components = setOf(component(ComponentReference("api"))),
+            )
+            val applicator = SourceSetLayoutConfigApplicator(
+                settings(),
+                listOf(
+                    GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("module")), module),
+                    GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("exam")), exam),
+                ),
+            )
+            applicator.applyConfig(moduleProject)
+            applicator.applyConfig(examProject)
+
+            moduleProject.dependencies.add(
+                "domainApi",
+                moduleProject.dependencies.project(":exam", "apiApiElements"),
+            )
+
+            assertThat(moduleProject.configurations.getByName("domainRuntimeOnly").projectDependencyConfigurations())
+                .containsExactly("apiRuntimeElements")
+            assertThat(moduleProject.configurations.getByName("domainTestFixturesApi").projectDependencyConfigurations())
+                .containsExactly("apiTestFixturesApiElements")
+            assertThat(moduleProject.configurations.getByName("domainTestFixturesRuntimeOnly").projectDependencyConfigurations())
+                .containsExactly("apiTestFixturesRuntimeElements")
         }
     }
 

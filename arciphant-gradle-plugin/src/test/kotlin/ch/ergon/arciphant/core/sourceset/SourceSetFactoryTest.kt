@@ -1,8 +1,12 @@
 package ch.ergon.arciphant.core.sourceset
 
 import ch.ergon.arciphant.core.GradlePluginIds.IDEA
+import ch.ergon.arciphant.core.model.ComponentReference
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
+import ch.ergon.arciphant.core.model.DomainModule
+import ch.ergon.arciphant.core.model.ModuleReference
+import ch.ergon.arciphant.core.model.component
 import ch.ergon.arciphant.core.sourceSetComponentSettings
 import ch.ergon.arciphant.util.configuration
 import ch.ergon.arciphant.util.hasFileDependencyOn
@@ -238,6 +242,11 @@ class SourceSetFactoryTest {
         )
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = customSettings)
+        val libraryModule = DomainModule(
+            reference = ModuleReference(name = "library"),
+            components = setOf(component(ComponentReference("domain"))),
+        )
+        InterModuleDependencyMirror(module, customSettings, listOf(libraryModule)).register(source)
 
         SourceSetDependencyFactory(module, customSettings).addInterModuleDependency(
             type = API,
@@ -266,13 +275,17 @@ class SourceSetFactoryTest {
         )
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = settings)
+        val libraryModule = DomainModule(
+            reference = ModuleReference(name = "library"),
+            components = setOf(component(ComponentReference("domain"), withTestFixturesSourceSet = false)),
+        )
+        InterModuleDependencyMirror(module, settings, listOf(libraryModule)).register(source)
 
         SourceSetDependencyFactory(module, settings).addInterModuleDependency(
             type = API,
             sourceSet = source.production,
             projectPath = ":library",
             componentName = "domain",
-            withTestFixturesSourceSet = false,
         )
 
         assertThat(module.configuration("applicationApi").projectDependencyConfigurations())
