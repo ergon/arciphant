@@ -160,6 +160,24 @@ class SourceSetFactoryTest {
     }
 
     @Test
+    fun `it should attach component source sets to the default java compile tasks`() {
+        val project = javaProject()
+
+        val factory = SourceSetFactory(project)
+        factory.createComponent(name = "domain", settings = settings)
+
+        val compileJava = project.tasks.getByName("compileJava")
+        val compileTestJava = project.tasks.getByName("compileTestJava")
+        assertThat(compileJava.taskDependencies.getDependencies(compileJava))
+            .contains(project.tasks.getByName("compileDomainJava"))
+        assertThat(compileTestJava.taskDependencies.getDependencies(compileTestJava))
+            .contains(
+                project.tasks.getByName("compileDomainTestJava"),
+                project.tasks.getByName("compileDomainTestFixturesJava")
+            )
+    }
+
+    @Test
     fun `it should mark tests and test fixtures as IDEA test sources`() {
         val project = javaProject().also { it.pluginManager.apply(IDEA) }
 
