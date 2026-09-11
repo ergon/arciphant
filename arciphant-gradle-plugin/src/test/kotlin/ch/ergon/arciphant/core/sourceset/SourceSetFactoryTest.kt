@@ -1,6 +1,5 @@
 package ch.ergon.arciphant.core.sourceset
 
-import ch.ergon.arciphant.core.ComponentDependencyRegistry
 import ch.ergon.arciphant.core.GradlePluginIds.IDEA
 import ch.ergon.arciphant.core.model.ComponentReference
 import ch.ergon.arciphant.core.model.DependencyType.API
@@ -199,7 +198,7 @@ class SourceSetFactoryTest {
         val target = factory.createComponent(name = "domain", settings = settings)
         val source = factory.createComponent(name = "application", settings = settings)
 
-        SourceSetDependencyFactory(project, settings, ComponentDependencyRegistry())
+        SourceSetDependencyFactory(project, settings)
             .addIntraModuleDependency(IMPLEMENTATION, source.production, target.production)
 
         assertThat(project.configuration("applicationImplementation").hasFileDependencyOn(target.production)).isTrue()
@@ -221,7 +220,7 @@ class SourceSetFactoryTest {
         val target = factory.createComponent(name = "domain", settings = customSettings)
         val source = factory.createComponent(name = "application", settings = customSettings)
 
-        SourceSetDependencyFactory(project, customSettings, ComponentDependencyRegistry())
+        SourceSetDependencyFactory(project, customSettings)
             .addIntraModuleDependency(IMPLEMENTATION, source.production, target.production)
 
         assertThat(target.testFixtures?.name).isEqualTo("domainFixtures")
@@ -241,12 +240,10 @@ class SourceSetFactoryTest {
         )
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = customSettings)
-        val registry = ComponentDependencyRegistry()
-        SourceSetLayoutComponentDependencyCompleter(module, customSettings, registry).register(source)
 
-        SourceSetDependencyFactory(module, customSettings, registry).addInterModuleDependency(
+        SourceSetDependencyFactory(module, customSettings).addInterModuleDependency(
             type = API,
-            sourceSet = source.production,
+            sourceSets = source,
             projectPath = ":library",
             component = component(ComponentReference("domain")),
         )
@@ -271,12 +268,10 @@ class SourceSetFactoryTest {
         )
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = settings)
-        val registry = ComponentDependencyRegistry()
-        SourceSetLayoutComponentDependencyCompleter(module, settings, registry).register(source)
 
-        SourceSetDependencyFactory(module, settings, registry).addInterModuleDependency(
+        SourceSetDependencyFactory(module, settings).addInterModuleDependency(
             type = API,
-            sourceSet = source.production,
+            sourceSets = source,
             projectPath = ":library",
             component = component(ComponentReference("domain"), withTestFixturesSourceSet = false),
         )

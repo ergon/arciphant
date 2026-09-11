@@ -2,7 +2,6 @@ package ch.ergon.arciphant.core.sourceset
 
 import ch.ergon.arciphant.core.ComponentDependencyNotation
 import ch.ergon.arciphant.core.ComponentDependencyRegistry
-import ch.ergon.arciphant.core.SourceSetComponentSettings
 import ch.ergon.arciphant.core.gradleProjectPath
 import ch.ergon.arciphant.core.model.DependencyType
 import ch.ergon.arciphant.core.model.DependencyType.API
@@ -19,7 +18,7 @@ internal fun Project.sourceSetComponentDependency() = ComponentDependencyNotatio
 }
 
 /**
- * Completes component dependencies of the source set layout.
+ * Completes component dependencies of the source set layout that are declared in a `dependencies` block.
  *
  * A declaration like `"domainApi"(component(module = "exam", component = "api"))` puts a single project
  * dependency on the target component's `…ApiElements` configuration into the `domainApi` configuration.
@@ -36,9 +35,11 @@ internal fun Project.sourceSetComponentDependency() = ComponentDependencyNotatio
  * The notation itself cannot add these legs because it does not know which configuration it is assigned
  * to. This completer therefore registers a hook on the `api` and `implementation` configuration of every
  * component source set — the hooked configuration determines the source set and the dependency type of
- * the added legs. Only dependencies known to the [ComponentDependencyRegistry] (i.e. created by the
- * `component` notation, which also carries the resolved target component) are completed; hand-written
- * project dependencies are left untouched.
+ * the legs, which are added through [SourceSetDependencyFactory.completeInterModuleDependency]. Only
+ * dependencies known to the [ComponentDependencyRegistry] (i.e. created by the `component` notation,
+ * which also carries the resolved target component) are completed; hand-written project dependencies are
+ * left untouched, and the dependencies Arciphant derives from its configuration add their legs directly
+ * through [SourceSetDependencyFactory.addInterModuleDependency].
  *
  * Note: the completion only triggers for eagerly added dependencies. Lazily added dependencies
  * (`addLater`) are realized during dependency resolution, when other configurations can no longer
@@ -46,8 +47,8 @@ internal fun Project.sourceSetComponentDependency() = ComponentDependencyNotatio
  */
 internal class SourceSetLayoutComponentDependencyCompleter(
     private val project: Project,
-    private val settings: SourceSetComponentSettings,
     private val registry: ComponentDependencyRegistry,
+    private val dependencyFactory: SourceSetDependencyFactory,
 ) {
 
     fun register(sourceSets: ComponentSourceSets) {
@@ -63,23 +64,6 @@ internal class SourceSetLayoutComponentDependencyCompleter(
 
     private fun complete(type: DependencyType, dependency: ProjectDependency, sourceSets: ComponentSourceSets) {
         val target = registry.findComponent(dependency) ?: return
-        val targetComponentName = target.reference.name
-
-        project.dependencies.add(
-            sourceSets.production.runtimeOnlyConfigurationName,
-            project.projectDependency(dependency.path, targetComponentName.runtimeElementsConfigurationName()),
-        )
-
-        val sourceTestFixtures = sourceSets.testFixtures ?: return
-        if (!(target.withTestFixturesSourceSet ?: settings.withTestFixturesSourceSet)) return
-        val targetTestFixturesName = settings.testFixturesSourceSetName(targetComponentName)
-        project.dependencies.add(
-            project.dependencyConfiguration(sourceTestFixtures, type).name,
-            project.projectDependency(dependency.path, targetTestFixturesName.apiElementsConfigurationName()),
-        )
-        project.dependencies.add(
-            sourceTestFixtures.runtimeOnlyConfigurationName,
-            project.projectDependency(dependency.path, targetTestFixturesName.runtimeElementsConfigurationName()),
-        )
+        dependencyFactory.completeInterModuleDependency(type, sourceSets, dependency.path, target)
     }
 }

@@ -159,7 +159,10 @@ class ComponentDependencyFactoryTest {
         name = name,
         settings = settings,
         withTestFixturesSourceSet = withTestFixturesSourceSet,
-    ).also { SourceSetLayoutComponentDependencyCompleter(project, settings, registry).register(it) }
+    ).also {
+        SourceSetLayoutComponentDependencyCompleter(project, registry, SourceSetDependencyFactory(project, settings))
+            .register(it)
+    }
 
     private fun examModule(vararg components: Component) = DomainModule(
         reference = ModuleReference(name = "exam"),
