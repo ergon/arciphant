@@ -1,7 +1,9 @@
 package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.ComponentDependencyFactory
 import ch.ergon.arciphant.core.GlobalSettings
 import ch.ergon.arciphant.core.GlobalSettingsRepository
+import ch.ergon.arciphant.core.createComponentDependencyFactory
 import ch.ergon.arciphant.core.GradleBundleModuleProjectConfig
 import ch.ergon.arciphant.core.GradleFunctionalModuleProjectConfig
 import ch.ergon.arciphant.core.GradleProjectPath
@@ -326,7 +328,7 @@ class SourceSetLayoutConfigApplicatorTest {
      * in lifecycle.beforeProject, i.e. before the applicator's configuration can run.
      */
     private fun Project.createComponentExtension(modules: List<Module> = emptyList()) =
-        extensions.createComponentDependencyFactory(project = this, modules = modules)
+        extensions.createComponentDependencyFactory(modules = modules, notation = sourceSetComponentDependency())
 
     private fun settings(configure: ArciphantDsl.() -> Unit = {}) = GlobalSettingsRepository(
         ArciphantDsl().apply {

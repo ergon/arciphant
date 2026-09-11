@@ -1,10 +1,9 @@
 package ch.ergon.arciphant
 
 import ch.ergon.arciphant.ArciphantPlugin.Companion.logger
-import ch.ergon.arciphant.core.project.ArciphantComponentDsl.Companion.ARCIPHANT_COMPONENT_EXTENSION_NAME
-import ch.ergon.arciphant.core.project.createArciphantComponentDsl
-import ch.ergon.arciphant.core.sourceset.ComponentDependencyFactory.Companion.COMPONENT_EXTENSION_NAME
-import ch.ergon.arciphant.core.sourceset.createComponentDependencyFactory
+import ch.ergon.arciphant.core.ComponentDependencyFactory.Companion.COMPONENT_EXTENSION_NAME
+import ch.ergon.arciphant.core.createComponentDependencyFactory
+import ch.ergon.arciphant.core.project.projectComponentDependency
 import org.gradle.api.Project
 
 /**
@@ -13,18 +12,16 @@ import org.gradle.api.Project
 class ArciphantProjectPlugin {
 
     fun apply(project: Project) {
-        if (!project.hasExtension(ARCIPHANT_COMPONENT_EXTENSION_NAME) && !project.hasExtension(COMPONENT_EXTENSION_NAME)) {
+        if (!project.hasExtension(COMPONENT_EXTENSION_NAME)) {
             if (!project.isKotlinDslAccessorGenerationProject()) {
                 logger.warn("Arciphant was applied to project '${project.path}', but the Arciphant settings plugin\n" +
                         "was not applied to this build. Apply 'ch.ergon.arciphant' in settings.gradle(.kts).")
             }
-            project.extensions.createArciphantComponentDsl(
-                project = project,
-                modules = emptyList(),
-            )
+            // the notation is never reached with an empty module list — the extension only exists to make
+            // the Kotlin DSL accessor available in precompiled script plugins
             project.extensions.createComponentDependencyFactory(
-                project = project,
                 modules = emptyList(),
+                notation = project.projectComponentDependency(),
             )
         }
     }

@@ -26,12 +26,15 @@ internal fun Project.addMainDependency(type: DependencyType, path: GradleProject
     }
 }
 
-internal fun Project.addTestFixturesDependency(type: DependencyType, path: GradleProjectPath) {
+internal fun Project.addTestFixturesDependency(type: DependencyType, path: GradleProjectPath) =
+    addTestFixturesDependency(type, path.value)
+
+internal fun Project.addTestFixturesDependency(type: DependencyType, path: String) {
     pluginManager.withPlugin(JAVA_TEST_FIXTURES) {
         dependencies {
-            add(type.testFixturesConfigurationName, testFixtures(project(path.value)))
+            add(type.testFixturesConfigurationName, testFixtures(project(path)))
             if (type == IMPLEMENTATION) {
-                add("testImplementation", testFixtures(project(path.value)))
+                add("testImplementation", testFixtures(project(path)))
             }
         }
     }
