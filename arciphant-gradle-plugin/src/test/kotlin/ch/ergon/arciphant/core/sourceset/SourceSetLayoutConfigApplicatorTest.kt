@@ -217,7 +217,7 @@ class SourceSetLayoutConfigApplicatorTest {
     }
 
     @Nested
-    inner class InterModuleDependencyTest {
+    inner class ComponentDependencyTest {
 
         @Test
         fun `it should complete component dependencies declared in the dependencies block`() {
