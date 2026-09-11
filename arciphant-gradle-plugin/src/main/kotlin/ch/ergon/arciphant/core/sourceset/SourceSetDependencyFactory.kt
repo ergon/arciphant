@@ -11,17 +11,17 @@ class SourceSetDependencyFactory internal constructor(
     private val settings: SourceSetComponentSettings,
 ) {
 
-    internal fun addIntraModuleDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
-        doAddIntraModuleDependency(type, sourceSet, dependency)
+    internal fun addSourceSetDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
+        doAddSourceSetDependency(type, sourceSet, dependency)
 
         val sourceTestFixtures = sourceSet.testFixturesSourceSet()
         val dependencyTestFixtures = dependency.testFixturesSourceSet()
         if (sourceTestFixtures != null && dependencyTestFixtures != null) {
-            doAddIntraModuleDependency(type, sourceTestFixtures, dependencyTestFixtures)
+            doAddSourceSetDependency(type, sourceTestFixtures, dependencyTestFixtures)
         }
     }
 
-    private fun doAddIntraModuleDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
+    private fun doAddSourceSetDependency(type: DependencyType, sourceSet: SourceSet, dependency: SourceSet) {
         val dependencyConfiguration = project.dependencyConfiguration(sourceSet, type)
         dependencyConfiguration.extendsFrom(project.apiConfiguration(dependency))
         project.dependencies.add(dependencyConfiguration.name, dependency.output)
@@ -29,10 +29,10 @@ class SourceSetDependencyFactory internal constructor(
     }
 
     /**
-     * Adds an inter-module dependency on the given component of another module: the dependency on the
-     * target's `…ApiElements` configuration plus the completing legs (see [completeInterModuleDependency]).
+     * Adds a dependency on the given component of another module: the dependency on the target's
+     * `…ApiElements` configuration plus the completing legs (see [completeComponentDependency]).
      */
-    internal fun addInterModuleDependency(
+    internal fun addComponentDependency(
         type: DependencyType,
         sourceSets: ComponentSourceSets,
         projectPath: String,
@@ -42,18 +42,18 @@ class SourceSetDependencyFactory internal constructor(
             project.dependencyConfiguration(sourceSets.production, type).name,
             project.projectDependency(projectPath, component.reference.name.apiElementsConfigurationName()),
         )
-        completeInterModuleDependency(type, sourceSets, projectPath, component)
+        completeComponentDependency(type, sourceSets, projectPath, component)
     }
 
     /**
-     * Adds the legs completing an inter-module component dependency: the matching `…RuntimeElements`
+     * Adds the legs completing a component dependency: the matching `…RuntimeElements`
      * dependency in the source set's `runtimeOnly` configuration, and — if both the source and the target
      * component have a test fixtures source set — the mirrored dependency between the test fixtures source
-     * sets. Used by [addInterModuleDependency] for the dependencies derived from the Arciphant
+     * sets. Used by [addComponentDependency] for the dependencies derived from the Arciphant
      * configuration, and by the [SourceSetLayoutComponentDependencyCompleter] for dependencies declared
      * with the `component` notation in a `dependencies` block.
      */
-    internal fun completeInterModuleDependency(
+    internal fun completeComponentDependency(
         type: DependencyType,
         sourceSets: ComponentSourceSets,
         projectPath: String,

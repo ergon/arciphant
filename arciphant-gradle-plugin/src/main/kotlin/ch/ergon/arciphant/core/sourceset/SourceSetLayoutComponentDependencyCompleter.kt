@@ -35,11 +35,11 @@ internal fun Project.sourceSetLayoutComponentDependency() = ComponentDependencyN
  * The notation itself cannot add these legs because it does not know which configuration it is assigned
  * to. This completer therefore registers a hook on the `api` and `implementation` configuration of every
  * component source set — the hooked configuration determines the source set and the dependency type of
- * the legs, which are added through [SourceSetDependencyFactory.completeInterModuleDependency]. Only
+ * the legs, which are added through [SourceSetDependencyFactory.completeComponentDependency]. Only
  * dependencies known to the [ComponentDependencyRegistry] (i.e. created by the `component` notation,
  * which also carries the resolved target component) are completed; hand-written project dependencies are
  * left untouched, and the dependencies Arciphant derives from its configuration add their legs directly
- * through [SourceSetDependencyFactory.addInterModuleDependency].
+ * through [SourceSetDependencyFactory.addComponentDependency].
  *
  * Note: the completion only triggers for eagerly added dependencies. Lazily added dependencies
  * (`addLater`) are realized during dependency resolution, when other configurations can no longer
@@ -64,6 +64,6 @@ internal class SourceSetLayoutComponentDependencyCompleter(
 
     private fun complete(type: DependencyType, dependency: ProjectDependency, sourceSets: ComponentSourceSets) {
         val target = registry.findComponent(dependency) ?: return
-        dependencyFactory.completeInterModuleDependency(type, sourceSets, dependency.path, target)
+        dependencyFactory.completeComponentDependency(type, sourceSets, dependency.path, target)
     }
 }
