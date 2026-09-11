@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.ComponentDependencyRegistry
 import ch.ergon.arciphant.core.GradlePluginIds.IDEA
 import ch.ergon.arciphant.core.model.ComponentReference
 import ch.ergon.arciphant.core.model.DependencyType.API

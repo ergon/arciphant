@@ -1,5 +1,7 @@
 package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.ComponentDependencyNotation
+import ch.ergon.arciphant.core.gradleProjectPath
 import ch.ergon.arciphant.core.model.DependencyType
 import ch.ergon.arciphant.core.model.DependencyType.API
 import ch.ergon.arciphant.core.model.DependencyType.IMPLEMENTATION
@@ -35,6 +37,14 @@ internal fun Project.extendRuntimeOnly(sourceSet: SourceSet, dependency: SourceS
 
 internal fun Project.projectDependency(projectPath: String, targetConfiguration: String): ProjectDependency {
     return dependencies.project(projectPath, targetConfiguration)
+}
+
+/**
+ * The component dependency notation of the source set layout: a project dependency on the target
+ * component's `…ApiElements` configuration.
+ */
+internal fun Project.sourceSetComponentDependency() = ComponentDependencyNotation { module, component ->
+    projectDependency(module.gradleProjectPath().value, component.reference.name.apiElementsConfigurationName())
 }
 
 internal fun Project.sourceSets(): SourceSetContainer =

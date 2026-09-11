@@ -139,6 +139,11 @@ the test-fixtures source sets is added as well. The completion only applies to n
 and only when they are declared eagerly (not via `addLater`); a hand-written `project(path, configuration)` dependency
 is left untouched.
 
+The `component` notation is also available in the **project layout**, where a component of another module is an
+ordinary Gradle project: the notation resolves to a project dependency (e.g. `"api"(component(module = "exam",
+component = "api"))` in a component project's `build.gradle.kts`), and once the `java-test-fixtures` plugin is applied,
+the matching test-fixtures dependency is added automatically.
+
 ## Layout-specific restrictions
 
 Component plugins cannot be configured in `SOURCE_SET` mode because Gradle plugins can only be applied to projects.

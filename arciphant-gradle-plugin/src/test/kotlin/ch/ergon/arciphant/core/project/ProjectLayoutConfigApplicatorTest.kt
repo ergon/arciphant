@@ -2,6 +2,7 @@ package ch.ergon.arciphant.core.project
 
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
 import ch.ergon.arciphant.core.GlobalSettingsRepository
+import ch.ergon.arciphant.core.createComponentDependencyFactory
 import ch.ergon.arciphant.core.GradleFunctionalModuleProjectConfig
 import ch.ergon.arciphant.core.GradleProjectPath
 import ch.ergon.arciphant.core.model.BundleModule
@@ -291,7 +292,11 @@ class ProjectLayoutConfigApplicatorTest {
         }
     }
 
-    private fun javaProject(path: String) = project(path).also { it.pluginManager.apply("java-library") }
+    // the 'component' extension (holding the dependency registry) is normally created by the
+    // ArciphantSettingsPlugin in lifecycle.beforeProject, i.e. before the applicator runs
+    private fun javaProject(path: String) = project(path)
+        .also { it.extensions.createComponentDependencyFactory(emptyList(), it.projectComponentDependency()) }
+        .also { it.pluginManager.apply("java-library") }
 
     private fun project(path: String): Project =
         path.split(":").filter { it.isNotEmpty() }.fold(root) { parent, name ->
