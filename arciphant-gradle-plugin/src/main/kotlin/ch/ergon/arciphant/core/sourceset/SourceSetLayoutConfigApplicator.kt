@@ -79,19 +79,17 @@ internal class SourceSetLayoutConfigApplicator(
             )
         }
 
-        // completes inter-module component dependencies (runtime + test fixtures legs) declared through
-        // the 'component' dependency notation — in a dependencies block or by Arciphant itself below.
+        val dependencyFactory = SourceSetDependencyFactory(moduleProject, sourceSetComponentSettings)
+
+        // completes component dependencies declared with the 'component' notation in dependencies blocks.
         // The 'component' extension holding the registry is created by the ArciphantSettingsPlugin in a
         // beforeProject callback registered before this applicator's, so it exists whenever this code runs.
-        val registry = moduleProject.componentDependencyRegistry()
         val dependencyCompleter = SourceSetLayoutComponentDependencyCompleter(
             project = moduleProject,
-            settings = sourceSetComponentSettings,
-            registry = registry,
+            registry = moduleProject.componentDependencyRegistry(),
+            dependencyFactory = dependencyFactory,
         )
         sourceSetsByComponent.values.forEach { dependencyCompleter.register(it) }
-
-        val dependencyFactory = SourceSetDependencyFactory(moduleProject, sourceSetComponentSettings, registry)
         sourceSetsByComponent.forEach { (component, sourceSets) ->
             component.dependsOn.forEach { dependency ->
                 val target = sourceSetsByComponent.entries.singleOrNull {
@@ -113,7 +111,7 @@ internal class SourceSetLayoutConfigApplicator(
                         .forEach { libraryComponent ->
                             dependencyFactory.addInterModuleDependency(
                                 type = API,
-                                sourceSet = sourceSets.production,
+                                sourceSets = sourceSets,
                                 projectPath = library.path.value,
                                 component = libraryComponent,
                             )
