@@ -128,7 +128,7 @@ class ProjectLayoutComponentDependencyCompleterTest {
     }
 
     private fun factory(modules: List<Module> = examModules()) =
-        ComponentDependencyFactory(modules, registry, project.projectComponentDependency())
+        ComponentDependencyFactory(modules, registry, project.projectLayoutComponentDependency())
 
     private fun examModules(): List<Module> = listOf(
         DomainModule(

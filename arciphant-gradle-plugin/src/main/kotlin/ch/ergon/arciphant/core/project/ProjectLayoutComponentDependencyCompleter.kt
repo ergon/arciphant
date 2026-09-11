@@ -15,7 +15,7 @@ import org.gradle.kotlin.dsl.project
  * The component dependency notation of the project layout: a project dependency on the target
  * component's Gradle project.
  */
-internal fun Project.projectComponentDependency() = ComponentDependencyNotation { module, component ->
+internal fun Project.projectLayoutComponentDependency() = ComponentDependencyNotation { module, component ->
     dependencies.project(module.gradleProjectPath(component.reference).value)
 }
 

@@ -295,7 +295,7 @@ class ProjectLayoutConfigApplicatorTest {
     // the 'component' extension (holding the dependency registry) is normally created by the
     // ArciphantSettingsPlugin in lifecycle.beforeProject, i.e. before the applicator runs
     private fun javaProject(path: String) = project(path)
-        .also { it.extensions.createComponentDependencyFactory(emptyList(), it.projectComponentDependency()) }
+        .also { it.extensions.createComponentDependencyFactory(emptyList(), it.projectLayoutComponentDependency()) }
         .also { it.pluginManager.apply("java-library") }
 
     private fun project(path: String): Project =
