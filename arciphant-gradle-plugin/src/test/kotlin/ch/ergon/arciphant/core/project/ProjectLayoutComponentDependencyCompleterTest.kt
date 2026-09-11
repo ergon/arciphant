@@ -17,7 +17,7 @@ import org.gradle.kotlin.dsl.project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
-class ComponentDependencyMirrorTest {
+class ProjectLayoutComponentDependencyCompleterTest {
 
     private val root = ProjectBuilder.builder().withName("root").build()
     private val project = javaProject(name = "domain", parent = root)
@@ -26,7 +26,7 @@ class ComponentDependencyMirrorTest {
     init {
         val exam = subProject(name = "exam", parent = root)
         subProject(name = "api", parent = exam)
-        ComponentDependencyMirror(project, registry).register()
+        ProjectLayoutComponentDependencyCompleter(project, registry).register()
     }
 
     @Test

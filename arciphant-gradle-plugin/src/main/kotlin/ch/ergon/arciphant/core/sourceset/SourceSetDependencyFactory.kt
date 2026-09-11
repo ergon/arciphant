@@ -32,8 +32,9 @@ class SourceSetDependencyFactory internal constructor(
 
     /**
      * Adds the dependency on the target component's `…ApiElements` configuration. The runtime dependency
-     * and the test fixtures mirroring are added by the [InterModuleDependencyMirror] registered on the
-     * component configurations, which recognizes the dependency through the [ComponentDependencyRegistry].
+     * and the test fixtures mirroring are added by the [SourceSetLayoutComponentDependencyCompleter]
+     * registered on the component configurations, which recognizes the dependency through the
+     * [ComponentDependencyRegistry].
      */
     internal fun addInterModuleDependency(type: DependencyType, sourceSet: SourceSet, projectPath: String, component: Component) {
         val dependency = project.projectDependency(projectPath, component.reference.name.apiElementsConfigurationName())

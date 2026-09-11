@@ -20,17 +20,27 @@ internal fun Project.projectComponentDependency() = ComponentDependencyNotation 
 }
 
 /**
- * Completes inter-module component dependencies in the project layout. Whenever a component dependency
- * notation (created by [ch.ergon.arciphant.core.ComponentDependencyFactory] and identified through the
- * [ComponentDependencyRegistry]) is added to the `api` or `implementation` configuration, the matching
- * test fixtures dependency is added as well — once the `java-test-fixtures` plugin is applied.
- * Hand-written project dependencies are not completed.
+ * Completes component dependencies of the project layout.
+ *
+ * A declaration like `"api"(component(module = "exam", component = "api"))` puts a single project
+ * dependency on the target component's Gradle project into the `api` configuration. Compile and runtime
+ * classpath resolve correctly through Gradle's variant selection, so unlike in the source set layout no
+ * runtime leg is needed. What is missing is the test fixtures dependency
+ * (`testFixtures(project(":exam:api"))`), which the notation itself cannot add because it does not know
+ * which configuration it is assigned to.
+ *
+ * This completer therefore registers a hook on the `api` and `implementation` configuration — the hooked
+ * configuration determines the test fixtures scope (`testFixturesApi` or `testFixturesImplementation`,
+ * for implementation dependencies additionally `testImplementation`). The test fixtures dependency is
+ * added once the `java-test-fixtures` plugin is applied. Only dependencies known to the
+ * [ComponentDependencyRegistry] (i.e. created by the `component` notation) are completed; hand-written
+ * project dependencies are left untouched.
  *
  * Note: the completion only triggers for eagerly added dependencies. Lazily added dependencies
  * (`addLater`) are realized during dependency resolution, when other configurations can no longer
  * be modified.
  */
-internal class ComponentDependencyMirror(
+internal class ProjectLayoutComponentDependencyCompleter(
     private val project: Project,
     private val registry: ComponentDependencyRegistry,
 ) {

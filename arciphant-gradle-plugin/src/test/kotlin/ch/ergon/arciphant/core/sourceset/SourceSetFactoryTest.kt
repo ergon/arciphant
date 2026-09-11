@@ -242,7 +242,7 @@ class SourceSetFactoryTest {
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = customSettings)
         val registry = ComponentDependencyRegistry()
-        InterModuleDependencyMirror(module, customSettings, registry).register(source)
+        SourceSetLayoutComponentDependencyCompleter(module, customSettings, registry).register(source)
 
         SourceSetDependencyFactory(module, customSettings, registry).addInterModuleDependency(
             type = API,
@@ -272,7 +272,7 @@ class SourceSetFactoryTest {
         val module = javaProject("module", root)
         val source = SourceSetFactory(module).createComponent(name = "application", settings = settings)
         val registry = ComponentDependencyRegistry()
-        InterModuleDependencyMirror(module, settings, registry).register(source)
+        SourceSetLayoutComponentDependencyCompleter(module, settings, registry).register(source)
 
         SourceSetDependencyFactory(module, settings, registry).addInterModuleDependency(
             type = API,

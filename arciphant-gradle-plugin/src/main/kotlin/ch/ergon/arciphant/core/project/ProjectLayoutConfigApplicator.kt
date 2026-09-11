@@ -30,7 +30,7 @@ internal class ProjectLayoutConfigApplicator(
             // completes component dependencies declared through the 'component' dependency notation with
             // the test fixtures dependency. The 'component' extension holding the registry is created by
             // the ArciphantSettingsPlugin in lifecycle.beforeProject, i.e. before this code runs.
-            ComponentDependencyMirror(project, project.componentDependencyRegistry()).register()
+            ProjectLayoutComponentDependencyCompleter(project, project.componentDependencyRegistry()).register()
 
             when (it) {
                 is GradleBundleModuleProjectConfig -> it.applyBundleModuleConfig(project)
