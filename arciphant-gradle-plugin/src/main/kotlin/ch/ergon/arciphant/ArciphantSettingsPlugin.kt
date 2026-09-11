@@ -8,9 +8,9 @@ import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.createComponentDependencyFactory
 import ch.ergon.arciphant.core.project.ProjectLayoutConfigApplicator
-import ch.ergon.arciphant.core.project.projectComponentDependency
+import ch.ergon.arciphant.core.project.projectLayoutComponentDependency
 import ch.ergon.arciphant.core.sourceset.SourceSetLayoutConfigApplicator
-import ch.ergon.arciphant.core.sourceset.sourceSetComponentDependency
+import ch.ergon.arciphant.core.sourceset.sourceSetLayoutComponentDependency
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
@@ -41,8 +41,8 @@ class ArciphantSettingsPlugin {
                     extensions.createComponentDependencyFactory(
                         modules = modules,
                         notation = when (settings.componentLayout) {
-                            PROJECT -> projectComponentDependency()
-                            SOURCE_SET -> sourceSetComponentDependency()
+                            PROJECT -> projectLayoutComponentDependency()
+                            SOURCE_SET -> sourceSetLayoutComponentDependency()
                         },
                     )
                     registerValidatePackageStructureTask(packageStructureValidationSettings)

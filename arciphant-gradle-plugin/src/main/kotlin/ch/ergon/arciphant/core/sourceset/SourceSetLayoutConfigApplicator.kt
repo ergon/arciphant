@@ -122,7 +122,7 @@ internal class SourceSetLayoutConfigApplicator(
     }
 
     private fun unexpectedComponentLayoutError(path: GradleProjectPath): Nothing =
-        arciphantError("unexpected component project ${path.value} in component layout ${SOURCE_SET}.")
+        arciphantError("unexpected component project '${path.value}' in component layout '$SOURCE_SET'.")
 }
 
 private fun Project.addSourceSetComponentDependency(path: GradleProjectPath, componentName: String) {
