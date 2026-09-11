@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.ComponentDependencyRegistry
 import ch.ergon.arciphant.core.SourceSetComponentSettings
 import ch.ergon.arciphant.core.model.Component
 import ch.ergon.arciphant.core.model.DependencyType

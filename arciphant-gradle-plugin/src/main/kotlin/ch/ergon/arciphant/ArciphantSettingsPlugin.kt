@@ -6,10 +6,11 @@ import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
 import ch.ergon.arciphant.core.FolderCreator
 import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.ModuleRepository
+import ch.ergon.arciphant.core.createComponentDependencyFactory
 import ch.ergon.arciphant.core.project.ProjectLayoutConfigApplicator
-import ch.ergon.arciphant.core.project.createArciphantComponentDsl
+import ch.ergon.arciphant.core.project.projectComponentDependency
 import ch.ergon.arciphant.core.sourceset.SourceSetLayoutConfigApplicator
-import ch.ergon.arciphant.core.sourceset.createComponentDependencyFactory
+import ch.ergon.arciphant.core.sourceset.sourceSetComponentDependency
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
@@ -37,16 +38,13 @@ class ArciphantSettingsPlugin {
                 // (it holds the component dependency registry) and can run in the same beforeProject stage
                 // when the JVM plugin was already applied to the project (e.g. from an allprojects block)
                 gradle.lifecycle.beforeProject {
-                    when (settings.componentLayout) {
-                        PROJECT -> extensions.createArciphantComponentDsl(
-                            project = this,
-                            modules = modules,
-                        )
-                        SOURCE_SET -> extensions.createComponentDependencyFactory(
-                            project = this,
-                            modules = modules,
-                        )
-                    }
+                    extensions.createComponentDependencyFactory(
+                        modules = modules,
+                        notation = when (settings.componentLayout) {
+                            PROJECT -> projectComponentDependency()
+                            SOURCE_SET -> sourceSetComponentDependency()
+                        },
+                    )
                     registerValidatePackageStructureTask(packageStructureValidationSettings)
                 }
 

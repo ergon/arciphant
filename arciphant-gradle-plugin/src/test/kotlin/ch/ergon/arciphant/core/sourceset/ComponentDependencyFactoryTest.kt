@@ -1,5 +1,7 @@
 package ch.ergon.arciphant.core.sourceset
 
+import ch.ergon.arciphant.core.ComponentDependencyFactory
+import ch.ergon.arciphant.core.ComponentDependencyRegistry
 import ch.ergon.arciphant.core.SourceSetComponentSettings
 import ch.ergon.arciphant.core.model.ComponentReference
 import ch.ergon.arciphant.core.model.Module
@@ -146,7 +148,8 @@ class ComponentDependencyFactoryTest {
 
     private val defaultModules = listOf(examModule(component(ComponentReference("api"))))
 
-    private fun factory(modules: List<Module> = defaultModules) = ComponentDependencyFactory(project, modules, registry)
+    private fun factory(modules: List<Module> = defaultModules) =
+        ComponentDependencyFactory(modules, registry, project.sourceSetComponentDependency())
 
     private fun createComponent(
         name: String,
