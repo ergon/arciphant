@@ -13,7 +13,7 @@ import org.gradle.api.artifacts.ProjectDependency
  * The component dependency notation of the source set layout: a project dependency on the target
  * component's `…ApiElements` configuration.
  */
-internal fun Project.sourceSetComponentDependency() = ComponentDependencyNotation { module, component ->
+internal fun Project.sourceSetLayoutComponentDependency() = ComponentDependencyNotation { module, component ->
     projectDependency(module.gradleProjectPath().value, component.reference.name.apiElementsConfigurationName())
 }
 

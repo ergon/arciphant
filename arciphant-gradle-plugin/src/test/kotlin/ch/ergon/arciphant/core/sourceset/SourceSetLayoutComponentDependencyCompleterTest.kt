@@ -20,7 +20,7 @@ import org.gradle.kotlin.dsl.project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
-class ComponentDependencyFactoryTest {
+class SourceSetLayoutComponentDependencyCompleterTest {
 
     private val root = ProjectBuilder.builder().withName("root").build()
     private val project = javaProject(name = "certificate", parent = root)
@@ -149,7 +149,7 @@ class ComponentDependencyFactoryTest {
     private val defaultModules = listOf(examModule(component(ComponentReference("api"))))
 
     private fun factory(modules: List<Module> = defaultModules) =
-        ComponentDependencyFactory(modules, registry, project.sourceSetComponentDependency())
+        ComponentDependencyFactory(modules, registry, project.sourceSetLayoutComponentDependency())
 
     private fun createComponent(
         name: String,

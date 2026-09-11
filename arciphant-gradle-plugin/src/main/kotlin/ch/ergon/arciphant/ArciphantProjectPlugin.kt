@@ -3,7 +3,7 @@ package ch.ergon.arciphant
 import ch.ergon.arciphant.ArciphantPlugin.Companion.logger
 import ch.ergon.arciphant.core.ComponentDependencyFactory.Companion.COMPONENT_EXTENSION_NAME
 import ch.ergon.arciphant.core.createComponentDependencyFactory
-import ch.ergon.arciphant.core.project.projectComponentDependency
+import ch.ergon.arciphant.core.project.projectLayoutComponentDependency
 import org.gradle.api.Project
 
 /**
@@ -21,7 +21,7 @@ class ArciphantProjectPlugin {
             // the Kotlin DSL accessor available in precompiled script plugins
             project.extensions.createComponentDependencyFactory(
                 modules = emptyList(),
-                notation = project.projectComponentDependency(),
+                notation = project.projectLayoutComponentDependency(),
             )
         }
     }

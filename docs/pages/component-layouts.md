@@ -105,44 +105,37 @@ component are still declared on its own configurations (e.g. `"domainImplementat
 Since the standard configurations of the `main` and `test` source sets are reused, dependencies cannot be declared for
 only the (typically unused) `main` source set of a module project.
 
-## Project-level utility DSL
+## Component dependencies in build scripts
 
-The same source-set creation and dependency functions used internally by Arciphant are available through the `arciphant`
-extension in `build.gradle.kts` files:
-
-``` kotlin title="build.gradle.kts"
-arciphant {
-    val domain = createComponent("domain")
-    createComponent(
-        name = "application",
-        sourceSetDependencies = { application ->
-            api(application, domain)
-        },
-    )
-}
-```
-
-A component in another module can be referenced by the module and component names of the Arciphant configuration,
+A component of another module can be referenced by the module and component names of the Arciphant configuration,
 directly in the `dependencies` block — in the same style as external dependencies. The `component` extension registered
-by Arciphant creates the dependency notation:
+by Arciphant creates the dependency notation; it is available in both component layouts:
 
-``` kotlin title="build.gradle.kts"
+``` kotlin title="build.gradle.kts (source set layout, in the module project)"
 dependencies {
     "applicationImplementation"(component(module = "contracts", component = "api"))
 }
 ```
 
-Arciphant resolves the target Gradle project path from the module configuration, so no project path has to be spelled
-out, and completes the dependency automatically: the runtime dependency is added to the source set's `runtimeOnly`
-configuration, and if both the source and the target component have a test-fixtures source set, the dependency between
-the test-fixtures source sets is added as well. The completion only applies to notations created by `component(...)`
-and only when they are declared eagerly (not via `addLater`); a hand-written `project(path, configuration)` dependency
-is left untouched.
+``` kotlin title="build.gradle.kts (project layout, in the component project)"
+dependencies {
+    "implementation"(component(module = "contracts", component = "api"))
+}
+```
 
-The `component` notation is also available in the **project layout**, where a component of another module is an
-ordinary Gradle project: the notation resolves to a project dependency (e.g. `"api"(component(module = "exam",
-component = "api"))` in a component project's `build.gradle.kts`), and once the `java-test-fixtures` plugin is applied,
-the matching test-fixtures dependency is added automatically.
+Arciphant resolves the target Gradle project path from the module configuration, so no project path has to be spelled
+out, and completes the dependency automatically:
+
+* In the **source set layout**, the notation is a dependency on the target component's `…ApiElements` configuration.
+  Arciphant adds the matching runtime dependency to the source set's `runtimeOnly` configuration and, if both the
+  source and the target component have a test-fixtures source set, the dependency between the test-fixtures source
+  sets as well.
+* In the **project layout**, the notation is an ordinary project dependency, so compile and runtime classpath resolve
+  through Gradle's variant selection. Once the `java-test-fixtures` plugin is applied, the matching test-fixtures
+  dependency is added automatically.
+
+The completion only applies to notations created by `component(...)` and only when they are declared eagerly (not via
+`addLater`); a hand-written project dependency is left untouched.
 
 ## Layout-specific restrictions
 

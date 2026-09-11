@@ -328,7 +328,7 @@ class SourceSetLayoutConfigApplicatorTest {
      * in lifecycle.beforeProject, i.e. before the applicator's configuration can run.
      */
     private fun Project.createComponentExtension(modules: List<Module> = emptyList()) =
-        extensions.createComponentDependencyFactory(modules = modules, notation = sourceSetComponentDependency())
+        extensions.createComponentDependencyFactory(modules = modules, notation = sourceSetLayoutComponentDependency())
 
     private fun settings(configure: ArciphantDsl.() -> Unit = {}) = GlobalSettingsRepository(
         ArciphantDsl().apply {

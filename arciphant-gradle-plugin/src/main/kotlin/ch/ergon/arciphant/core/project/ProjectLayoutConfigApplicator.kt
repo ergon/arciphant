@@ -26,19 +26,19 @@ internal class ProjectLayoutConfigApplicator(
         .filter { it.module is LibraryModule }
 
     fun applyConfig(project: Project) {
-        projectConfigsByPath[project.path]?.let {
-            // completes component dependencies declared through the 'component' dependency notation with
-            // the test fixtures dependency. The 'component' extension holding the registry is created by
-            // the ArciphantSettingsPlugin in lifecycle.beforeProject, i.e. before this code runs.
-            ProjectLayoutComponentDependencyCompleter(project, project.componentDependencyRegistry()).register()
+        val config = projectConfigsByPath[project.path] ?: return
 
-            when (it) {
-                is GradleBundleModuleProjectConfig -> it.applyBundleModuleConfig(project)
-                is GradleComponentProjectConfig -> it.applyComponentConfig(project)
-                is GradleFunctionalModuleProjectConfig -> arciphantError(
-                    "unexpected functional module project '${project.path}' in component layout '${PROJECT}'."
-                )
-            }
+        // completes component dependencies declared with the 'component' notation in dependencies blocks.
+        // The 'component' extension holding the registry is created by the ArciphantSettingsPlugin in
+        // lifecycle.beforeProject, i.e. before this code runs.
+        ProjectLayoutComponentDependencyCompleter(project, project.componentDependencyRegistry()).register()
+
+        when (config) {
+            is GradleBundleModuleProjectConfig -> config.applyBundleModuleConfig(project)
+            is GradleComponentProjectConfig -> config.applyComponentConfig(project)
+            is GradleFunctionalModuleProjectConfig -> arciphantError(
+                "unexpected functional module project '${config.path.value}' in component layout '$PROJECT'."
+            )
         }
     }
 
