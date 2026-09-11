@@ -84,12 +84,12 @@ internal class SourceSetLayoutConfigApplicator(
         // The 'component' extension holding the registry is created by the ArciphantSettingsPlugin in a
         // beforeProject callback registered before this applicator's, so it exists whenever this code runs.
         val registry = moduleProject.componentDependencyRegistry()
-        val dependencyMirror = InterModuleDependencyMirror(
+        val dependencyCompleter = SourceSetLayoutComponentDependencyCompleter(
             project = moduleProject,
             settings = sourceSetComponentSettings,
             registry = registry,
         )
-        sourceSetsByComponent.values.forEach { dependencyMirror.register(it) }
+        sourceSetsByComponent.values.forEach { dependencyCompleter.register(it) }
 
         val dependencyFactory = SourceSetDependencyFactory(moduleProject, sourceSetComponentSettings, registry)
         sourceSetsByComponent.forEach { (component, sourceSets) ->
