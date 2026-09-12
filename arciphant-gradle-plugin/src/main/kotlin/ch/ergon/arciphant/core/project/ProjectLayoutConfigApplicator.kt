@@ -26,9 +26,6 @@ internal class ProjectLayoutConfigApplicator(
     override fun componentDependencyNotation(project: Project) = project.projectLayoutComponentDependency()
 
     override fun doApplyConfig(project: Project, config: GradleProjectConfig) {
-        // completes component dependencies declared with the 'component' notation in dependencies blocks
-        ProjectLayoutComponentDependencyCompleter(project, project.componentDependencyRegistry()).register()
-
         when (config) {
             is GradleBundleModuleProjectConfig -> config.applyBundleModuleConfig(project)
             is GradleComponentProjectConfig -> config.applyComponentConfig(project)
@@ -47,6 +44,10 @@ internal class ProjectLayoutConfigApplicator(
     }
 
     private fun GradleComponentProjectConfig.applyComponentConfig(componentProject: Project) {
+        // completes component dependencies declared with the 'component' notation in dependencies blocks
+        ProjectLayoutComponentDependencyCompleter(componentProject, componentProject.componentDependencyRegistry())
+            .register()
+
         component.plugin?.applyTo(componentProject)
 
         component.dependsOn.forEach {
