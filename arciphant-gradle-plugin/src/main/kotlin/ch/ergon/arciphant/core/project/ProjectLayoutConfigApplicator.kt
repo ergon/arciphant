@@ -16,21 +16,17 @@ import org.gradle.kotlin.dsl.apply
 internal class ProjectLayoutConfigApplicator(
     settings: GlobalSettings,
     private val projectConfigs: List<GradleProjectConfig>
-) {
+) : LayoutConfigApplicator(projectConfigs) {
 
     private val projectComponentSettings = settings.projectComponentSettings
-
-    private val projectConfigsByPath = projectConfigs.associateBy { it.path.value }
 
     private val libraryComponents = projectConfigs.filterIsInstance<GradleComponentProjectConfig>()
         .filter { it.module is LibraryModule }
 
-    fun applyConfig(project: Project) {
-        val config = projectConfigsByPath[project.path] ?: return
+    override fun componentDependencyNotation(project: Project) = project.projectLayoutComponentDependency()
 
-        // completes component dependencies declared with the 'component' notation in dependencies blocks.
-        // The 'component' extension holding the registry is created by the ArciphantSettingsPlugin in
-        // lifecycle.beforeProject, i.e. before this code runs.
+    override fun doApplyConfig(project: Project, config: GradleProjectConfig) {
+        // completes component dependencies declared with the 'component' notation in dependencies blocks
         ProjectLayoutComponentDependencyCompleter(project, project.componentDependencyRegistry()).register()
 
         when (config) {
