@@ -23,7 +23,7 @@ internal class ProjectLayoutConfigApplicator(
     private val libraryComponents = projectConfigs.filterIsInstance<GradleComponentProjectConfig>()
         .filter { it.module is LibraryModule }
 
-    override fun componentDependencyNotation(project: Project) = project.projectLayoutComponentDependency()
+    override fun componentDependencyFactory(project: Project) = project.projectLayoutComponentDependency()
 
     override fun doApplyConfig(project: Project, config: GradleProjectConfig) {
         when (config) {

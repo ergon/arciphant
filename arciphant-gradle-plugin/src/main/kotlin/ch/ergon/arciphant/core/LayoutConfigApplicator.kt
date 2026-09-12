@@ -8,7 +8,7 @@ import org.gradle.api.Project
  * settings to the Gradle projects. Projects that are not managed by Arciphant are ignored.
  *
  * For every managed project, the applicator first registers the `component` dependency notation extension,
- * parameterized with the layout-specific [ComponentDependencyNotation]. Registering it here (instead of in
+ * parameterized with the layout-specific [componentDependencyFactory]. Registering it here (instead of in
  * a separate callback) guarantees that the extension exists before anything that relies on it runs: the
  * layout-specific configuration itself (which uses the extension's [ComponentDependencyRegistry]) and the
  * build scripts (including their Kotlin DSL accessor generation). Deliberately, projects where the notation
@@ -26,15 +26,15 @@ internal abstract class LayoutConfigApplicator(projectConfigs: List<GradleProjec
         val config = projectConfigsByPath[project.path] ?: return
 
         if (config !is GradleBundleModuleProjectConfig) {
-            project.extensions.createComponentDependencyFactory(
+            project.extensions.createComponentDependencyExtension(
                 modules = modules,
-                notation = componentDependencyNotation(project),
+                componentDependencyFactory = componentDependencyFactory(project),
             )
         }
         doApplyConfig(project, config)
     }
 
-    protected abstract fun componentDependencyNotation(project: Project): ComponentDependencyNotation
+    protected abstract fun componentDependencyFactory(project: Project): ComponentDependencyFactory
 
     protected abstract fun doApplyConfig(project: Project, config: GradleProjectConfig)
 }
