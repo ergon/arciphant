@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.core.project
 
-import ch.ergon.arciphant.core.ComponentDependencyFactory
+import ch.ergon.arciphant.core.ComponentDependencyExtension
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
 import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.GradleFunctionalModuleProjectConfig
@@ -274,8 +274,8 @@ class ProjectLayoutConfigApplicatorTest {
             applicator.applyConfig(bundleProject)
             applicator.applyConfig(componentProject)
 
-            assertThat(bundleProject.extensions.findByType(ComponentDependencyFactory::class.java)).isNull()
-            assertThat(componentProject.extensions.findByType(ComponentDependencyFactory::class.java)).isNotNull()
+            assertThat(bundleProject.extensions.findByType(ComponentDependencyExtension::class.java)).isNull()
+            assertThat(componentProject.extensions.findByType(ComponentDependencyExtension::class.java)).isNotNull()
         }
     }
 

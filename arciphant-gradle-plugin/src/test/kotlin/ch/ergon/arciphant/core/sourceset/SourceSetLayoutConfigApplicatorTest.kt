@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.core.sourceset
 
-import ch.ergon.arciphant.core.ComponentDependencyFactory
+import ch.ergon.arciphant.core.ComponentDependencyExtension
 import ch.ergon.arciphant.core.GlobalSettings
 import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.GradleBundleModuleProjectConfig
@@ -222,7 +222,7 @@ class SourceSetLayoutConfigApplicatorTest {
 
             moduleProject.dependencies.add(
                 "domainApi",
-                moduleProject.componentDependencyNotation(module = "exam", component = "api"),
+                moduleProject.ComponentDependencyFactory(module = "exam", component = "api"),
             )
 
             assertThat(moduleProject.configurations.getByName("domainRuntimeOnly").projectDependencyConfigurations())
@@ -327,8 +327,8 @@ class SourceSetLayoutConfigApplicatorTest {
             applicator.applyConfig(moduleProject)
             applicator.applyConfig(bundleProject)
 
-            assertThat(bundleProject.extensions.findByType(ComponentDependencyFactory::class.java)).isNull()
-            assertThat(moduleProject.extensions.findByType(ComponentDependencyFactory::class.java)).isNotNull()
+            assertThat(bundleProject.extensions.findByType(ComponentDependencyExtension::class.java)).isNull()
+            assertThat(moduleProject.extensions.findByType(ComponentDependencyExtension::class.java)).isNotNull()
         }
     }
 
@@ -340,8 +340,8 @@ class SourceSetLayoutConfigApplicatorTest {
             .also { it.pluginManager.apply("java-library") }
     }
 
-    private fun Project.componentDependencyNotation(module: String, component: String) =
-        extensions.getByType(ComponentDependencyFactory::class.java).invoke(module = module, component = component)
+    private fun Project.ComponentDependencyFactory(module: String, component: String) =
+        extensions.getByType(ComponentDependencyExtension::class.java).invoke(module = module, component = component)
 
     private fun settings(configure: ArciphantDsl.() -> Unit = {}) = GlobalSettingsRepository(
         ArciphantDsl().apply {

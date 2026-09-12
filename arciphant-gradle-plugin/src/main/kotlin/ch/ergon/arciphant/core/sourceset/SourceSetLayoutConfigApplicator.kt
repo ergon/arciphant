@@ -20,7 +20,7 @@ internal class SourceSetLayoutConfigApplicator(
     private val libraryModules = projectConfigs.filterIsInstance<GradleFunctionalModuleProjectConfig>()
         .filter { it.module is LibraryModule }
 
-    override fun componentDependencyNotation(project: Project) = project.sourceSetLayoutComponentDependency()
+    override fun componentDependencyFactory(project: Project) = project.sourceSetLayoutComponentDependency()
 
     override fun doApplyConfig(project: Project, config: GradleProjectConfig) {
         // This runs in lifecycle.beforeProject, i.e. before any other configuration of the project —

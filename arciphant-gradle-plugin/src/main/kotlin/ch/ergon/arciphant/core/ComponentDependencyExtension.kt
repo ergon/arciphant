@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.core
 
-import ch.ergon.arciphant.core.ComponentDependencyFactory.Companion.COMPONENT_EXTENSION_NAME
+import ch.ergon.arciphant.core.ComponentDependencyExtension.Companion.COMPONENT_EXTENSION_NAME
 import ch.ergon.arciphant.core.model.Component
 import ch.ergon.arciphant.core.model.FunctionalModule
 import ch.ergon.arciphant.core.model.Module
@@ -22,20 +22,20 @@ import java.util.IdentityHashMap
  * ```
  *
  * Arciphant resolves the target from the module configuration through the layout-specific
- * [ComponentDependencyNotation] and completes the dependency automatically (runtime and test fixtures
+ * [ComponentDependencyFactory] and completes the dependency automatically (runtime and test fixtures
  * legs in the source set layout, the test fixtures dependency in the project layout) when it is added
  * to a supported configuration.
  */
-open class ComponentDependencyFactory internal constructor(
+open class ComponentDependencyExtension internal constructor(
     private val modules: List<Module>,
     internal val registry: ComponentDependencyRegistry,
-    private val notation: ComponentDependencyNotation,
+    private val componentDependencyFactory: ComponentDependencyFactory,
 ) {
 
     operator fun invoke(module: String, component: String): ProjectDependency {
         val targetModule = modules.getByName(module)
         val targetComponent = targetModule.getComponent(component)
-        val dependency = notation.create(targetModule, targetComponent)
+        val dependency = componentDependencyFactory.create(targetModule, targetComponent)
         registry.register(dependency, targetComponent)
         return dependency
     }
@@ -46,18 +46,18 @@ open class ComponentDependencyFactory internal constructor(
 }
 
 /**
- * Keep parameters of this method in sync with constructor of [ComponentDependencyFactory].
+ * Keep parameters of this method in sync with constructor of [ComponentDependencyExtension].
  */
-internal fun ExtensionContainer.createComponentDependencyFactory(
+internal fun ExtensionContainer.createComponentDependencyExtension(
     modules: List<Module>,
-    notation: ComponentDependencyNotation,
+    componentDependencyFactory: ComponentDependencyFactory,
 ) {
     create(
         COMPONENT_EXTENSION_NAME,
-        ComponentDependencyFactory::class.java,
+        ComponentDependencyExtension::class.java,
         modules,
         ComponentDependencyRegistry(),
-        notation,
+        componentDependencyFactory,
     )
 }
 
@@ -65,7 +65,7 @@ internal fun ExtensionContainer.createComponentDependencyFactory(
 /**
  * Creates the layout-specific project dependency for a component of another module.
  */
-internal fun interface ComponentDependencyNotation {
+internal fun interface ComponentDependencyFactory {
     fun create(module: FunctionalModule, component: Component): ProjectDependency
 }
 
@@ -88,4 +88,4 @@ internal class ComponentDependencyRegistry {
 }
 
 internal fun Project.componentDependencyRegistry(): ComponentDependencyRegistry =
-    extensions.getByType(ComponentDependencyFactory::class.java).registry
+    extensions.getByType(ComponentDependencyExtension::class.java).registry

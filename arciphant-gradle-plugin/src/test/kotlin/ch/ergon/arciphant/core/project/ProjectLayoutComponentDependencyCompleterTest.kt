@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.core.project
 
-import ch.ergon.arciphant.core.ComponentDependencyFactory
+import ch.ergon.arciphant.core.ComponentDependencyExtension
 import ch.ergon.arciphant.core.ComponentDependencyRegistry
 import ch.ergon.arciphant.core.model.ComponentReference
 import ch.ergon.arciphant.core.model.DomainModule
@@ -31,7 +31,7 @@ class ProjectLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should add an api dependency on a component project of another module`() {
-        val component = factory()
+        val component = componentDependencyExtension()
 
         project.dependencies.add("api", component(module = "exam", component = "api"))
 
@@ -41,7 +41,7 @@ class ProjectLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should add an implementation dependency on a component project of another module`() {
-        val component = factory()
+        val component = componentDependencyExtension()
 
         project.dependencies.add("implementation", component(module = "exam", component = "api"))
 
@@ -58,7 +58,7 @@ class ProjectLayoutComponentDependencyCompleterTest {
             reference = ModuleReference(parentProjectPath = listOf("modules"), name = "course"),
             components = setOf(component(ComponentReference("api"))),
         )
-        val component = factory(modules = listOf(module))
+        val component = componentDependencyExtension(modules = listOf(module))
 
         project.dependencies.add("api", component(module = "course", component = "api"))
 
@@ -68,7 +68,7 @@ class ProjectLayoutComponentDependencyCompleterTest {
     @Test
     fun `it should mirror an api dependency to the api scope of the test fixtures`() {
         project.pluginManager.apply("java-test-fixtures")
-        val component = factory()
+        val component = componentDependencyExtension()
 
         project.dependencies.add("api", component(module = "exam", component = "api"))
 
@@ -81,7 +81,7 @@ class ProjectLayoutComponentDependencyCompleterTest {
     @Test
     fun `it should mirror an implementation dependency to the implementation scope of the test fixtures`() {
         project.pluginManager.apply("java-test-fixtures")
-        val component = factory()
+        val component = componentDependencyExtension()
 
         project.dependencies.add("implementation", component(module = "exam", component = "api"))
 
@@ -93,7 +93,7 @@ class ProjectLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should defer the test fixtures dependency until the java-test-fixtures plugin is applied`() {
-        val component = factory()
+        val component = componentDependencyExtension()
 
         project.dependencies.add("api", component(module = "exam", component = "api"))
 
@@ -107,7 +107,7 @@ class ProjectLayoutComponentDependencyCompleterTest {
     @Test
     fun `it should not complete hand-written project dependencies`() {
         project.pluginManager.apply("java-test-fixtures")
-        factory()
+        componentDependencyExtension()
 
         project.dependencies.add("api", project.dependencies.project(":exam:api"))
 
@@ -117,18 +117,18 @@ class ProjectLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should reject an unknown target module`() {
-        assertThatThrownBy { factory()(module = "billing", component = "api") }
+        assertThatThrownBy { componentDependencyExtension()(module = "billing", component = "api") }
             .hasMessage("Arciphant configuration error: Module with name 'billing' does not exist.")
     }
 
     @Test
     fun `it should reject an unknown component of the target module`() {
-        assertThatThrownBy { factory()(module = "exam", component = "db") }
+        assertThatThrownBy { componentDependencyExtension()(module = "exam", component = "db") }
             .hasMessage("Arciphant configuration error: Component with name 'db' does not exist in module 'exam'.")
     }
 
-    private fun factory(modules: List<Module> = examModules()) =
-        ComponentDependencyFactory(modules, registry, project.projectLayoutComponentDependency())
+    private fun componentDependencyExtension(modules: List<Module> = examModules()) =
+        ComponentDependencyExtension(modules, registry, project.projectLayoutComponentDependency())
 
     private fun examModules(): List<Module> = listOf(
         DomainModule(
