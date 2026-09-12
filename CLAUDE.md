@@ -42,8 +42,8 @@ applied in `settings.gradle.kts` (not `build.gradle.kts`).
 
 Flow: the `arciphant { … }` DSL extension is registered on apply → in `settingsEvaluated`, the DSL is loaded into the
 internal model (`ModuleRepository`, `GlobalSettingsRepository`), converted to `GradleProjectConfig`s, project folders
-are created, and each project is `include()`d → depending on the component layout, `ProjectLayoutConfigApplicator` (in
-`allprojects.beforeEvaluate`) or `SourceSetLayoutConfigApplicator` (in `gradle.lifecycle.beforeProject`) applies
+are created, and each project is `include()`d → depending on the component layout, `ProjectLayoutConfigurer` (in
+`allprojects.beforeEvaluate`) or `SourceSetLayoutConfigurer` (in `gradle.lifecycle.beforeProject`) applies
 convention plugins and dependencies to each project → in `projectsLoaded`, the root tasks `validatePackageStructure` and
 `projectDependencies` are registered.
 
@@ -51,7 +51,7 @@ Packages under `ch.ergon.arciphant`:
 
 - `dsl` — public DSL surface (`ArciphantDsl`, builders); everything else is `internal`
 - `core` / `core.model` — internal metamodel (`Module`, `Component`, `Dependency`, sealed interfaces + data classes) and
-  Gradle wiring; layout-specific config applicators live in `core.project` and `core.sourceset`
+  Gradle wiring; layout-specific configurers live in `core.project` and `core.sourceset`
 - `sca` — package structure validation (`validatePackageStructure` task)
 - `analyze` — `projectDependencies` task
 - `util` — verification helpers (errors are prefixed "Arciphant configuration error: …")
