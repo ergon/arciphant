@@ -56,7 +56,7 @@ Packages under `ch.ergon.arciphant`:
 - `analyze` — `projectDependencies` task
 - `util` — verification helpers (errors are prefixed "Arciphant configuration error: …")
 
-Mapping rules: `dependsOn` → `implementation`, `dependsOnApi` → `api`; every component of a domain module automatically
+Mapping rules: `dependencies` → `implementation`, `apiDependencies` → `api`; every component of a domain module automatically
 gets an `api` dependency on the same-named library component; a `bundle` without `includes` depends on all functional
 modules.
 

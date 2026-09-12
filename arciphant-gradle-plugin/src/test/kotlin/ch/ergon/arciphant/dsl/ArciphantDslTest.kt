@@ -243,8 +243,8 @@ class ArciphantDslTest {
                 module(name = "module")
                     .createComponent(
                         name = sourceComponent,
-                        dependsOnApi = setOf(targetComponent3a),
-                        dependsOn = setOf(targetComponent3b)
+                        apiDependencies = setOf(targetComponent3a),
+                        dependencies = setOf(targetComponent3b)
                     )
             }
 
@@ -261,12 +261,12 @@ class ArciphantDslTest {
         fun `it should merge dependencies`() {
             with(dsl) {
                 val template1 = template()
-                    .createComponent(name = sourceComponent, dependsOn = setOf(targetComponent1a, targetComponent1b))
+                    .createComponent(name = sourceComponent, dependencies = setOf(targetComponent1a, targetComponent1b))
                 val template2 = template()
                     .extends(template1)
-                    .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent2))
+                    .extendComponent(name = sourceComponent, dependencies = setOf(targetComponent2))
                 module(name = "module", templates = setOf(template2))
-                    .extendComponent(name = sourceComponent, dependsOn = setOf(targetComponent3a, targetComponent3b))
+                    .extendComponent(name = sourceComponent, dependencies = setOf(targetComponent3a, targetComponent3b))
             }
 
             val component = moduleRepository.loadSingleComponent()
@@ -351,14 +351,14 @@ class ArciphantDslTest {
             with(dsl) {
                 val common = template()
                     .createComponent(name = "domain", plugin = domainPlugin.id)
-                    .createComponent(name = "db", plugin = dbPlugin.id, dependsOn = setOf("domain"))
+                    .createComponent(name = "db", plugin = dbPlugin.id, dependencies = setOf("domain"))
                 val web = template()
                     .createComponent(name = "web-api")
-                    .createComponent(name = "web", dependsOnApi = setOf("web-api"))
+                    .createComponent(name = "web", apiDependencies = setOf("web-api"))
                 library(name = "shared", template = common)
                     .createComponent("base")
-                    .extendComponent("domain", dependsOn = setOf("base"))
-                    .extendComponent("db", dependsOn = setOf("base"))
+                    .extendComponent("domain", dependencies = setOf("base"))
+                    .extendComponent("db", dependencies = setOf("base"))
 
                 val customer = module(name = "customer", templates = setOf(common, web))
                 val order = module(name = "order", templates = setOf(common, web))

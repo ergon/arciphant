@@ -22,24 +22,24 @@ arciphant {
 
     val commonModuleTemplate = template()
         .createComponent(name = "api") // the module's public contract, usable from other modules
-        .createComponent(name = "domain", dependsOnApi = setOf("api"))
-        .createComponent(name = "db", dependsOn = setOf("domain"))
+        .createComponent(name = "domain", apiDependencies = setOf("api"))
+        .createComponent(name = "db", dependencies = setOf("domain"))
         .createComponent(name = "webApi")
-        .createComponent(name = "web", dependsOn = setOf("webApi", "domain"))
+        .createComponent(name = "web", dependencies = setOf("webApi", "domain"))
 
     val moduleWithFilestoreTemplate = template()
         .extends(commonModuleTemplate)
-        .createComponent(name = "filestore", dependsOn = setOf("domain"))
+        .createComponent(name = "filestore", dependencies = setOf("domain"))
 
     library(name = "shared", template = moduleWithFilestoreTemplate)
 
     module(name = "course", template = commonModuleTemplate)
     module(name = "exam", template = commonModuleTemplate)
     module(name = "certificate", template = moduleWithFilestoreTemplate)
-        .createComponent(name = "certificateAuthorityAdapter", dependsOn = setOf("domain"))
+        .createComponent(name = "certificateAuthorityAdapter", dependencies = setOf("domain"))
     module(name = "accounting", template = moduleWithFilestoreTemplate)
-        .createComponent(name = "paymentProviderAdapter", dependsOn = setOf("domain"))
-        .extendComponent(name = "web", dependsOn = setOf("paymentProviderAdapter"))
+        .createComponent(name = "paymentProviderAdapter", dependencies = setOf("domain"))
+        .extendComponent(name = "web", dependencies = setOf("paymentProviderAdapter"))
 
     bundle(name = "online-learning-platform")
 

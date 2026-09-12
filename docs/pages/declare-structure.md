@@ -19,9 +19,9 @@ this template to create (instantiate) the 4 modules:
 arciphant {
     val moduleTemplate = template()
         .createComponent(name = "domain")
-        .createComponent(name = "application", dependsOnApi = setOf("domain"))
-        .createComponent(name = "web", dependsOn = setOf("application"))
-        .createComponent(name = "db", dependsOn = setOf("application"))
+        .createComponent(name = "application", apiDependencies = setOf("domain"))
+        .createComponent(name = "web", dependencies = setOf("application"))
+        .createComponent(name = "db", dependencies = setOf("application"))
 
     module(name = "module-a", template = moduleTemplate)
     module(name = "module-b", template = moduleTemplate)
@@ -61,15 +61,15 @@ root-project
 
 You probably noticed the different attributes to setup dependency between components:
 
-* `dependsOn`: Creates a *implementation* dependency from component *A* to component *B*
-* `dependsOnApi`: Creates an *api* (transitive) dependency from component *A* to component *B*, meaning that every
+* `dependencies`: Creates an *implementation* dependency from component *A* to component *B*
+* `apiDependencies`: Creates an *api* (transitive) dependency from component *A* to component *B*, meaning that every
   component depending on *A* gets access to *B*
 
 In above example this means that *web* and *db* can access *domain* thanks to the API dependency to *applicatoin*.
 
 !!! info "Transitive dependencies in Clean Architecture"
 
-    <p>Whether transitive dependencies (i.e. `dependsOnApi`) are reasonable in a clean architecture or whether each ring (component) should only access the next inner ring is an interesting discussion.</p>
+    <p>Whether transitive dependencies (i.e. `apiDependencies`) are reasonable in a clean architecture or whether each ring (component) should only access the next inner ring is an interesting discussion.</p>
     <p>Since Arcpihant is a tool and not a methodology, it provides the ability without making a statement whether to use it or not.</p>
 
 ## Shared code
@@ -99,9 +99,9 @@ The complete sample now looks like the following:
 arciphant {
     val moduleTemplate = template()
         .createComponent(name = "domain")
-        .createComponent(name = "application", dependsOnApi = setOf("domain"))
-        .createComponent(name = "web", dependsOn = setOf("application"))
-        .createComponent(name = "db", dependsOn = setOf("application"))
+        .createComponent(name = "application", apiDependencies = setOf("domain"))
+        .createComponent(name = "web", dependencies = setOf("application"))
+        .createComponent(name = "db", dependencies = setOf("application"))
 
     library(name = "shared", template = moduleTemplate)
 
@@ -130,7 +130,7 @@ You can solve this problem by creating another template, extending from the exis
 ``` kotlin
 val moduleWithFsTemplate = template()
     .extends(moduleTemplate)
-    .createComponent(name = "fs", dependsOn = setOf("application"))
+    .createComponent(name = "fs", dependencies = setOf("application"))
 ```
 
 The complete example now looks like the following:
@@ -139,13 +139,13 @@ The complete example now looks like the following:
 arciphant {
     val moduleTemplate = template()
         .createComponent(name = "domain")
-        .createComponent(name = "application", dependsOnApi = setOf("domain"))
-        .createComponent(name = "web", dependsOn = setOf("application"))
-        .createComponent(name = "db", dependsOn = setOf("application"))
+        .createComponent(name = "application", apiDependencies = setOf("domain"))
+        .createComponent(name = "web", dependencies = setOf("application"))
+        .createComponent(name = "db", dependencies = setOf("application"))
 
     val moduleWithFsTemplate = template()
         .extends(moduleTemplate)
-        .createComponent(name = "fs", dependsOn = setOf("application"))
+        .createComponent(name = "fs", dependencies = setOf("application"))
 
     library(name = "shared", template = moduleWithFsTemplate) // (1)!
 
@@ -170,7 +170,7 @@ To do so, you can create a component for the specific module:
 
 ``` kotlin
 module(name = "module-d", template = moduleWithFsTemplate)
-    .createComponent(name = "ext-api", dependsOn = setOf("application"))
+    .createComponent(name = "ext-api", dependencies = setOf("application"))
 ```
 
 The complete example now looks like the following:
@@ -179,13 +179,13 @@ The complete example now looks like the following:
 arciphant {
     val moduleTemplate = template()
         .createComponent(name = "domain")
-        .createComponent(name = "application", dependsOnApi = setOf("domain"))
-        .createComponent(name = "web", dependsOn = setOf("application"))
-        .createComponent(name = "db", dependsOn = setOf("application"))
+        .createComponent(name = "application", apiDependencies = setOf("domain"))
+        .createComponent(name = "web", dependencies = setOf("application"))
+        .createComponent(name = "db", dependencies = setOf("application"))
 
     val moduleWithFsTemplate = template()
         .extends(moduleTemplate)
-        .createComponent(name = "fs", dependsOn = setOf("application"))
+        .createComponent(name = "fs", dependencies = setOf("application"))
 
     library(name = "shared", template = moduleTemplate)
 
@@ -193,7 +193,7 @@ arciphant {
     module(name = "module-b", template = moduleTemplate)
     module(name = "module-c", template = moduleWithFsTemplate)
     module(name = "module-d", template = moduleWithFsTemplate)
-        .createComponent(name = "ext-api", dependsOn = setOf("application"))
+        .createComponent(name = "ext-api", dependencies = setOf("application"))
 }
 ```
 

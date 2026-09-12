@@ -114,7 +114,7 @@ class ArciphantSettingsPluginTest {
 
             module("test")
                 .createComponent("domain")
-                .createComponent("application", dependsOnApi = setOf("domain"))
+                .createComponent("application", apiDependencies = setOf("domain"))
             """
         )
         buildFileWithJvmPlugins()
@@ -455,7 +455,7 @@ class ArciphantSettingsPluginTest {
 
             module("module")
                 .createComponent("domain")
-                .createComponent("application", dependsOn = setOf("domain"))
+                .createComponent("application", dependencies = setOf("domain"))
             """
         )
         buildFile.write(

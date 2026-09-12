@@ -21,7 +21,7 @@ arciphant {
 
     val template = template()
         .createComponent("domain")
-        .createComponent("application", dependsOnApi = setOf("domain"))
+        .createComponent("application", apiDependencies = setOf("domain"))
 
     module("orders", template = template)
 }

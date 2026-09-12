@@ -25,19 +25,24 @@ class FunctionalModuleBuilder internal constructor(
 ) : ModuleBuilder(name, basePath) {
     internal val componentsBuilder = ComponentsBuilder()
 
+    /**
+     * [dependencies] become implementation dependencies of the component; [apiDependencies] become api
+     * dependencies, which are additionally exposed to the component's consumers. The two sets are separate —
+     * a component listed in [apiDependencies] does not need to be repeated in [dependencies].
+     */
     fun createComponent(
         name: String,
         plugin: String? = null,
-        dependsOnApi: Set<String> = emptySet(),
-        dependsOn: Set<String> = emptySet(),
+        dependencies: Set<String> = emptySet(),
+        apiDependencies: Set<String> = emptySet(),
         withTestSourceSet: Boolean? = null,
         withTestFixturesSourceSet: Boolean? = null,
     ): FunctionalModuleBuilder {
         componentsBuilder.doCreateComponent(
             name = name,
             plugin = plugin,
-            dependsOnApi = dependsOnApi,
-            dependsOn = dependsOn,
+            apiDependencies = apiDependencies,
+            implementationDependencies = dependencies,
             withTestSourceSet = withTestSourceSet,
             withTestFixturesSourceSet = withTestFixturesSourceSet,
         )
@@ -46,10 +51,14 @@ class FunctionalModuleBuilder internal constructor(
 
     fun extendComponent(
         name: String,
-        dependsOnApi: Set<String> = emptySet(),
-        dependsOn: Set<String> = emptySet(),
+        dependencies: Set<String> = emptySet(),
+        apiDependencies: Set<String> = emptySet(),
     ): FunctionalModuleBuilder {
-        componentsBuilder.doExtendComponent(name = name, dependsOnApi = dependsOnApi, dependsOn = dependsOn)
+        componentsBuilder.doExtendComponent(
+            name = name,
+            apiDependencies = apiDependencies,
+            implementationDependencies = dependencies,
+        )
         return this
     }
 
@@ -65,19 +74,24 @@ class ModuleTemplateBuilder internal constructor() {
         return this
     }
 
+    /**
+     * [dependencies] become implementation dependencies of the component; [apiDependencies] become api
+     * dependencies, which are additionally exposed to the component's consumers. The two sets are separate —
+     * a component listed in [apiDependencies] does not need to be repeated in [dependencies].
+     */
     fun createComponent(
         name: String,
         plugin: String? = null,
-        dependsOnApi: Set<String> = emptySet(),
-        dependsOn: Set<String> = emptySet(),
+        dependencies: Set<String> = emptySet(),
+        apiDependencies: Set<String> = emptySet(),
         withTestSourceSet: Boolean? = null,
         withTestFixturesSourceSet: Boolean? = null,
     ): ModuleTemplateBuilder {
         componentsBuilder.doCreateComponent(
             name = name,
             plugin = plugin,
-            dependsOnApi = dependsOnApi,
-            dependsOn = dependsOn,
+            apiDependencies = apiDependencies,
+            implementationDependencies = dependencies,
             withTestSourceSet = withTestSourceSet,
             withTestFixturesSourceSet = withTestFixturesSourceSet,
         )
@@ -86,13 +100,13 @@ class ModuleTemplateBuilder internal constructor() {
 
     fun extendComponent(
         name: String,
-        dependsOnApi: Set<String> = emptySet(),
-        dependsOn: Set<String> = emptySet(),
+        dependencies: Set<String> = emptySet(),
+        apiDependencies: Set<String> = emptySet(),
     ): ModuleTemplateBuilder {
         componentsBuilder.doExtendComponent(
             name = name,
-            dependsOnApi = dependsOnApi,
-            dependsOn = dependsOn,
+            apiDependencies = apiDependencies,
+            implementationDependencies = dependencies,
         )
         return this
     }
@@ -105,13 +119,13 @@ internal class ComponentsBuilder {
     fun doCreateComponent(
         name: String,
         plugin: String?,
-        dependsOnApi: Set<String>,
-        dependsOn: Set<String>,
+        apiDependencies: Set<String>,
+        implementationDependencies: Set<String>,
         withTestSourceSet: Boolean?,
         withTestFixturesSourceSet: Boolean?,
     ) {
         verifyName(name, "component")
-        val dependencies = mapDependencies(dependsOnApi, dependsOn)
+        val dependencies = mapDependencies(apiDependencies, implementationDependencies)
         components.add(
             Component(
                 reference = ComponentReference(name),
@@ -123,8 +137,8 @@ internal class ComponentsBuilder {
         )
     }
 
-    fun doExtendComponent(name: String, dependsOnApi: Set<String>, dependsOn: Set<String>) {
-        val dependencies = mapDependencies(dependsOnApi, dependsOn)
+    fun doExtendComponent(name: String, apiDependencies: Set<String>, implementationDependencies: Set<String>) {
+        val dependencies = mapDependencies(apiDependencies, implementationDependencies)
         verify(componentDependencyOverrides.putIfAbsent(name, dependencies) == null) {
             "Component '$name' has already been extended in the current context."
         }

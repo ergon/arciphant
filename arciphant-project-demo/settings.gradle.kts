@@ -20,24 +20,24 @@ plugins {
 arciphant {
     val commonModuleTemplate = template()
         .createComponent(name = "api", plugin = "spring-component")
-        .createComponent(name = "domain", plugin = "spring-component", dependsOnApi = setOf("api"))
-        .createComponent(name = "db", plugin = "jooq-component", dependsOn = setOf("domain"))
+        .createComponent(name = "domain", plugin = "spring-component", apiDependencies = setOf("api"))
+        .createComponent(name = "db", plugin = "jooq-component", dependencies = setOf("domain"))
         .createComponent(name = "web-api", plugin = "spring-web-component")
-        .createComponent(name = "web", plugin = "spring-web-component", dependsOn = setOf("web-api", "domain"))
+        .createComponent(name = "web", plugin = "spring-web-component", dependencies = setOf("web-api", "domain"))
 
     val moduleWithFilestoreTemplate = template()
         .extends(commonModuleTemplate)
-        .createComponent(name = "filestore", plugin = "minio-component", dependsOn = setOf("domain"))
+        .createComponent(name = "filestore", plugin = "minio-component", dependencies = setOf("domain"))
 
     library(name = "shared", template = moduleWithFilestoreTemplate)
 
     module(name = "course", template = commonModuleTemplate)
     module(name = "exam", template = commonModuleTemplate)
     module(name = "certificate", template = moduleWithFilestoreTemplate)
-        .createComponent(name = "certificate-authority-adapter", plugin = "spring-component", dependsOn = setOf("domain"))
+        .createComponent(name = "certificate-authority-adapter", plugin = "spring-component", dependencies = setOf("domain"))
     module(name = "accounting", template = moduleWithFilestoreTemplate)
-        .createComponent(name = "payment-provider-adapter", plugin = "spring-component", dependsOn = setOf("domain"))
-        .extendComponent(name = "web", dependsOn = setOf("payment-provider-adapter"))
+        .createComponent(name = "payment-provider-adapter", plugin = "spring-component", dependencies = setOf("domain"))
+        .extendComponent(name = "web", dependencies = setOf("payment-provider-adapter"))
 
     bundle(name = "online-learning-platform", plugin = "spring-boot-bundle-module")
 

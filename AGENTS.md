@@ -62,8 +62,8 @@ Packages below `ch.ergon.arciphant`:
 
 Preserve these dependency mappings and defaults:
 
-- `dependsOn` maps to `implementation`.
-- `dependsOnApi` maps to `api`.
+- `dependencies` maps to `implementation`.
+- `apiDependencies` maps to `api`.
 - Every component of a domain module automatically receives an `api` dependency on the same-named library component.
 - A `bundle` without `includes` depends on all functional modules.
 
