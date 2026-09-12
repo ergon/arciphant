@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.core.project
 
+import ch.ergon.arciphant.core.ComponentDependencyFactory
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
 import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.GradleFunctionalModuleProjectConfig
@@ -260,6 +261,21 @@ class ProjectLayoutConfigApplicatorTest {
 
             assertThat(bundleProject.configuration("implementation").projectDependencyPaths())
                 .containsExactly(":included:domain")
+        }
+
+        @Test
+        fun `it should not provide the component dependency notation in bundle projects`() {
+            val module = domainModule(component(ComponentReference("domain")))
+            val bundle = bundleModule(module.reference)
+            val bundleProject = javaProject(":bundle")
+            val componentProject = javaProject(":module:domain")
+            val applicator = applicator(module, bundle)
+
+            applicator.applyConfig(bundleProject)
+            applicator.applyConfig(componentProject)
+
+            assertThat(bundleProject.extensions.findByType(ComponentDependencyFactory::class.java)).isNull()
+            assertThat(componentProject.extensions.findByType(ComponentDependencyFactory::class.java)).isNotNull()
         }
     }
 

@@ -270,9 +270,6 @@ class SourceSetLayoutConfigApplicatorTest {
             applicator.applyConfig(examProject)
             return moduleProject
         }
-
-        private fun Project.componentDependencyNotation(module: String, component: String) =
-            extensions.getByType(ComponentDependencyFactory::class.java).invoke(module = module, component = component)
     }
 
     @Nested
@@ -308,6 +305,31 @@ class SourceSetLayoutConfigApplicatorTest {
             assertThat(bundleProject.configurations.getByName("runtimeOnly").projectDependencyConfigurations())
                 .containsExactlyInAnyOrder("domainRuntimeElements", "apiRuntimeElements")
         }
+
+        @Test
+        fun `it should not provide the component dependency notation in bundle projects`() {
+            val root = ProjectBuilder.builder().withName("root").build()
+            val moduleProject = javaProject(root = root)
+            val bundleProject = javaProject(name = "bundle", root = root)
+            val module = domainModule(component(ComponentReference("domain")))
+            val bundle = BundleModule(
+                reference = ModuleReference(name = "bundle"),
+                plugin = null,
+                includes = emptySet(),
+            )
+            val applicator = SourceSetLayoutConfigApplicator(
+                settings(),
+                listOf(
+                    GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("module")), module),
+                    GradleBundleModuleProjectConfig(GradleProjectPath.of(listOf("bundle")), bundle),
+                ),
+            )
+            applicator.applyConfig(moduleProject)
+            applicator.applyConfig(bundleProject)
+
+            assertThat(bundleProject.extensions.findByType(ComponentDependencyFactory::class.java)).isNull()
+            assertThat(moduleProject.extensions.findByType(ComponentDependencyFactory::class.java)).isNotNull()
+        }
     }
 
     private fun javaProject(
@@ -317,6 +339,9 @@ class SourceSetLayoutConfigApplicatorTest {
         return ProjectBuilder.builder().withName(name).withParent(root).build()
             .also { it.pluginManager.apply("java-library") }
     }
+
+    private fun Project.componentDependencyNotation(module: String, component: String) =
+        extensions.getByType(ComponentDependencyFactory::class.java).invoke(module = module, component = component)
 
     private fun settings(configure: ArciphantDsl.() -> Unit = {}) = GlobalSettingsRepository(
         ArciphantDsl().apply {
