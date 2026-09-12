@@ -10,10 +10,10 @@ import ch.ergon.arciphant.core.model.LibraryModule
 import ch.ergon.arciphant.util.arciphantError
 import org.gradle.api.Project
 
-internal class SourceSetLayoutConfigApplicator(
+internal class SourceSetLayoutConfigurer(
     settings: GlobalSettings,
     private val projectConfigs: List<GradleProjectConfig>
-) : LayoutConfigApplicator(projectConfigs) {
+) : LayoutConfigurer(projectConfigs) {
 
     private val sourceSetComponentSettings = settings.sourceSetComponentSettings
 
@@ -22,7 +22,7 @@ internal class SourceSetLayoutConfigApplicator(
 
     override fun componentDependencyFactory(project: Project) = project.sourceSetLayoutComponentDependency()
 
-    override fun doApplyConfig(project: Project, config: GradleProjectConfig) {
+    override fun doConfigure(project: Project, config: GradleProjectConfig) {
         // This runs in lifecycle.beforeProject, i.e. before any other configuration of the project —
         // including the JVM plugin application that creates the source set container and the 'test'
         // and 'classes' tasks (typically done in the root project's allprojects block). Defer until

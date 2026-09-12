@@ -23,7 +23,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class SourceSetLayoutConfigApplicatorTest {
+class SourceSetLayoutConfigurerTest {
 
     @Nested
     inner class SourceSetSettingsTest {
@@ -153,10 +153,10 @@ class SourceSetLayoutConfigApplicatorTest {
                 includes = emptySet(),
             )
 
-            SourceSetLayoutConfigApplicator(
+            SourceSetLayoutConfigurer(
                 settings(),
                 listOf(GradleBundleModuleProjectConfig(GradleProjectPath.of(listOf("bundle")), bundle)),
-            ).applyConfig(project)
+            ).configure(project)
 
             assertThat(project.configurations.names)
                 .contains("testFixturesApi", "testFixturesImplementation")
@@ -166,7 +166,7 @@ class SourceSetLayoutConfigApplicatorTest {
         fun `it should not create the shared configurations in other projects`() {
             val project = javaProject(name = "not-an-arciphant-module")
 
-            SourceSetLayoutConfigApplicator(settings(), emptyList()).applyConfig(project)
+            SourceSetLayoutConfigurer(settings(), emptyList()).configure(project)
 
             assertThat(project.configurations.names).doesNotContain(
                 "testFixturesApi",
@@ -259,15 +259,15 @@ class SourceSetLayoutConfigApplicatorTest {
             )
             val moduleProject = javaProject(root = root)
             val examProject = javaProject(name = "exam", root = root)
-            val applicator = SourceSetLayoutConfigApplicator(
+            val configurer = SourceSetLayoutConfigurer(
                 settings(),
                 listOf(
                     GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("module")), module),
                     GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("exam")), exam),
                 ),
             )
-            applicator.applyConfig(moduleProject)
-            applicator.applyConfig(examProject)
+            configurer.configure(moduleProject)
+            configurer.configure(examProject)
             return moduleProject
         }
     }
@@ -289,7 +289,7 @@ class SourceSetLayoutConfigApplicatorTest {
                 plugin = null,
                 includes = setOf(module.reference),
             )
-            val applicator = SourceSetLayoutConfigApplicator(
+            val configurer = SourceSetLayoutConfigurer(
                 settings(),
                 listOf(
                     GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("module")), module),
@@ -297,8 +297,8 @@ class SourceSetLayoutConfigApplicatorTest {
                 ),
             )
 
-            applicator.applyConfig(moduleProject)
-            applicator.applyConfig(bundleProject)
+            configurer.configure(moduleProject)
+            configurer.configure(bundleProject)
 
             assertThat(bundleProject.configurations.getByName("implementation").projectDependencyConfigurations())
                 .containsExactlyInAnyOrder("domainApiElements", "apiApiElements")
@@ -317,15 +317,15 @@ class SourceSetLayoutConfigApplicatorTest {
                 plugin = null,
                 includes = emptySet(),
             )
-            val applicator = SourceSetLayoutConfigApplicator(
+            val configurer = SourceSetLayoutConfigurer(
                 settings(),
                 listOf(
                     GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("module")), module),
                     GradleBundleModuleProjectConfig(GradleProjectPath.of(listOf("bundle")), bundle),
                 ),
             )
-            applicator.applyConfig(moduleProject)
-            applicator.applyConfig(bundleProject)
+            configurer.configure(moduleProject)
+            configurer.configure(bundleProject)
 
             assertThat(bundleProject.extensions.findByType(ComponentDependencyExtension::class.java)).isNull()
             assertThat(moduleProject.extensions.findByType(ComponentDependencyExtension::class.java)).isNotNull()
@@ -356,9 +356,9 @@ class SourceSetLayoutConfigApplicatorTest {
     )
 
     private fun Project.applyModuleConfig(module: FunctionalModule, settings: GlobalSettings) =
-        SourceSetLayoutConfigApplicator(
+        SourceSetLayoutConfigurer(
             settings,
             listOf(GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf(name)), module)),
-        ).applyConfig(this)
+        ).configure(this)
 
 }

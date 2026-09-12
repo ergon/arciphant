@@ -13,10 +13,10 @@ import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
 
-internal class ProjectLayoutConfigApplicator(
+internal class ProjectLayoutConfigurer(
     settings: GlobalSettings,
     private val projectConfigs: List<GradleProjectConfig>
-) : LayoutConfigApplicator(projectConfigs) {
+) : LayoutConfigurer(projectConfigs) {
 
     private val projectComponentSettings = settings.projectComponentSettings
 
@@ -25,7 +25,7 @@ internal class ProjectLayoutConfigApplicator(
 
     override fun componentDependencyFactory(project: Project) = project.projectLayoutComponentDependency()
 
-    override fun doApplyConfig(project: Project, config: GradleProjectConfig) {
+    override fun doConfigure(project: Project, config: GradleProjectConfig) {
         when (config) {
             is GradleBundleModuleProjectConfig -> config.applyBundleModuleConfig(project)
             is GradleComponentProjectConfig -> config.applyComponentConfig(project)
