@@ -13,18 +13,16 @@ import org.gradle.api.Project
 internal class SourceSetLayoutConfigApplicator(
     settings: GlobalSettings,
     private val projectConfigs: List<GradleProjectConfig>
-) {
+) : LayoutConfigApplicator(projectConfigs) {
 
     private val sourceSetComponentSettings = settings.sourceSetComponentSettings
-
-    private val projectConfigsByPath = projectConfigs.associateBy { it.path.value }
 
     private val libraryModules = projectConfigs.filterIsInstance<GradleFunctionalModuleProjectConfig>()
         .filter { it.module is LibraryModule }
 
-    fun applyConfig(project: Project) {
-        val config = projectConfigsByPath[project.path] ?: return
+    override fun componentDependencyNotation(project: Project) = project.sourceSetLayoutComponentDependency()
 
+    override fun doApplyConfig(project: Project, config: GradleProjectConfig) {
         // This runs in lifecycle.beforeProject, i.e. before any other configuration of the project —
         // including the JVM plugin application that creates the source set container and the 'test'
         // and 'classes' tasks (typically done in the root project's allprojects block). Defer until
@@ -81,9 +79,7 @@ internal class SourceSetLayoutConfigApplicator(
 
         val dependencyFactory = SourceSetDependencyFactory(moduleProject, sourceSetComponentSettings)
 
-        // completes component dependencies declared with the 'component' notation in dependencies blocks.
-        // The 'component' extension holding the registry is created by the ArciphantSettingsPlugin in a
-        // beforeProject callback registered before this applicator's, so it exists whenever this code runs.
+        // completes component dependencies declared with the 'component' notation in dependencies blocks
         val dependencyCompleter = SourceSetLayoutComponentDependencyCompleter(
             project = moduleProject,
             registry = moduleProject.componentDependencyRegistry(),

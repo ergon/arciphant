@@ -3,7 +3,6 @@ package ch.ergon.arciphant.core.sourceset
 import ch.ergon.arciphant.core.ComponentDependencyFactory
 import ch.ergon.arciphant.core.GlobalSettings
 import ch.ergon.arciphant.core.GlobalSettingsRepository
-import ch.ergon.arciphant.core.createComponentDependencyFactory
 import ch.ergon.arciphant.core.GradleBundleModuleProjectConfig
 import ch.ergon.arciphant.core.GradleFunctionalModuleProjectConfig
 import ch.ergon.arciphant.core.GradleProjectPath
@@ -12,7 +11,6 @@ import ch.ergon.arciphant.core.model.Component
 import ch.ergon.arciphant.core.model.ComponentReference
 import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.FunctionalModule
-import ch.ergon.arciphant.core.model.Module
 import ch.ergon.arciphant.core.model.ModuleReference
 import ch.ergon.arciphant.core.model.component
 import ch.ergon.arciphant.dsl.ArciphantDsl
@@ -204,7 +202,6 @@ class SourceSetLayoutConfigApplicatorTest {
         fun `it should defer the config until a JVM plugin is applied`() {
             val project = ProjectBuilder.builder().withName("module")
                 .withParent(ProjectBuilder.builder().withName("root").build()).build()
-                .also { it.createComponentExtension() }
 
             project.applyModuleConfig(domainModule(component(ComponentReference("domain"))), settings())
 
@@ -260,7 +257,7 @@ class SourceSetLayoutConfigApplicatorTest {
                 reference = ModuleReference(name = "exam"),
                 components = setOf(component(ComponentReference("api"))),
             )
-            val moduleProject = javaProject(root = root, modules = listOf(module, exam))
+            val moduleProject = javaProject(root = root)
             val examProject = javaProject(name = "exam", root = root)
             val applicator = SourceSetLayoutConfigApplicator(
                 settings(),
@@ -316,19 +313,10 @@ class SourceSetLayoutConfigApplicatorTest {
     private fun javaProject(
         name: String = "module",
         root: Project = ProjectBuilder.builder().withName("root").build(),
-        modules: List<Module> = emptyList(),
     ): Project {
         return ProjectBuilder.builder().withName(name).withParent(root).build()
-            .also { it.createComponentExtension(modules) }
             .also { it.pluginManager.apply("java-library") }
     }
-
-    /**
-     * The 'component' extension (holding the dependency registry) is created by the ArciphantSettingsPlugin
-     * in lifecycle.beforeProject, i.e. before the applicator's configuration can run.
-     */
-    private fun Project.createComponentExtension(modules: List<Module> = emptyList()) =
-        extensions.createComponentDependencyFactory(modules = modules, notation = sourceSetLayoutComponentDependency())
 
     private fun settings(configure: ArciphantDsl.() -> Unit = {}) = GlobalSettingsRepository(
         ArciphantDsl().apply {
