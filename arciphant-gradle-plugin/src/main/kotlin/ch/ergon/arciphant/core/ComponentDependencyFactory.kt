@@ -46,6 +46,23 @@ open class ComponentDependencyFactory internal constructor(
 }
 
 /**
+ * Keep parameters of this method in sync with constructor of [ComponentDependencyFactory].
+ */
+internal fun ExtensionContainer.createComponentDependencyFactory(
+    modules: List<Module>,
+    notation: ComponentDependencyNotation,
+) {
+    create(
+        COMPONENT_EXTENSION_NAME,
+        ComponentDependencyFactory::class.java,
+        modules,
+        ComponentDependencyRegistry(),
+        notation,
+    )
+}
+
+
+/**
  * Creates the layout-specific project dependency for a component of another module.
  */
 internal fun interface ComponentDependencyNotation {
@@ -72,19 +89,3 @@ internal class ComponentDependencyRegistry {
 
 internal fun Project.componentDependencyRegistry(): ComponentDependencyRegistry =
     extensions.getByType(ComponentDependencyFactory::class.java).registry
-
-/**
- * Keep parameters of this method in sync with constructor of [ComponentDependencyFactory].
- */
-internal fun ExtensionContainer.createComponentDependencyFactory(
-    modules: List<Module>,
-    notation: ComponentDependencyNotation,
-) {
-    create(
-        COMPONENT_EXTENSION_NAME,
-        ComponentDependencyFactory::class.java,
-        modules,
-        ComponentDependencyRegistry(),
-        notation,
-    )
-}
