@@ -30,7 +30,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class ProjectLayoutConfigApplicatorTest {
+class ProjectLayoutConfigurerTest {
 
     private val root = ProjectBuilder.builder().withName("root").build()
 
@@ -49,7 +49,7 @@ class ProjectLayoutConfigApplicatorTest {
             val domainProject = javaProject(":module:domain")
             project(":module:api")
 
-            applicator(module).applyConfig(domainProject)
+            configurer(module).configure(domainProject)
 
             assertThat(domainProject.configuration("implementation").projectDependencyPaths())
                 .containsExactly(":module:api")
@@ -67,7 +67,7 @@ class ProjectLayoutConfigApplicatorTest {
             val domainProject = javaProject(":module:domain")
             project(":module:api")
 
-            applicator(module).applyConfig(domainProject)
+            configurer(module).configure(domainProject)
 
             assertThat(domainProject.configuration("api").projectDependencyPaths())
                 .containsExactly(":module:api")
@@ -88,7 +88,7 @@ class ProjectLayoutConfigApplicatorTest {
             project(":library:domain")
             project(":library:other")
 
-            applicator(module, library).applyConfig(domainProject)
+            configurer(module, library).configure(domainProject)
 
             assertThat(domainProject.configuration("api").projectDependencyPaths())
                 .containsExactly(":library:domain")
@@ -99,7 +99,7 @@ class ProjectLayoutConfigApplicatorTest {
             val library = libraryModule(component(ComponentReference("domain")))
             val libraryProject = javaProject(":library:domain")
 
-            applicator(library).applyConfig(libraryProject)
+            configurer(library).configure(libraryProject)
 
             assertThat(libraryProject.configuration("api").projectDependencyPaths()).isEmpty()
         }
@@ -115,7 +115,7 @@ class ProjectLayoutConfigApplicatorTest {
             )
             val domainProject = javaProject(":module:domain")
 
-            applicator(module).applyConfig(domainProject)
+            configurer(module).configure(domainProject)
 
             assertThat(domainProject.pluginManager.hasPlugin("jacoco")).isTrue()
         }
@@ -125,7 +125,7 @@ class ProjectLayoutConfigApplicatorTest {
             val bundle = bundleModule(plugin = Plugin(id = "jacoco"))
             val bundleProject = javaProject(":bundle")
 
-            applicator(bundle).applyConfig(bundleProject)
+            configurer(bundle).configure(bundleProject)
 
             assertThat(bundleProject.pluginManager.hasPlugin("jacoco")).isTrue()
         }
@@ -141,7 +141,7 @@ class ProjectLayoutConfigApplicatorTest {
             domainProject.pluginManager.apply("java-test-fixtures")
             project(":module:api")
 
-            applicator(module).applyConfig(domainProject)
+            configurer(module).configure(domainProject)
 
             assertThat(domainProject.configuration("testFixturesApi").projectDependencyPaths())
                 .contains(":module:api")
@@ -156,7 +156,7 @@ class ProjectLayoutConfigApplicatorTest {
             domainProject.pluginManager.apply("java-test-fixtures")
             project(":module:api")
 
-            applicator(module).applyConfig(domainProject)
+            configurer(module).configure(domainProject)
 
             assertThat(domainProject.configuration("testFixturesImplementation").projectDependencyPaths())
                 .contains(":module:api")
@@ -171,7 +171,7 @@ class ProjectLayoutConfigApplicatorTest {
             domainProject.pluginManager.apply("java-test-fixtures")
             project(":module:api")
 
-            applicator(module).applyConfig(domainProject)
+            configurer(module).configure(domainProject)
 
             assertThat(domainProject.configuration("testImplementation").projectDependencyPaths())
                 .contains(":module:api")
@@ -183,7 +183,7 @@ class ProjectLayoutConfigApplicatorTest {
             val domainProject = javaProject(":module:domain")
             project(":module:api")
 
-            applicator(module).applyConfig(domainProject)
+            configurer(module).configure(domainProject)
 
             assertThat(domainProject.configurations.findByName("testFixturesImplementation")).isNull()
 
@@ -210,7 +210,7 @@ class ProjectLayoutConfigApplicatorTest {
             val module = domainModule(component(ComponentReference("domain")))
             val domainProject = javaProject(":module:domain")
 
-            applicator(module).applyConfig(domainProject)
+            configurer(module).configure(domainProject)
 
             assertThat(domainProject.jarTask().archiveBaseName.get()).isEqualTo("module-domain")
         }
@@ -220,7 +220,7 @@ class ProjectLayoutConfigApplicatorTest {
             val module = domainModule(component(ComponentReference("domain")))
             val domainProject = javaProject(":module:domain")
 
-            applicator(module) { disableQualifiedArchiveBaseName() }.applyConfig(domainProject)
+            configurer(module) { disableQualifiedArchiveBaseName() }.configure(domainProject)
 
             assertThat(domainProject.jarTask().archiveBaseName.get()).isEqualTo("domain")
         }
@@ -242,7 +242,7 @@ class ProjectLayoutConfigApplicatorTest {
             project(":module:domain")
             project(":module:api")
 
-            applicator(module, bundle).applyConfig(bundleProject)
+            configurer(module, bundle).configure(bundleProject)
 
             assertThat(bundleProject.configuration("implementation").projectDependencyPaths())
                 .containsExactlyInAnyOrder(":module:domain", ":module:api")
@@ -257,7 +257,7 @@ class ProjectLayoutConfigApplicatorTest {
             project(":included:domain")
             project(":excluded:domain")
 
-            applicator(included, excluded, bundle).applyConfig(bundleProject)
+            configurer(included, excluded, bundle).configure(bundleProject)
 
             assertThat(bundleProject.configuration("implementation").projectDependencyPaths())
                 .containsExactly(":included:domain")
@@ -269,10 +269,10 @@ class ProjectLayoutConfigApplicatorTest {
             val bundle = bundleModule(module.reference)
             val bundleProject = javaProject(":bundle")
             val componentProject = javaProject(":module:domain")
-            val applicator = applicator(module, bundle)
+            val configurer = configurer(module, bundle)
 
-            applicator.applyConfig(bundleProject)
-            applicator.applyConfig(componentProject)
+            configurer.configure(bundleProject)
+            configurer.configure(componentProject)
 
             assertThat(bundleProject.extensions.findByType(ComponentDependencyExtension::class.java)).isNull()
             assertThat(componentProject.extensions.findByType(ComponentDependencyExtension::class.java)).isNotNull()
@@ -287,7 +287,7 @@ class ProjectLayoutConfigApplicatorTest {
             val module = domainModule(component(ComponentReference("domain")))
             val otherProject = javaProject(":other")
 
-            applicator(module).applyConfig(otherProject)
+            configurer(module).configure(otherProject)
 
             assertThat(otherProject.configuration("implementation").dependencies).isEmpty()
         }
@@ -295,13 +295,13 @@ class ProjectLayoutConfigApplicatorTest {
         @Test
         fun `it should fail for a functional module project`() {
             val module = domainModule(component(ComponentReference("domain")))
-            val applicator = ProjectLayoutConfigApplicator(
+            val configurer = ProjectLayoutConfigurer(
                 settings(),
                 listOf(GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("module")), module)),
             )
             val moduleProject = javaProject(":module")
 
-            assertThatThrownBy { applicator.applyConfig(moduleProject) }
+            assertThatThrownBy { configurer.configure(moduleProject) }
                 .isInstanceOf(IllegalStateException::class.java)
                 .hasMessageContaining("unexpected functional module project ':module'")
         }
@@ -314,8 +314,8 @@ class ProjectLayoutConfigApplicatorTest {
             parent.childProjects[name] ?: ProjectBuilder.builder().withName(name).withParent(parent).build()
         }
 
-    private fun applicator(vararg modules: Module, configure: ArciphantDsl.() -> Unit = {}) =
-        ProjectLayoutConfigApplicator(settings(configure), modules.flatMap { it.toProjectConfigs(PROJECT) })
+    private fun configurer(vararg modules: Module, configure: ArciphantDsl.() -> Unit = {}) =
+        ProjectLayoutConfigurer(settings(configure), modules.flatMap { it.toProjectConfigs(PROJECT) })
 
     private fun settings(configure: ArciphantDsl.() -> Unit = {}) =
         GlobalSettingsRepository(ArciphantDsl().apply(configure)).load()
