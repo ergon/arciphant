@@ -293,6 +293,24 @@ class ProjectLayoutConfigurerTest {
         }
 
         @Test
+        fun `it should explain the missing api configuration when java-library is not applied`() {
+            val module = domainModule(
+                component(ComponentReference("api")),
+                component(
+                    reference = ComponentReference("domain"),
+                    dependsOn = setOf(Dependency(component = ComponentReference("api"), type = API)),
+                ),
+            )
+            // plain 'java' plugin: the 'api' configuration requires the java-library plugin
+            val domainProject = project(":module:domain").also { it.pluginManager.apply("java") }
+            project(":module:api")
+
+            assertThatThrownBy { configurer(module).configure(domainProject) }
+                .hasMessageContaining("configuration 'api' does not exist in project ':module:domain'")
+                .hasMessageContaining("'java-library' additionally provides 'api'")
+        }
+
+        @Test
         fun `it should fail for a functional module project`() {
             val module = domainModule(component(ComponentReference("domain")))
             val configurer = ProjectLayoutConfigurer(
