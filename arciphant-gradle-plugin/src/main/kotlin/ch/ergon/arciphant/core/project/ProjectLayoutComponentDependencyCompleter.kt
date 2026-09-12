@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.core.project
 
-import ch.ergon.arciphant.core.ComponentDependencyNotation
+import ch.ergon.arciphant.core.ComponentDependencyFactory
 import ch.ergon.arciphant.core.ComponentDependencyRegistry
 import ch.ergon.arciphant.core.addTestFixturesDependency
 import ch.ergon.arciphant.core.gradleProjectPath
@@ -12,10 +12,10 @@ import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.kotlin.dsl.project
 
 /**
- * The component dependency notation of the project layout: a project dependency on the target
+ * The component dependency factory of the project layout: creates a project dependency on the target
  * component's Gradle project.
  */
-internal fun Project.projectLayoutComponentDependency() = ComponentDependencyNotation { module, component ->
+internal fun Project.projectLayoutComponentDependency() = ComponentDependencyFactory { module, component ->
     dependencies.project(module.gradleProjectPath(component.reference).value)
 }
 

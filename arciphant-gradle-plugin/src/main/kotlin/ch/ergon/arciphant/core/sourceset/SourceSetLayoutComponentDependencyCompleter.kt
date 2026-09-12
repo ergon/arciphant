@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.core.sourceset
 
-import ch.ergon.arciphant.core.ComponentDependencyNotation
+import ch.ergon.arciphant.core.ComponentDependencyFactory
 import ch.ergon.arciphant.core.ComponentDependencyRegistry
 import ch.ergon.arciphant.core.gradleProjectPath
 import ch.ergon.arciphant.core.model.DependencyType
@@ -10,10 +10,10 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
 
 /**
- * The component dependency notation of the source set layout: a project dependency on the target
+ * The component dependency factory of the source set layout: creates a project dependency on the target
  * component's `…ApiElements` configuration.
  */
-internal fun Project.sourceSetLayoutComponentDependency() = ComponentDependencyNotation { module, component ->
+internal fun Project.sourceSetLayoutComponentDependency() = ComponentDependencyFactory { module, component ->
     projectDependency(module.gradleProjectPath().value, component.reference.name.apiElementsConfigurationName())
 }
 

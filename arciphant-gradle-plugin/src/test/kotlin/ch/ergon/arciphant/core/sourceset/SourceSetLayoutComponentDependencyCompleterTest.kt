@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.core.sourceset
 
-import ch.ergon.arciphant.core.ComponentDependencyFactory
+import ch.ergon.arciphant.core.ComponentDependencyExtension
 import ch.ergon.arciphant.core.ComponentDependencyRegistry
 import ch.ergon.arciphant.core.SourceSetComponentSettings
 import ch.ergon.arciphant.core.model.ComponentReference
@@ -33,7 +33,7 @@ class SourceSetLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should create a project dependency on the api elements of the target component`() {
-        val component = factory()
+        val component = componentDependencyExtension()
 
         val notation = component(module = "exam", component = "api")
 
@@ -43,7 +43,7 @@ class SourceSetLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should add an api dependency on a component of another module`() {
-        val component = factory()
+        val component = componentDependencyExtension()
         createComponent(name = "domain")
 
         project.dependencies.add("domainApi", component(module = "exam", component = "api"))
@@ -57,7 +57,7 @@ class SourceSetLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should add an implementation dependency on a component of another module`() {
-        val component = factory()
+        val component = componentDependencyExtension()
         createComponent(name = "domain")
 
         project.dependencies.add("domainImplementation", component(module = "exam", component = "api"))
@@ -69,7 +69,7 @@ class SourceSetLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should link test fixtures when both source and target component have a test fixtures source set`() {
-        val component = factory()
+        val component = componentDependencyExtension()
         createComponent(name = "domain")
 
         project.dependencies.add("domainApi", component(module = "exam", component = "api"))
@@ -84,7 +84,7 @@ class SourceSetLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should not complete hand-written project dependencies`() {
-        factory()
+        componentDependencyExtension()
         createComponent(name = "domain")
 
         project.dependencies.add("domainApi", project.dependencies.project(":exam", "apiApiElements"))
@@ -98,7 +98,7 @@ class SourceSetLayoutComponentDependencyCompleterTest {
     @Test
     fun `it should not link test fixtures when the target component has no test fixtures source set`() {
         val targetComponent = component(ComponentReference("api"), withTestFixturesSourceSet = false)
-        val component = factory(modules = listOf(examModule(targetComponent)))
+        val component = componentDependencyExtension(modules = listOf(examModule(targetComponent)))
         createComponent(name = "domain")
 
         project.dependencies.add("domainApi", component(module = "exam", component = "api"))
@@ -110,7 +110,7 @@ class SourceSetLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should not link test fixtures when the source component has no test fixtures source set`() {
-        val component = factory()
+        val component = componentDependencyExtension()
         createComponent(name = "domain", withTestFixturesSourceSet = false)
 
         project.dependencies.add("domainApi", component(module = "exam", component = "api"))
@@ -122,7 +122,7 @@ class SourceSetLayoutComponentDependencyCompleterTest {
     @Test
     fun `it should fall back to the global test fixtures setting for the target component`() {
         val settings = sourceSetComponentSettings(withTestFixturesSourceSet = false)
-        val component = factory()
+        val component = componentDependencyExtension()
         createComponent(name = "domain", settings = settings, withTestFixturesSourceSet = true)
 
         project.dependencies.add("domainApi", component(module = "exam", component = "api"))
@@ -132,7 +132,7 @@ class SourceSetLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should reject an unknown target module`() {
-        val component = factory()
+        val component = componentDependencyExtension()
 
         assertThatThrownBy { component(module = "billing", component = "api") }
             .hasMessage("Arciphant configuration error: Module with name 'billing' does not exist.")
@@ -140,7 +140,7 @@ class SourceSetLayoutComponentDependencyCompleterTest {
 
     @Test
     fun `it should reject an unknown component of the target module`() {
-        val component = factory()
+        val component = componentDependencyExtension()
 
         assertThatThrownBy { component(module = "exam", component = "db") }
             .hasMessage("Arciphant configuration error: Component with name 'db' does not exist in module 'exam'.")
@@ -148,8 +148,8 @@ class SourceSetLayoutComponentDependencyCompleterTest {
 
     private val defaultModules = listOf(examModule(component(ComponentReference("api"))))
 
-    private fun factory(modules: List<Module> = defaultModules) =
-        ComponentDependencyFactory(modules, registry, project.sourceSetLayoutComponentDependency())
+    private fun componentDependencyExtension(modules: List<Module> = defaultModules) =
+        ComponentDependencyExtension(modules, registry, project.sourceSetLayoutComponentDependency())
 
     private fun createComponent(
         name: String,
