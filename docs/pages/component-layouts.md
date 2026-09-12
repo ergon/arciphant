@@ -109,7 +109,8 @@ only the (typically unused) `main` source set of a module project.
 
 A component of another module can be referenced by the module and component names of the Arciphant configuration,
 directly in the `dependencies` block — in the same style as external dependencies. The `component` extension registered
-by Arciphant creates the dependency notation; it is available in both component layouts:
+by Arciphant creates the dependency notation; it is available in both component layouts, in every project managed by
+Arciphant:
 
 ``` kotlin title="build.gradle.kts (source set layout, in the module project)"
 dependencies {
