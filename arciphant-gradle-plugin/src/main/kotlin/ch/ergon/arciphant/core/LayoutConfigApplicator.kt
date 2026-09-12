@@ -18,7 +18,6 @@ import org.gradle.api.Project
  */
 internal abstract class LayoutConfigApplicator(projectConfigs: List<GradleProjectConfig>) {
 
-    // in the project layout, a module is referenced by several project configs (one per component)
     private val modules: List<Module> = projectConfigs.map { it.module }.distinct()
 
     private val projectConfigsByPath = projectConfigs.associateBy { it.path.value }
