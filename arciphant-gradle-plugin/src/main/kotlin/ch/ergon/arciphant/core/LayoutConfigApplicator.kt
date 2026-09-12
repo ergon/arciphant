@@ -11,8 +11,10 @@ import org.gradle.api.Project
  * parameterized with the layout-specific [ComponentDependencyNotation]. Registering it here (instead of in
  * a separate callback) guarantees that the extension exists before anything that relies on it runs: the
  * layout-specific configuration itself (which uses the extension's [ComponentDependencyRegistry]) and the
- * build scripts (including their Kotlin DSL accessor generation). Deliberately, unmanaged projects do not
- * get the extension — using the notation there would not be completed, so it fails at compile time instead.
+ * build scripts (including their Kotlin DSL accessor generation). Deliberately, projects where the notation
+ * is not supported do not get the extension — using it there would not be completed, so it fails at compile
+ * time instead: this applies to unmanaged projects and to bundle projects, which bundle whole modules and
+ * must not depend on individual components.
  */
 internal abstract class LayoutConfigApplicator(projectConfigs: List<GradleProjectConfig>) {
 
@@ -24,10 +26,12 @@ internal abstract class LayoutConfigApplicator(projectConfigs: List<GradleProjec
     fun applyConfig(project: Project) {
         val config = projectConfigsByPath[project.path] ?: return
 
-        project.extensions.createComponentDependencyFactory(
-            modules = modules,
-            notation = componentDependencyNotation(project),
-        )
+        if (config !is GradleBundleModuleProjectConfig) {
+            project.extensions.createComponentDependencyFactory(
+                modules = modules,
+                notation = componentDependencyNotation(project),
+            )
+        }
         doApplyConfig(project, config)
     }
 
