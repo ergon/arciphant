@@ -31,10 +31,6 @@ class ArciphantSettingsPlugin {
                 // create project structure (during gradle initialization phase)
                 projectConfigs.map { it.path }.forEach { include(it.value) }
 
-                gradle.lifecycle.beforeProject {
-                    registerValidatePackageStructureTask(packageStructureValidationSettings)
-                }
-
                 // apply plugins and add dependencies (during gradle configuration phase)
                 when (settings.componentLayout) {
                     PROJECT -> {
@@ -50,6 +46,10 @@ class ArciphantSettingsPlugin {
                             configurer.configure(this)
                         }
                     }
+                }
+
+                gradle.lifecycle.beforeProject {
+                    registerValidatePackageStructureTask(packageStructureValidationSettings)
                 }
             }
 
