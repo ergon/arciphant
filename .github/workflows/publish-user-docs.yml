@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./docs
+        working-directory: ./docs-zensical
     steps:
       - uses: actions/configure-pages@v5.0.0
       - uses: actions/checkout@v6.0.1
@@ -24,6 +24,6 @@ jobs:
       - run: zensical build --clean
       - uses: actions/upload-pages-artifact@v4.0.0
         with:
-          path: docs/site
+          path: docs-zensical/site
       - uses: actions/deploy-pages@v4.0.5
         id: deployment
