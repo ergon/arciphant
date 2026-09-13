@@ -16,7 +16,7 @@ Four parts (the root is a composite build via `includeBuild`):
   **project**, reference for DSL usage
 - `arciphant-source-set-demo/` — the same example app with component layout **source set** (components are source sets
   inside one Gradle project per module)
-- `docs/` — user documentation (Zensical, published to GitHub Pages)
+- `docs` — user documentation ([Blume](https://useblume.dev), published to GitHub Pages)
 
 ## Build & Test Commands
 
@@ -69,7 +69,7 @@ Both demos implement the same "Online Learning Platform" module structure, once 
   (`sourceSetComponentLayout()`).
 - Convention plugins live in each demo's `build-logic/` (included build). At least one of them must appear with
   `apply false` in the settings `plugins` block, otherwise Gradle does not resolve them (known workaround, see
-  `docs/pages/using-plugins.md`).
+  `docs-zensical`).
 - Project layout: component folders normally have **no** `build.gradle.kts` — Arciphant configures them. Only components
   with extra dependencies have one (e.g. `course/domain/build.gradle.kts`). Component-specific convention plugins (e.g.
   `spring-web-component`) are registered in the DSL.
@@ -91,7 +91,7 @@ Both demos implement the same "Online Learning Platform" module structure, once 
   Gradle before running it from IntelliJ.
 - Code style: `internal` by default outside the DSL, extension functions instead of utility classes, named arguments in
   DSL calls.
-- Docs source is `docs/pages/`; `docs/site/` is **generated build output** (gitignored) — never edit it by hand,
+- Docs source is `docs-zensical`; `docs-zensical` is **generated build output** (gitignored) — never edit it by hand,
   regenerate via the Zensical build.
 - Plugin version lives in `arciphant-gradle-plugin/build.gradle.kts` (`version = "0.1.9"`).
 - Commit messages: short imperative sentence ending with a period (e.g. "Fix docs.").

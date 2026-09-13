@@ -11,7 +11,7 @@ The repository root is a composite build with no tasks of its own:
 - `arciphant-gradle-plugin/`: the Kotlin Gradle plugin.
 - `arciphant-project-demo/`: an example application for the usage of Arciphant with component layout 'project'
 - `arciphant-source-set-demo/`: an example application for the usage of Arciphant with component layout 'source set'
-- `docs/`: Zensical user documentation published to GitHub Pages.
+- `docs`: user documentation ([Blume](https://useblume.dev), published to GitHub Pages)
 
 ## Build and Verification
 
@@ -90,7 +90,7 @@ Both demo projects implement the same "Online Learning Platform" module structur
   `arciphant-source-set-demo/settings.gradle.kts` as the canonical example for the source set layout
   (`sourceSetComponentLayout()`).
 - Convention plugins live in each demo's `build-logic/` included build. At least one must be declared with `apply false`
-  in the settings `plugins` block so Gradle resolves them; see `docs/pages/using-plugins.md`.
+  in the settings `plugins` block so Gradle resolves them; see `docs-zensical`.
 - In `arciphant-project-demo`, component directories normally have no `build.gradle.kts`; Arciphant configures them. Add
   one only when a component needs extra configuration or dependencies.
 - In `arciphant-source-set-demo`, components are source sets under `src/<component>/` of the module project, and
@@ -103,9 +103,9 @@ Both demo projects implement the same "Online Learning Platform" module structur
 
 ## Documentation
 
-Documentation sources live in `docs/pages/`.
+Documentation sources live in `docs-zensical`.
 
-`docs/site/` is generated output and gitignored. Never edit it manually; regenerate it with Zensical.
+`docs-zensical` is generated output and gitignored. Never edit it manually; regenerate it with Zensical.
 
 Docker is required for documentation commands:
 
