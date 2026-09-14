@@ -14,6 +14,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_TARGET: github-pages
     defaults:
       run:
         working-directory: ./docs
@@ -25,9 +27,9 @@ jobs:
           cache: npm
           cache-dependency-path: docs/package-lock.json
       - run: npm ci
-      - run: npx blume build --strict
-        env:
-          DEPLOY_TARGET: github-pages
+      - run: npm run doctor
+      - run: npm run validate
+      - run: npm run build
       - uses: actions/upload-pages-artifact@v4.0.0
         with:
           path: docs/dist

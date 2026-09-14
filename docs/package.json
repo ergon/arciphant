@@ -4,8 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "blume dev",
-    "build": "blume build",
-    "doctor": "blume doctor"
+    "build": "blume build --strict",
+    "doctor": "blume doctor",
+    "validate": "blume validate --strict"
   },
   "dependencies": {
     "blume": "^1.6.4"
