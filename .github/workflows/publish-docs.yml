@@ -26,6 +26,8 @@ jobs:
           cache-dependency-path: docs/package-lock.json
       - run: npm ci
       - run: npx blume build --strict
+        env:
+          DEPLOY_TARGET: github-pages
       - uses: actions/upload-pages-artifact@v4.0.0
         with:
           path: docs/dist

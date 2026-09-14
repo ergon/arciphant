@@ -12,4 +12,9 @@ export default defineConfig({
     repo: "arciphant",
     dir: "docs",
   },
+  // GitHub Pages serves the site under /arciphant; local dev stays at the root.
+  deployment:
+    process.env.DEPLOY_TARGET === "github-pages"
+      ? { base: "/arciphant" }
+      : undefined,
 });
