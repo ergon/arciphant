@@ -12,8 +12,12 @@ modules and components can be created.
 ```mermaid
 ---
 config:
+    theme: base
     class:
         hideEmptyMembersBox: true
+    themeVariables:
+        primaryColor: "#DCEFF8"
+        primaryBorderColor: "#2078A4"
 ---
 classDiagram
     class Module {
@@ -51,6 +55,4 @@ classDiagram
     BundleModule "1" *-- "n" Module: includes
 
     Module <|-- BundleModule
-
-    classDef default fill:#eef0fe,stroke:#526cfe
 ```
