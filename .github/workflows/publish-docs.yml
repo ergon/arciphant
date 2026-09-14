@@ -1,0 +1,33 @@
+name: Publish documentation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./docs
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - run: npm ci
+      - run: npx blume build --strict
+      - uses: actions/upload-pages-artifact@v4.0.0
+        with:
+          path: docs/dist
+      - uses: actions/deploy-pages@v4.0.5
+        id: deployment
