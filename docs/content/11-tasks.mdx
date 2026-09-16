@@ -1,0 +1,53 @@
+---
+title: Gradle tasks
+description: The tasks Arciphant registers — projectDependencies and validatePackageStructure.
+icon: list-checks
+sidebar:
+  label: Tasks
+---
+
+Arciphant registers two Gradle tasks.
+
+## projectDependencies
+
+Prints all project dependencies of each project in the whole project hierarchy — useful to verify that the dependencies
+Arciphant wired are as expected. The task is only available in the root project:
+
+```bash
+./gradlew -q projectDependencies
+```
+
+```text
+Project ':customers:application'
+ |- [api] :customers:domain
+Project ':customers:domain'
+Project ':customers:web'
+ |- [implementation] :customers:application
+Project ':orders:application'
+ |- [api] :orders:domain
+...
+```
+
+Each line shows the configuration (e.g. `api`, `implementation`, `testFixturesApi`) and the target project of one
+dependency.
+
+## validatePackageStructure
+
+Validates that the package structure of the source files matches the project structure. The expected packages and all
+options are configured in the [`packageStructureValidation` block](/verify-project-structure).
+
+The task is registered on every project: each project validates its own sources, and the root project's task aggregates
+the validation of all subprojects. So a single invocation on the root project validates the whole build:
+
+```bash
+./gradlew validatePackageStructure
+```
+
+To make every build validate the package structure automatically, hook the task into the compilation — for example in
+the root `build.gradle.kts` (as the demo projects do):
+
+```kotlin build.gradle.kts
+tasks.named("compileKotlin") {
+    dependsOn("validatePackageStructure")
+}
+```

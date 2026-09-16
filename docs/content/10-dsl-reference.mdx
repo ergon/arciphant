@@ -1,0 +1,215 @@
+---
+title: DSL reference
+description: All functions of the Arciphant DSL — signatures, parameters and defaults.
+icon: code
+sidebar:
+  label: DSL Reference
+---
+
+This page is the reference of everything that can be declared inside the `arciphant { }` block in
+`settings.gradle.kts`. For a guided introduction see [Declare Structure](/declare-structure).
+
+## Global settings
+
+| Function                                    | Description                                                                                                                                                                                    |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `basePath(path: String)`                    | Base path under which all modules are created; can be nested (e.g. `"backend:my-service"`). Can be overridden per module. See [Custom base path](/additional-settings#custom-base-path).       |
+| `projectSetComponentLayout()`               | Selects the [project layout](/component-layouts) — one Gradle project per component. This is the default.                                                                                       |
+| `sourceSetComponentLayout()`                | Selects the [source set layout](/component-layouts#source-set-layout) — one Gradle project per functional module, components as source sets.                                                    |
+| `disableFolderCreation()`                   | Disables the [automatic creation](/additional-settings#automatic-folder-creation) of missing project folders.                                                                                   |
+| `disableQualifiedArchiveBaseName()`         | _Project layout only._ Disables the [qualified archive base name](/additional-settings#qualified-archive-base-name) `moduleName-componentName`.                                                 |
+| `withTestSourceSet(Boolean)`                | _Source set layout only._ Enables/disables test source sets for all components (default `true`). See [Test source set configuration](/component-layouts#test-source-set-configuration).         |
+| `withTestFixturesSourceSet(Boolean)`        | _Source set layout only._ Enables/disables test fixtures source sets for all components (default `true`).                                                                                       |
+| `testSourceSetName((String) -> String)`     | _Source set layout only._ Naming scheme for test source sets (default `<component>Test`).                                                                                                       |
+| `testFixturesSourceSetName((String) -> String)` | _Source set layout only._ Naming scheme for test fixtures source sets (default `<component>TestFixtures`).                                                                                  |
+| `packageStructureValidation { }`            | Configures the package structure validation — see [Verify project structure](/verify-project-structure) for all options.                                                                        |
+
+## Declaring structure
+
+### template
+
+```kotlin
+template(): ModuleTemplateBuilder
+```
+
+Creates a new [module template](/concepts#template). The returned builder provides [createComponent](#createcomponent),
+[extendComponent](#extendcomponent) and [extends](#extends).
+
+### module
+
+```kotlin
+module(name: String, basePath: String? = null, template: ModuleTemplateBuilder)
+module(name: String, basePath: String? = null, templates: Set<ModuleTemplateBuilder> = emptySet())
+```
+
+Creates a [domain module](/concepts#module), instantiated from the given template(s).
+
+<TypeTable
+  type={{
+    name: {
+      type: "String",
+      required: true,
+      description: "The module name; becomes the name of the Gradle project (and folder).",
+    },
+    basePath: {
+      type: "String?",
+      default: "global base path",
+      description: "Overrides the global base path for this module.",
+    },
+    "template / templates": {
+      type: "ModuleTemplateBuilder",
+      default: "emptySet()",
+      description:
+        "The template(s) the module is instantiated from. When several templates are combined, each component name may only be declared by one of them. A module may also be declared without any template.",
+    },
+  }}
+/>
+
+The returned builder provides [createComponent](#createcomponent) and [extendComponent](#extendcomponent) to add or
+extend components of this specific module.
+
+### library
+
+```kotlin
+library(name: String, basePath: String? = null, template: ModuleTemplateBuilder)
+library(name: String, basePath: String? = null, templates: Set<ModuleTemplateBuilder> = emptySet())
+```
+
+Creates a [library module](/concepts#module). Same parameters and builder as [module](#module). Each component of each
+domain module automatically gets an `api` dependency on the same-named component of the library module — see
+[Shared code](/declare-structure#shared-code).
+
+### bundle
+
+```kotlin
+bundle(name: String, basePath: String? = null, plugin: String? = null, includes: Set<ModuleBuilder> = emptySet())
+```
+
+Creates a [bundle module](/declare-structure#bundle-modules) that depends on the modules it includes.
+
+<TypeTable
+  type={{
+    name: {
+      type: "String",
+      required: true,
+      description: "The bundle name; becomes the name of the Gradle project (and folder).",
+    },
+    basePath: {
+      type: "String?",
+      default: "global base path",
+      description: "Overrides the global base path for this bundle.",
+    },
+    plugin: {
+      type: "String?",
+      description:
+        "Project layout only. Id of a convention plugin applied to the bundle project — see Bundle plugins.",
+    },
+    includes: {
+      type: "Set<ModuleBuilder>",
+      default: "all functional modules",
+      description:
+        "The modules (or other bundles) this bundle packages. If empty, the bundle depends on all functional modules.",
+    },
+  }}
+/>
+
+## Declaring components
+
+### createComponent
+
+Available on templates and on modules/libraries.
+
+```kotlin
+createComponent(
+    name: String,
+    plugin: String? = null,
+    dependencies: Set<String> = emptySet(),
+    apiDependencies: Set<String> = emptySet(),
+    withTestSourceSet: Boolean? = null,
+    withTestFixturesSourceSet: Boolean? = null,
+)
+```
+
+<TypeTable
+  type={{
+    name: {
+      type: "String",
+      required: true,
+      description:
+        "The component name. In the source set layout, prefer lowerCamelCase names — the name becomes a source set name.",
+    },
+    plugin: {
+      type: "String?",
+      description:
+        "Project layout only. Id of a convention plugin applied to the component project — see Using Plugins.",
+    },
+    dependencies: {
+      type: "Set<String>",
+      default: "emptySet()",
+      description:
+        "Names of components of the same module this component gets an implementation dependency on.",
+    },
+    apiDependencies: {
+      type: "Set<String>",
+      default: "emptySet()",
+      description:
+        "Names of components of the same module this component gets an api (transitive) dependency on. A component listed here does not need to be repeated in dependencies.",
+    },
+    withTestSourceSet: {
+      type: "Boolean?",
+      default: "global setting",
+      description: "Source set layout only. Overrides the global withTestSourceSet flag for this component.",
+    },
+    withTestFixturesSourceSet: {
+      type: "Boolean?",
+      default: "global setting",
+      description:
+        "Source set layout only. Overrides the global withTestFixturesSourceSet flag for this component.",
+    },
+  }}
+/>
+
+Creating a component that already exists (e.g. inherited from a template) is a configuration error — use
+[extendComponent](#extendcomponent) instead.
+
+### extendComponent
+
+Available on templates and on modules/libraries.
+
+```kotlin
+extendComponent(
+    name: String,
+    dependencies: Set<String> = emptySet(),
+    apiDependencies: Set<String> = emptySet(),
+)
+```
+
+Adds the given dependencies to an already declared (typically inherited) component — see
+[Extending components](/declare-structure#extending-components). Everything else about the component remains untouched.
+Each component can be extended at most once per module or template; extending a component that does not exist is a
+configuration error.
+
+### extends
+
+Available on templates only.
+
+```kotlin
+extends(template: ModuleTemplateBuilder)
+```
+
+Inherits all components of another template — see [Different shapes](/declare-structure#different-shapes).
+
+## Dependencies in build scripts
+
+### component
+
+```kotlin
+dependencies {
+    "implementation"(component(module = "contracts", component = "api"))
+}
+```
+
+The `component(module, component)` extension creates a dependency notation for a component of another module, resolved
+from the Arciphant configuration. It is registered on every project managed by Arciphant except bundle projects and is
+available in both component layouts — see
+[Component dependencies in build scripts](/component-layouts#component-dependencies-in-build-scripts).

@@ -1,0 +1,83 @@
+---
+title: Troubleshooting
+description: Common errors when using Arciphant and how to fix them.
+icon: circle-help
+---
+
+A good first step when a build behaves unexpectedly is to print the wired dependencies with the
+[`projectDependencies` task](/tasks#projectdependencies).
+
+Configuration errors detected by Arciphant fail the build during the initialization phase with a message prefixed
+`Arciphant configuration error: …` — these indicate a problem in the `arciphant { }` block itself. The most common
+errors and symptoms:
+
+## Convention plugin not found
+
+**Symptom**: Gradle fails with `Plugin [id: '…'] was not found in any of the following sources`, although the plugin is
+provided by a build included via `includeBuild` in `pluginManagement`.
+
+Gradle only resolves plugins from included builds when at least one plugin is referenced in the settings `plugins`
+block. Add one of the convention plugins with `apply false` to `settings.gradle.kts` — see
+[Use includeBuild instead of buildSrc](/using-plugins#use-includebuild-instead-of-buildsrc).
+
+## Duplicate jar entries when bundling
+
+**Symptom**:
+
+```text
+Entry BOOT-INF/lib/db-plain.jar is a duplicate but no duplicate handling strategy has been set.
+```
+
+Multiple modules contain a component with the same name, so their jars collide when packaged together. Arciphant
+prevents this by default with [qualified archive base names](/additional-settings#qualified-archive-base-name) — this
+error can only occur when that feature was disabled with `disableQualifiedArchiveBaseName()`.
+
+## Component has already been declared
+
+**Symptom**:
+
+```text
+Arciphant configuration error: Component with name 'web' has already been declared.
+```
+
+The component already exists in the module — typically inherited from a template. To add dependencies to an inherited
+component, use [`extendComponent`](/declare-structure#extending-components) instead of `createComponent`. The same error
+occurs when [combining multiple templates](/declare-structure#multiple-templates) that declare a component of the same
+name.
+
+## Component does not exist
+
+**Symptom**:
+
+```text
+Arciphant configuration error: Component with name 'web' does not exist.
+```
+
+`extendComponent` was called for a component that is not declared in the module or its templates. Check the component
+name, or use `createComponent` to create a new component.
+
+## Option rejected for the current component layout
+
+**Symptom**:
+
+```text
+Arciphant configuration error: 'plugin' cannot be configured for component layout 'SOURCE_SET'
+```
+
+Some options only make sense in one of the two [component layouts](/component-layouts) and are rejected in the other
+rather than silently ignored:
+
+- `plugin` (on components and bundles) is only available in the **project** layout — see
+  [Layout-specific restrictions](/component-layouts#layout-specific-restrictions).
+- `withTestSourceSet`, `withTestFixturesSourceSet`, `testSourceSetName` and `testFixturesSourceSetName` are only
+  available in the **source set** layout.
+- `disableQualifiedArchiveBaseName()` is only available in the **project** layout.
+
+## Project folder does not exist (Gradle 9+)
+
+**Symptom**: With Gradle 9 or newer, a module or component project cannot be configured because its folder does not
+exist on disk.
+
+Gradle 9 requires every project folder to be present. Arciphant creates missing folders automatically unless this was
+disabled with `disableFolderCreation()` — see
+[Automatic folder creation](/additional-settings#automatic-folder-creation).

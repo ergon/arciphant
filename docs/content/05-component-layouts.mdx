@@ -11,6 +11,26 @@ Arciphant supports two ways of mapping configured components to Gradle:
 - The source set layout creates one Gradle project per functional module and maps every component to source sets inside
   that project.
 
+## Choosing a layout
+
+Both layouts enforce the same component structure and dependencies — they differ in how the structure is mapped to
+Gradle:
+
+|                                | Project layout                                                                                 | Source set layout                                                                     |
+| ------------------------------ | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Gradle projects                | one per component                                                                              | one per functional module                                                             |
+| Plugins per component          | yes — registered in the DSL, see [Using Plugins](/using-plugins)                               | no — plugins are applied per module project                                           |
+| Artifacts                      | one jar per component, with [qualified names](/additional-settings#qualified-archive-base-name) | one jar per module                                                                    |
+| Test fixtures                  | via the `java-test-fixtures` plugin (optional)                                                 | built-in source sets, no plugin required                                              |
+| External dependencies          | declared per component project                                                                 | declared per component configuration, or [shared](#shared-dependency-configurations)  |
+| Configuration cache            | supported                                                                                      | supported                                                                             |
+| Isolated projects (incubating) | not supported                                                                                  | supported                                                                             |
+
+As a rule of thumb: choose the **project layout** if your components need their own convention plugins or artifacts —
+each component being a full Gradle project gives you the complete Gradle feature set per component. Choose the
+**source set layout** if you want to keep the number of Gradle projects small (relevant for IDE sync and configuration
+time in large builds) or need compatibility with Gradle's isolated projects feature.
+
 ## Source set layout
 
 Enable the source set layout with `sourceSetComponentLayout()` in `settings.gradle.kts`:

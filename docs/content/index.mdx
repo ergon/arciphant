@@ -15,6 +15,57 @@ a simple DSL:
 - These templates can be configured using a simple DSL directly in the Gradle settings file
 - Modules can be instantiated based on templates and further components can be added as required
 
+## The problem
+
+Suppose your application consists of 4 domain modules, each with the same clean-architecture-like structure of 4
+components. Mapping this onto a plain Gradle multi-project build means writing 16 `include(...)` statements:
+
+```kotlin settings.gradle.kts
+include("module-a:domain")
+include("module-a:application")
+include("module-a:web")
+include("module-a:db")
+include("module-b:domain")
+// … 8 more include(…) lines for module-b and module-c …
+include("module-d:web")
+include("module-d:db")
+```
+
+…and, more importantly, a `build.gradle.kts` in every one of the 16 component projects, each wiring its dependencies by
+hand:
+
+```kotlin module-a/web/build.gradle.kts
+dependencies {
+    implementation(project(":module-a:application"))
+}
+```
+
+The architecture rule ("_web_ depends on _application_, which exposes _domain_") is duplicated once per module. It has
+to be kept consistent manually, test-fixture dependencies come on top, and every new module means copying the whole
+boilerplate again.
+
+## The Arciphant way
+
+With Arciphant, the same structure is declared **once** — as a template in `settings.gradle.kts`:
+
+```kotlin settings.gradle.kts
+arciphant {
+    val moduleTemplate = template()
+        .createComponent(name = "domain")
+        .createComponent(name = "application", apiDependencies = setOf("domain"))
+        .createComponent(name = "web", dependencies = setOf("application"))
+        .createComponent(name = "db", dependencies = setOf("application"))
+
+    module(name = "module-a", template = moduleTemplate)
+    module(name = "module-b", template = moduleTemplate)
+    module(name = "module-c", template = moduleTemplate)
+    module(name = "module-d", template = moduleTemplate)
+}
+```
+
+Arciphant generates the Gradle projects, wires all component dependencies (including test fixtures) and even creates the
+folders on disk — the component projects need no `build.gradle.kts` at all. Adding a fifth module is one line.
+
 This offers various advantages:
 
 - Architecture styles (e.g. Clean Architecture) can be mapped cleanly and declaratively as a Gradle Multi-Project Build
@@ -28,6 +79,15 @@ This offers various advantages:
 Arciphant offers the greatest benefit for software projects that consist of many different modules, whereby these
 modules have the same or a similar technical structure (e.g. Clean Architecture, Hexagonal Architecture, Onion
 Architecture, Layered Architecture) as, for example, in a modulith architecture.
+
+<CardGroup cols={2}>
+  <Card title="Getting started" href="/getting-started" icon="rocket">
+    Create a first Arciphant project from scratch in five minutes.
+  </Card>
+  <Card title="Declare structure" href="/declare-structure" icon="component">
+    The full tour: templates, modules, libraries and bundles.
+  </Card>
+</CardGroup>
 
 ## Technologies
 

@@ -18,8 +18,9 @@ Most of these mappings follow Arciphant's defaults (lower case, hyphens removed 
 fragment like `ppa` is configured with
 [`mapProjectNamesToPackageFragments`](#mapprojectnamestopackagefragments).
 
-Arciphant provides the task `validatePackageStructure` to verify correct package structure. The task is only available in
-the root project but scans all the subprojects, too.
+Arciphant provides the [task `validatePackageStructure`](/tasks#validatepackagestructure) to verify correct package
+structure. The task is registered on every project; the root project's task aggregates the validation of all
+subprojects, so a single invocation on the root project validates the whole build.
 
 To configure it, add a `packageStructureValidation` block to the _arciphant_ configuration, for example:
 
