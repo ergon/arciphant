@@ -11,11 +11,11 @@ sidebar:
 Assume you have a modulithic application with 4 domain modules. In each module, you want to have a
 clean-architecture-like structure with the domain in the middle:
 
-![Simple Example](./images/structure-01-modules.drawio.png)
+![Simple Example](../images/structure-01-modules.drawio.png)
 
-Normally, if you want to build this structure with nested Gradle projects, you have a lot of duplicated build setup.
-With Arciphant you can configure a template that defines the structure of the components (rings) of a module and then
-use this template to create (instantiate) the 4 modules:
+Building this structure with plain nested Gradle projects means a lot of duplicated build setup. With Arciphant you can
+configure a template that defines the structure of the components (rings) of a module and then use this template to
+create (instantiate) the 4 modules:
 
 ```kotlin settings.gradle.kts
 arciphant {
@@ -61,13 +61,13 @@ root-project
 
 ## Dependency types
 
-You probably noticed the different attributes to setup dependency between components:
+You probably noticed the two attributes for setting up dependencies between components:
 
 - `dependencies`: Creates an _implementation_ dependency from component _A_ to component _B_
 - `apiDependencies`: Creates an _api_ (transitive) dependency from component _A_ to component _B_, meaning that every
   component depending on _A_ gets access to _B_
 
-In above example this means that _web_ and _db_ can access _domain_ thanks to the API dependency to _application_.
+In the above example this means that _web_ and _db_ can access _domain_ thanks to the API dependency of _application_.
 
 :::info[Transitive dependencies in Clean Architecture]
 Whether transitive dependencies (i.e. `apiDependencies`) are reasonable in a clean architecture or whether each ring (component) should only access the next inner ring is an interesting discussion.
@@ -81,13 +81,12 @@ Now assume that for each of the components (rings) you need some shared code (e.
 db-components). So what you can do is create a shared library module with the same component structure. The following
 image shows this setup (with only two modules for simplicity):
 
-![Library](./images/structure-02-library.drawio.png)
+![Library](../images/structure-02-library.drawio.png)
 
-What you normally have to do is manage all the dependencies manually, which is error prone and pollutes the Gradle build
-setup with a lot of repetitive code.
+Normally you would have to manage all these dependencies manually, which is error-prone and pollutes the Gradle build
+setup with repetitive code.
 
-Instead of having to manage all these dependencies manually, Arciphant provides an out-of-the-box mechanism. You can
-specify a library module:
+Arciphant instead provides an out-of-the-box mechanism: you can specify a library module:
 
 ```kotlin
 library(name = "shared", template = moduleTemplate)
@@ -127,7 +126,7 @@ Since Arciphant is a tool and not a methodology, it provides the ability without
 Now assume that some modules (e.g. Module C and Module D) need access to a file store (e.g. MinIO). You want to put this
 code into a separate component called `fs` like the following:
 
-![Different shapes](./images/structure-03-different-shapes.drawio.png)
+![Different shapes](../images/structure-03-different-shapes.drawio.png)
 
 You can solve this problem by creating another template, extending from the existing template:
 
@@ -170,7 +169,7 @@ Even though not all modules require the additional `fs` component, the library c
 Of course, it is also possible to declare individual components in particular modules. E.g. if Module D requires the
 integration of an external API, you want to create a dedicated component 'ext-api' for the integration code:
 
-![Individual shapes](./images/structure-04-individual-shapes.drawio.png)
+![Individual shapes](../images/structure-04-individual-shapes.drawio.png)
 
 To do so, you can create a component for the specific module:
 
@@ -260,8 +259,8 @@ This creates a module `my-app` that has a dependency to all components of all mo
 have any components. A convention plugin (e.g. for packaging the application with Spring Boot) can be registered for a
 bundle — see [Bundle plugins](/using-plugins#bundle-plugins).
 
-It is also possible to declare explicit dependencies, e.g. if you need multiple different bundles who should _not_
-automatically depend to all domain modules:
+It is also possible to declare explicit dependencies, e.g. if you need multiple different bundles that should _not_
+automatically depend on all domain modules:
 
 ```kotlin
 bundle(name = "bundleX", includes = setOf(coreModuleA, coreModuleB, specificModuleX))
@@ -284,7 +283,7 @@ additional source set `testFixtures` in between `main` and `test`. While `test` 
 See [official documentation](https://docs.gradle.org/current/userguide/java_testing.html#sec:java_test_fixtures) for
 further information.
 
-Arciphant nicely plays together with `java-test-fixtures`: If `java-test-fixtures` is applied in the Gradle build, it
+Arciphant plays nicely with `java-test-fixtures`: If `java-test-fixtures` is applied in the Gradle build, it
 automatically creates the dependencies for the `testFixtures` source sets between components. So if e.g. the
 _application_ component depends on _domain_, the `testFixtures` of `domain` will be usable in `testFixtures` and `test`
 of `application`. Of course, if it is an api dependency, the transitivity is also taken into account.

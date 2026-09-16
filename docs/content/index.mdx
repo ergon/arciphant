@@ -8,8 +8,8 @@ import icon from "../public/icon.svg";
 
 ## About Arciphant
 
-Arciphant is a Gradle plugin that allows to specify the module structure of complex software project declaratively using
-a simple DSL:
+Arciphant is a Gradle plugin that lets you declare the module structure of a complex software project with a simple
+DSL:
 
 - Module templates define the technical structure (components and their dependencies) of modules
 - These templates can be configured using a simple DSL directly in the Gradle settings file
@@ -66,7 +66,7 @@ arciphant {
 Arciphant generates the Gradle projects, wires all component dependencies (including test fixtures) and even creates the
 folders on disk — the component projects need no `build.gradle.kts` at all. Adding a fifth module is one line.
 
-This offers various advantages:
+This brings several advantages:
 
 - Architecture styles (e.g. Clean Architecture) can be mapped cleanly and declaratively as a Gradle Multi-Project Build
 - The boilerplate part in the Gradle code is minimized
@@ -76,12 +76,12 @@ This offers various advantages:
 - Thanks to the interaction with the java-test-fixtures plugin (optional), testing dependencies work out-of-the-box
   without further effort
 
-Arciphant offers the greatest benefit for software projects that consist of many different modules, whereby these
-modules have the same or a similar technical structure (e.g. Clean Architecture, Hexagonal Architecture, Onion
-Architecture, Layered Architecture) as, for example, in a modulith architecture.
+Arciphant offers the greatest benefit for software projects that consist of many modules sharing the same or a similar
+technical structure (e.g. Clean Architecture, Hexagonal Architecture, Onion Architecture, Layered Architecture) — as,
+for example, in a modulith architecture.
 
 <CardGroup cols={2}>
-  <Card title="Getting started" href="/getting-started" icon="rocket">
+  <Card title="Quickstart" href="/getting-started" icon="rocket">
     Create a first Arciphant project from scratch in five minutes.
   </Card>
   <Card title="Declare structure" href="/declare-structure" icon="component">
@@ -109,7 +109,7 @@ plugin to the extent that we need for our own projects.
 
 ## About the name
 
-The name Arciphant is made up of architecture and elephant, whereby elephant is to be understood as a metaphor for a
-large project and at the same time is a reference to the Gradle logo.
+The name Arciphant combines architecture and elephant — the elephant being both a metaphor for a large project and a
+nod to the Gradle logo.
 
 <img src={icon.src} alt="Arciphant logo" width="300" />

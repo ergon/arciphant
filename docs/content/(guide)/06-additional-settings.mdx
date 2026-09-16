@@ -6,8 +6,8 @@ icon: settings
 
 ## Custom base path
 
-If your module/component structure does not start at the root project level, you can specify a base path. For example if
-your application is located in a sub-project `backend`:
+If your module/component structure does not start at the root project level, you can specify a base path. For example,
+if your application is located in a sub-project `backend`:
 
 ```kotlin settings.gradle.kts {2}
 arciphant {
@@ -51,9 +51,9 @@ If you disable this feature, you are responsible yourself for creating all the n
 
 ## Qualified archive base name
 
-With Arciphant, we typically have multiple gradle projects with the same name, since all the modules have the same
-component projects. This can lead to problems when bundling module components together, since the generated jar file of
-those components has the same name, too. Without declaring a _duplicate handling strategy_ in the build, this leads to
+With Arciphant, a build typically contains multiple Gradle projects with the same name, since all modules have the same
+component projects. This can lead to problems when bundling module components together, since the generated jar files of
+those components have the same name, too. Without declaring a _duplicate handling strategy_ in the build, this leads to
 an error:
 
 ```text
@@ -78,7 +78,7 @@ This option applies only to `ComponentLayout.PROJECT`. Arciphant rejects it in `
 creates a single archive per module.
 
 :::warning[Duplicate name handling strategy required]
-But be aware that if you disable it, you have to take care of preventing duplicated names yourself. To solve the issue in a generic way for arbitrary gradle projects, you can use something like this:
+Be aware that if you disable it, you have to prevent duplicate names yourself. To solve the issue in a generic way for arbitrary Gradle projects, you can use something like this:
 
 ```kotlin build.gradle.kts {2-4}
 subprojects {

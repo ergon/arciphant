@@ -9,16 +9,16 @@ sidebar:
 ## Component plugins
 
 The real power of Arciphant comes into play when you use it in combination with convention plugins that configure your
-component's characteristic and external dependencies.
+components' characteristics and external dependencies.
 
 Convention plugins are pre-compiled script plugins that contain build logic. See
 the [official Gradle documentation](https://docs.gradle.org/current/userguide/implementing_gradle_plugins_precompiled.html)
-for detailed information. They can be either located in the `buildSrc` folder or in a separate gradle project that is
+for detailed information. They can be located either in the `buildSrc` folder or in a separate Gradle project that is
 included with `includeBuild` in `pluginManagement`.
 
-Assuming that each of the components in your modules has some specific gradle setup such as external dependencies and
-the configuration around them. For example in the web component there might be the dependency to a web-framework and in
-the db-layer a library that manages database access.
+Assume that each of the components in your modules has some specific Gradle setup, such as external dependencies and
+the configuration around them. For example, the web component might depend on a web framework, and the db component on
+a library that manages database access.
 
 So assume you have the following convention plugins in your `buildSrc` folder specifying the dependencies/configurations
 for the respective component types:
@@ -51,8 +51,8 @@ Like component plugins, bundle plugins are available only with `ComponentLayout.
 
 ## Use `includeBuild` instead of `buildSrc`
 
-It is good practice to use a dedicated project for convention plugins instead of using `buildSrc`-folder and include it
-with `includeBuild`:
+It is good practice to use a dedicated project for convention plugins instead of the `buildSrc` folder and to include
+it with `includeBuild`:
 
 ```kotlin settings.gradle.kts {3}
 pluginManagement {
@@ -61,8 +61,8 @@ pluginManagement {
 }
 ```
 
-Unfortunately, these plugins won't work together with Arciphant out-of-the-box. The problem is that for some reason the
-`pluginManagement` block is only treated by Gradle when plugins are applied in the `plugins` block. Since Arciphant
+Unfortunately, these plugins won't work together with Arciphant out-of-the-box. The problem is that the
+`pluginManagement` block is only honored by Gradle when plugins are applied in the `plugins` block. Since Arciphant
 applies plugins programmatically (using `pluginManager.apply("plugin-id")`), the plugin will not be found. To overcome
 this issue you can use the following simple hack: just add one of the convention plugins to the plugins block of your
 `settings.gradle.kts` file with `apply false`:
