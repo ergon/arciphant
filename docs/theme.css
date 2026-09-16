@@ -1,0 +1,15 @@
+/*
+ * Restore the code-block title bar for titled fences inside <Tab> panels.
+ * Blume's theme clears the bar inside blume-tabs ("the tab container owns the
+ * frame"), which is right for <CodeGroup> — its tab strip already shows the
+ * filename — but loses real information for titled fences placed in authored
+ * <Tabs>. Scoped to direct children of a <Tab> panel with an explicit title,
+ * so CodeGroup blocks (where the pre itself is the panel) stay flush.
+ */
+.prose blume-tabs [data-blume-tab-panel] > pre[data-title] {
+  padding-top: 3.75rem;
+}
+
+.prose blume-tabs [data-blume-tab-panel] > pre[data-title]::before {
+  content: attr(data-title);
+}
