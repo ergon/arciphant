@@ -1,0 +1,10 @@
+---
+/**
+ * Thin wrapper around Blume's built-in Tree. Needed because the override in
+ * ../components.ts must be a *different* object than the built-in — mutating
+ * Blume's own Tree via Object.assign is undone by the generated runtime.
+ */
+import TreeRoot from "blume/components/content/Tree.astro";
+---
+
+<TreeRoot><slot /></TreeRoot>

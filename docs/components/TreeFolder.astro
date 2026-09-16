@@ -1,0 +1,66 @@
+---
+/**
+ * Copy of Blume's built-in TreeFolder (blume/components/content/TreeFolder.astro)
+ * extended with an `icon` prop (Lucide icon name, defaults to "folder") so trees
+ * can distinguish e.g. Gradle projects from source sets. Registered via ../components.ts.
+ */
+import Icon from "blume/components/Icon.astro";
+
+const { defaultOpen = false, icon = "folder", name, openable = true } = Astro.props;
+---
+
+{
+  openable ? (
+    <details
+      data-blume-tree-folder
+      data-blume-tree-openable="true"
+      open={defaultOpen}
+      role="none"
+    >
+      <summary
+        class="flex cursor-pointer list-none items-center gap-2 rounded px-2 py-1 font-medium outline-none transition-colors hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-accent/40 [&::-webkit-details-marker]:hidden"
+        data-blume-tree-item
+        data-blume-tree-name={name}
+        role="treeitem"
+      >
+        <Icon
+          class="shrink-0 transition-transform [details[open]>summary_&]:rotate-90"
+          name="chevron-right"
+          size={15}
+        />
+        <Icon class="shrink-0 text-muted-foreground" name={icon} size={15} />
+        <span class="font-mono text-xs">{name}</span>
+      </summary>
+      <div
+        class="ms-4 border-border border-s ps-2"
+        data-blume-tree-children
+        role="group"
+      >
+        <slot />
+      </div>
+    </details>
+  ) : (
+    <div
+      data-blume-tree-folder
+      data-blume-tree-openable="false"
+      role="none"
+    >
+      <div
+        class="flex items-center gap-2 rounded px-2 py-1 font-medium outline-none transition-colors hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-accent/40"
+        data-blume-tree-item
+        data-blume-tree-name={name}
+        role="treeitem"
+      >
+        <Icon class="shrink-0 text-muted-foreground" name={icon} size={15} />
+        <span class="font-mono text-xs">{name}</span>
+      </div>
+      <div
+        class="ms-4 border-border border-s ps-2"
+        data-blume-tree-children
+        role="group"
+      >
+        <slot />
+      </div>
+    </div>
+  )
+}

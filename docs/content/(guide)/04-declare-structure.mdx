@@ -38,221 +38,222 @@ application, web, db) in each module. How the components are mapped to Gradle de
 
 <Tabs>
   <Tab title="Project layout (default)">
-    Every component becomes its own nested Gradle project with the standard Gradle source sets:
+    Every component becomes its own nested Gradle project (<Icon class="inline" name="package" size={15} />) with the
+    standard Gradle source sets (<Icon class="inline" name="folder-code" size={15} />):
 
     <Tree>
-      <Tree.Folder name="root-project" defaultOpen>
-        <Tree.Folder name="module-a" defaultOpen>
-          <Tree.Folder name="domain" defaultOpen>
+      <Tree.Folder name="root-project" icon="package" defaultOpen>
+        <Tree.Folder name="module-a" icon="package" defaultOpen>
+          <Tree.Folder name="domain" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
-          <Tree.Folder name="application" defaultOpen>
+          <Tree.Folder name="application" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
-          <Tree.Folder name="web" defaultOpen>
+          <Tree.Folder name="web" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
-          <Tree.Folder name="db" defaultOpen>
+          <Tree.Folder name="db" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-            </Tree.Folder>
-          </Tree.Folder>
-        </Tree.Folder>
-        <Tree.Folder name="module-b" defaultOpen>
-          <Tree.Folder name="domain" defaultOpen>
-            <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-              <Tree.Folder name="test">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-              <Tree.Folder name="testFixtures">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-            </Tree.Folder>
-          </Tree.Folder>
-          <Tree.Folder name="application" defaultOpen>
-            <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-              <Tree.Folder name="test">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-              <Tree.Folder name="testFixtures">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-            </Tree.Folder>
-          </Tree.Folder>
-          <Tree.Folder name="web" defaultOpen>
-            <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-              <Tree.Folder name="test">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-              <Tree.Folder name="testFixtures">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-            </Tree.Folder>
-          </Tree.Folder>
-          <Tree.Folder name="db" defaultOpen>
-            <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-              <Tree.Folder name="test">
-                <Tree.Folder name="kotlin" />
-              </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
         </Tree.Folder>
-        <Tree.Folder name="module-c" defaultOpen>
-          <Tree.Folder name="domain" defaultOpen>
+        <Tree.Folder name="module-b" icon="package" defaultOpen>
+          <Tree.Folder name="domain" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
-          <Tree.Folder name="application" defaultOpen>
+          <Tree.Folder name="application" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
-          <Tree.Folder name="web" defaultOpen>
+          <Tree.Folder name="web" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
-          <Tree.Folder name="db" defaultOpen>
+          <Tree.Folder name="db" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
         </Tree.Folder>
-        <Tree.Folder name="module-d" defaultOpen>
-          <Tree.Folder name="domain" defaultOpen>
+        <Tree.Folder name="module-c" icon="package" defaultOpen>
+          <Tree.Folder name="domain" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
-          <Tree.Folder name="application" defaultOpen>
+          <Tree.Folder name="application" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
-          <Tree.Folder name="web" defaultOpen>
+          <Tree.Folder name="web" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
           </Tree.Folder>
-          <Tree.Folder name="db" defaultOpen>
+          <Tree.Folder name="db" icon="package" defaultOpen>
             <Tree.Folder name="src" defaultOpen>
-              <Tree.Folder name="main">
+              <Tree.Folder name="main" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="test">
+              <Tree.Folder name="test" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
-              <Tree.Folder name="testFixtures">
+              <Tree.Folder name="testFixtures" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+        </Tree.Folder>
+        <Tree.Folder name="module-d" icon="package" defaultOpen>
+          <Tree.Folder name="domain" icon="package" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="application" icon="package" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="web" icon="package" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="db" icon="package" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test" icon="folder-code">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures" icon="folder-code">
                 <Tree.Folder name="kotlin" />
               </Tree.Folder>
             </Tree.Folder>
@@ -265,166 +266,167 @@ application, web, db) in each module. How the components are mapped to Gradle de
     [Structurize test code](#structurize-test-code).
   </Tab>
   <Tab title="Source set layout">
-    Every module becomes one Gradle project whose components are source sets:
+    Every module becomes one Gradle project (<Icon class="inline" name="package" size={15} />) whose components are
+    source sets (<Icon class="inline" name="folder-code" size={15} />):
 
     <Tree>
-      <Tree.Folder name="root-project" defaultOpen>
-        <Tree.Folder name="module-a" defaultOpen>
+      <Tree.Folder name="root-project" icon="package" defaultOpen>
+        <Tree.Folder name="module-a" icon="package" defaultOpen>
           <Tree.Folder name="src" defaultOpen>
-            <Tree.Folder name="domain">
+            <Tree.Folder name="domain" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="domainTest">
+            <Tree.Folder name="domainTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="domainTestFixtures">
+            <Tree.Folder name="domainTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="application">
+            <Tree.Folder name="application" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="applicationTest">
+            <Tree.Folder name="applicationTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="applicationTestFixtures">
+            <Tree.Folder name="applicationTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="web">
+            <Tree.Folder name="web" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="webTest">
+            <Tree.Folder name="webTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="webTestFixtures">
+            <Tree.Folder name="webTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="db">
+            <Tree.Folder name="db" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="dbTest">
+            <Tree.Folder name="dbTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="dbTestFixtures">
+            <Tree.Folder name="dbTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
           </Tree.Folder>
         </Tree.Folder>
-        <Tree.Folder name="module-b" defaultOpen>
+        <Tree.Folder name="module-b" icon="package" defaultOpen>
           <Tree.Folder name="src" defaultOpen>
-            <Tree.Folder name="domain">
+            <Tree.Folder name="domain" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="domainTest">
+            <Tree.Folder name="domainTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="domainTestFixtures">
+            <Tree.Folder name="domainTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="application">
+            <Tree.Folder name="application" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="applicationTest">
+            <Tree.Folder name="applicationTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="applicationTestFixtures">
+            <Tree.Folder name="applicationTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="web">
+            <Tree.Folder name="web" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="webTest">
+            <Tree.Folder name="webTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="webTestFixtures">
+            <Tree.Folder name="webTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="db">
+            <Tree.Folder name="db" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="dbTest">
+            <Tree.Folder name="dbTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="dbTestFixtures">
+            <Tree.Folder name="dbTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
           </Tree.Folder>
         </Tree.Folder>
-        <Tree.Folder name="module-c" defaultOpen>
+        <Tree.Folder name="module-c" icon="package" defaultOpen>
           <Tree.Folder name="src" defaultOpen>
-            <Tree.Folder name="domain">
+            <Tree.Folder name="domain" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="domainTest">
+            <Tree.Folder name="domainTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="domainTestFixtures">
+            <Tree.Folder name="domainTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="application">
+            <Tree.Folder name="application" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="applicationTest">
+            <Tree.Folder name="applicationTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="applicationTestFixtures">
+            <Tree.Folder name="applicationTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="web">
+            <Tree.Folder name="web" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="webTest">
+            <Tree.Folder name="webTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="webTestFixtures">
+            <Tree.Folder name="webTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="db">
+            <Tree.Folder name="db" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="dbTest">
+            <Tree.Folder name="dbTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="dbTestFixtures">
+            <Tree.Folder name="dbTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
           </Tree.Folder>
         </Tree.Folder>
-        <Tree.Folder name="module-d" defaultOpen>
+        <Tree.Folder name="module-d" icon="package" defaultOpen>
           <Tree.Folder name="src" defaultOpen>
-            <Tree.Folder name="domain">
+            <Tree.Folder name="domain" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="domainTest">
+            <Tree.Folder name="domainTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="domainTestFixtures">
+            <Tree.Folder name="domainTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="application">
+            <Tree.Folder name="application" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="applicationTest">
+            <Tree.Folder name="applicationTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="applicationTestFixtures">
+            <Tree.Folder name="applicationTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="web">
+            <Tree.Folder name="web" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="webTest">
+            <Tree.Folder name="webTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="webTestFixtures">
+            <Tree.Folder name="webTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="db">
+            <Tree.Folder name="db" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="dbTest">
+            <Tree.Folder name="dbTest" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
-            <Tree.Folder name="dbTestFixtures">
+            <Tree.Folder name="dbTestFixtures" icon="folder-code">
               <Tree.Folder name="kotlin" />
             </Tree.Folder>
           </Tree.Folder>
