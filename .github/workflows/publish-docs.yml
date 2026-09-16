@@ -9,29 +9,17 @@ permissions:
   id-token: write
 
 jobs:
+  build:
+    uses: ./.github/workflows/build-docs.yml
+    with:
+      upload-pages-artifact: true
+
   deploy:
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    env:
-      DEPLOY_TARGET: github-pages
-    defaults:
-      run:
-        working-directory: ./docs
     steps:
-      - uses: actions/checkout@v6.0.1
-      - uses: actions/setup-node@v6.0.0
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: docs/package-lock.json
-      - run: npm ci
-      - run: npm run doctor
-      - run: npm run validate
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v4.0.0
-        with:
-          path: docs/dist
       - uses: actions/deploy-pages@v4.0.5
         id: deployment

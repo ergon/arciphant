@@ -1,0 +1,37 @@
+name: Build documentation
+
+on:
+  workflow_call:
+    inputs:
+      upload-pages-artifact:
+        description: Upload the built site as a GitHub Pages artifact.
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_TARGET: github-pages
+    defaults:
+      run:
+        working-directory: ./docs
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - run: npm ci
+      - run: npm run doctor
+      - run: npm run validate
+      - run: npm run build
+      - if: inputs.upload-pages-artifact
+        uses: actions/upload-pages-artifact@v4.0.0
+        with:
+          path: docs/dist

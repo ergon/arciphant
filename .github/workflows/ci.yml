@@ -41,3 +41,6 @@ jobs:
             **/build/reports/tests/test/**
             **/build/test-results/test/**
           if-no-files-found: ignore
+
+  docs:
+    uses: ./.github/workflows/build-docs.yml
