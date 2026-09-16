@@ -1,0 +1,107 @@
+---
+title: Getting started
+description: Create a first Arciphant project from scratch in five minutes.
+icon: rocket
+---
+
+This walkthrough sets up a minimal Arciphant build from scratch: two modules that share the same
+clean-architecture-like component structure. All you need is an empty directory with a Gradle wrapper (see
+[Setup](/setup#compatibility) for the compatibility requirements).
+
+## 1. Declare the module structure
+
+Create the following `settings.gradle.kts`:
+
+```kotlin settings.gradle.kts
+plugins {
+    id("ch.ergon.arciphant") version "0.2.0"
+}
+
+rootProject.name = "arciphant-quickstart"
+
+arciphant {
+    val moduleTemplate = template()
+        .createComponent(name = "domain")
+        .createComponent(name = "application", apiDependencies = setOf("domain"))
+        .createComponent(name = "web", dependencies = setOf("application"))
+
+    module(name = "orders", template = moduleTemplate)
+    module(name = "customers", template = moduleTemplate)
+}
+```
+
+The template defines the technical structure that all modules share — three components and their dependencies —
+and each `module(...)` call instantiates it as a domain module.
+
+## 2. Apply a JVM plugin
+
+Arciphant requires the Java or Kotlin JVM plugin on all managed projects (see
+[Setup](/setup#prerequisites)). Create the following `build.gradle.kts` in the root directory:
+
+```kotlin build.gradle.kts
+plugins {
+    kotlin("jvm") version "2.2.0" apply false
+}
+
+subprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+
+    repositories {
+        mavenCentral()
+    }
+}
+```
+
+## 3. Inspect the generated project structure
+
+That's it — Arciphant now generates the whole Gradle multi-project structure. Verify it with:
+
+```bash
+./gradlew projects
+```
+
+```text
+Root project 'arciphant-quickstart'
++--- Project ':customers'
+|    +--- Project ':customers:application'
+|    +--- Project ':customers:domain'
+|    \--- Project ':customers:web'
+\--- Project ':orders'
+     +--- Project ':orders:application'
+     +--- Project ':orders:domain'
+     \--- Project ':orders:web'
+```
+
+Arciphant also created the component folders on disk (see
+[automatic folder creation](/additional-settings#automatic-folder-creation)), so you can directly start putting your
+production code into `orders/domain/src/main/kotlin` etc. — without writing a single `build.gradle.kts` for any of the
+components.
+
+## 4. Verify the wired dependencies
+
+Arciphant has also wired the dependencies between the components, exactly as declared in the template. The
+`projectDependencies` task prints them:
+
+```bash
+./gradlew -q projectDependencies
+```
+
+```text
+Project ':customers:application'
+ |- [api] :customers:domain
+Project ':customers:domain'
+Project ':customers:web'
+ |- [implementation] :customers:application
+Project ':orders:application'
+ |- [api] :orders:domain
+...
+```
+
+`application` exposes `domain` to its consumers as an `api` dependency, so `web` has access to both.
+
+## Where to go next
+
+- [Declare Structure](/declare-structure) — the full tour: templates, libraries, individual components and bundles.
+- [Component layouts](/component-layouts) — map components to separate Gradle projects (default) or to source sets.
+- [Using Plugins](/using-plugins) — combine Arciphant with convention plugins that configure your components.
+- [Demo projects](/demo-project) — a complete example application, implemented in both component layouts.

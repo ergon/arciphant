@@ -93,5 +93,5 @@ Both demos implement the same "Online Learning Platform" module structure, once 
   DSL calls.
 - Docs source is `docs-zensical`; `docs-zensical` is **generated build output** (gitignored) — never edit it by hand,
   regenerate via the Zensical build.
-- Plugin version lives in `arciphant-gradle-plugin/build.gradle.kts` (`version = "0.1.9"`).
+- Plugin version lives in `arciphant-gradle-plugin/build.gradle.kts` (`version = "0.2.0"`).
 - Commit messages: short imperative sentence ending with a period (e.g. "Fix docs.").

@@ -1,38 +1,20 @@
 ---
 title: Arciphant setup
-description: Prerequisites and how to include Arciphant in your Gradle build.
+description: Prerequisites, compatibility and how to include Arciphant in your Gradle build.
 icon: monitor-cog
 sidebar:
   label: Setup
 ---
 
-## Prerequisites
-
-### Java or Kotlin plugin
-
-To use Arciphant in your Gradle build, you have to apply either the _Java_ or _Kotlin JVM_ plugin to all projects in the
-project hierarchy:
-
-```kotlin {2,6}
-plugins {
-  kotlin("jvm")
-}
-
-subprojects {
-  plugins.apply("org.jetbrains.kotlin.jvm")
-}
-```
-
-This is necessary since Arciphant uses the JVM-specific configurations _api_ and _implementation_ registered by these
-plugins.
-
 ## Include Arciphant in your build
 
-To integrate Arciphant, add the following to your `settings.gradle.kts`:
+Arciphant is published to
+the <a href="https://plugins.gradle.org/plugin/ch.ergon.arciphant" target="_blank" rel="noreferrer">Gradle Plugin Portal</a>.
+To integrate it, apply the plugin in your `settings.gradle.kts`:
 
 ```kotlin settings.gradle.kts {2}
 plugins {
-  id("ch.ergon.arciphant")
+  id("ch.ergon.arciphant") version "0.2.0"
 }
 
 arciphant {
@@ -40,5 +22,40 @@ arciphant {
 }
 ```
 
+The plugin portal page always shows the latest available version.
+
 Arciphant is a Gradle _settings_ plugin. A _settings_ plugin is different to normal plugins in that it is applied in the
 `settings.gradle.kts` file and _NOT_ in `build.gradle.kts`.
+
+## Prerequisites
+
+### Java or Kotlin plugin
+
+To use Arciphant in your Gradle build, you have to apply either the _Java_ or _Kotlin JVM_ plugin to all projects in the
+project hierarchy. This is necessary since Arciphant uses the JVM-specific configurations _api_ and _implementation_
+registered by these plugins.
+
+A simple way to do this is a `subprojects` block in the **root project's** `build.gradle.kts`:
+
+```kotlin build.gradle.kts {2,6}
+plugins {
+  kotlin("jvm") version "2.2.0" apply false
+}
+
+subprojects {
+  apply(plugin = "org.jetbrains.kotlin.jvm")
+}
+```
+
+In larger builds, the JVM plugin is typically applied by convention plugins instead — see
+[Using Plugins](/using-plugins).
+
+## Compatibility
+
+| Requirement                    | Supported versions                                                                                                                                                                                                                                                                              |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gradle                         | At least Gradle 8.8 (Arciphant relies on lifecycle callbacks introduced in 8.8); developed and tested against Gradle 8.12. For Gradle 9+, all project folders must exist on disk — Arciphant's [automatic folder creation](/additional-settings#automatic-folder-creation) takes care of this. |
+| Java                           | 17 or newer. The plugin is compiled for Java 17; the minimum version is recorded in the plugin metadata and enforced by Gradle.                                                                                                                                                                 |
+| Gradle DSL                     | The Arciphant DSL is designed for the Gradle Kotlin DSL (`settings.gradle.kts`); all examples in this documentation use it.                                                                                                                                                                     |
+| Configuration cache            | Supported in both [component layouts](/component-layouts).                                                                                                                                                                                                                                      |
+| Isolated projects (incubating) | Supported with the source set layout (covered by an automated compatibility test). The project layout configures projects via `allprojects` and is not compatible with isolated projects.                                                                                                       |
