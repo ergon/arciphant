@@ -32,32 +32,410 @@ arciphant {
 }
 ```
 
-Above configuration creates the following nested Gradle project structure and sets up the dependencies between the
-components (domain, application, web, db) in each module:
+Above configuration creates the following structure and sets up the dependencies between the components (domain,
+application, web, db) in each module. How the components are mapped to Gradle depends on the configured
+[component layout](/component-layouts):
 
-```text
-root-project
-|-- module-a
-  |-- domain
-  |-- application
-  |-- web
-  |-- db
-|-- module-b
-  |-- domain
-  |-- application
-  |-- web
-  |-- db
-|-- module-c
-  |-- domain
-  |-- application
-  |-- web
-  |-- db
-|-- module-d
-  |-- domain
-  |-- application
-  |-- web
-  |-- db
-```
+<Tabs>
+  <Tab title="Project layout (default)">
+    Every component becomes its own nested Gradle project with the standard Gradle source sets:
+
+    <Tree>
+      <Tree.Folder name="root-project" defaultOpen>
+        <Tree.Folder name="module-a" defaultOpen>
+          <Tree.Folder name="domain" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="application" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="web" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="db" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+        </Tree.Folder>
+        <Tree.Folder name="module-b" defaultOpen>
+          <Tree.Folder name="domain" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="application" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="web" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="db" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+        </Tree.Folder>
+        <Tree.Folder name="module-c" defaultOpen>
+          <Tree.Folder name="domain" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="application" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="web" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="db" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+        </Tree.Folder>
+        <Tree.Folder name="module-d" defaultOpen>
+          <Tree.Folder name="domain" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="application" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="web" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+          <Tree.Folder name="db" defaultOpen>
+            <Tree.Folder name="src" defaultOpen>
+              <Tree.Folder name="main">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="test">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+              <Tree.Folder name="testFixtures">
+                <Tree.Folder name="kotlin" />
+              </Tree.Folder>
+            </Tree.Folder>
+          </Tree.Folder>
+        </Tree.Folder>
+      </Tree.Folder>
+    </Tree>
+
+    `src/testFixtures` is only present once the optional `java-test-fixtures` plugin is applied — see
+    [Structurize test code](#structurize-test-code).
+  </Tab>
+  <Tab title="Source set layout">
+    Every module becomes one Gradle project whose components are source sets:
+
+    <Tree>
+      <Tree.Folder name="root-project" defaultOpen>
+        <Tree.Folder name="module-a" defaultOpen>
+          <Tree.Folder name="src" defaultOpen>
+            <Tree.Folder name="domain">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="domainTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="domainTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="application">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="applicationTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="applicationTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="web">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="webTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="webTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="db">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="dbTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="dbTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+          </Tree.Folder>
+        </Tree.Folder>
+        <Tree.Folder name="module-b" defaultOpen>
+          <Tree.Folder name="src" defaultOpen>
+            <Tree.Folder name="domain">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="domainTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="domainTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="application">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="applicationTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="applicationTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="web">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="webTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="webTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="db">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="dbTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="dbTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+          </Tree.Folder>
+        </Tree.Folder>
+        <Tree.Folder name="module-c" defaultOpen>
+          <Tree.Folder name="src" defaultOpen>
+            <Tree.Folder name="domain">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="domainTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="domainTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="application">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="applicationTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="applicationTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="web">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="webTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="webTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="db">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="dbTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="dbTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+          </Tree.Folder>
+        </Tree.Folder>
+        <Tree.Folder name="module-d" defaultOpen>
+          <Tree.Folder name="src" defaultOpen>
+            <Tree.Folder name="domain">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="domainTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="domainTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="application">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="applicationTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="applicationTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="web">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="webTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="webTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="db">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="dbTest">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+            <Tree.Folder name="dbTestFixtures">
+              <Tree.Folder name="kotlin" />
+            </Tree.Folder>
+          </Tree.Folder>
+        </Tree.Folder>
+      </Tree.Folder>
+    </Tree>
+
+    The `…Test` and `…TestFixtures` source sets are created by default; they can be renamed or disabled — see
+    [Component layouts](/component-layouts) for the details.
+  </Tab>
+</Tabs>
 
 ## Dependency types
 
