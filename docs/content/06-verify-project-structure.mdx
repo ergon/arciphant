@@ -6,13 +6,17 @@ icon: package-check
 
 Typically in a multi-project setup, you want to have different packages for the different projects. An example:
 
-| Gradle project path                     | Absolute package name                             |
-| --------------------------------------- | ------------------------------------------------- |
-| `:certificate:domain`                   | `com.company.project.certificate.domain`          |
-| `:certificate:web-api`                  | `com.company.project.package.certificate.webapi`  |
-| `:accounting:domain`                    | `com.company.project.package.accounting.domain`   |
-| `:accounting:web-api`                   | `com.company.project.package.accounting.webapi`   |
-| `:accounting:payment-provider-adapter`  | `com.company.project.package.accounting.ppa`      |
+| Gradle project path                     | Absolute package name                      |
+| --------------------------------------- | ------------------------------------------ |
+| `:certificate:domain`                   | `com.company.project.certificate.domain`   |
+| `:certificate:web-api`                  | `com.company.project.certificate.webapi`   |
+| `:accounting:domain`                    | `com.company.project.accounting.domain`    |
+| `:accounting:web-api`                   | `com.company.project.accounting.webapi`    |
+| `:accounting:payment-provider-adapter`  | `com.company.project.accounting.ppa`       |
+
+Most of these mappings follow Arciphant's defaults (lower case, hyphens removed — e.g. `web-api` → `webapi`). A custom
+fragment like `ppa` is configured with
+[`mapProjectNamesToPackageFragments`](#mapprojectnamestopackagefragments).
 
 Arciphant provides the task `validatePackageStructure` to verify correct package structure. The task is only available in
 the root project but scans all the subprojects, too.
@@ -33,20 +37,20 @@ If no configuration is provided, default values are applied.
 
 ## Configuration options
 
-The `packageStructureValidation` task provides the following configuration options (see also
+The `packageStructureValidation` block provides the following configuration options (see also
 `PackageStructureValidationDsl`) to customize the desired package structure:
 
 | Option | Description |
 | --- | --- |
-| `basePackageName` | The base package name for the whole project.<br />Example: `basePackageName('com.company.project')` |
+| `basePackageName` | The base package name for the whole project.<br />Example: `basePackageName("com.company.project")` |
 | `disableUseLowerCase` | By default, upper case letters are converted to lower case when mapping project names to corresponding package fragments.<br />Example: project name `FileStore` is mapped to package fragment `filestore`.<br />Use `disableUseLowerCase()` to deactivate this behavior. |
 | `disableRemoveUnderscore` | By default, underscores '\_' are removed when mapping project name to corresponding package fragment.<br />Example: project name `file_store` is mapped to package fragment `filestore`.<br />Use `disableRemoveUnderscore()` to deactivate this behavior. |
 | `disableRemoveHyphen` | By default, hyphens '-' are removed when mapping project name to corresponding package fragment.<br />Example: project name `file-store` is mapped to package fragment `filestore`.<br />Use `disableRemoveHyphen` to deactivate this behavior. |
 | `mapProjectNamesToPackageFragments` | Configure mappings for specific project names. See detailed description [below](#mapprojectnamestopackagefragments). |
 | `mapProjectPathsToAbsolutePackages` | Completely overrides the package name for the given Gradle project path. See detailed description [below](#mapprojectpathstoabsolutepackages). |
-| `excludeProjectPath` | Excludes a specific project from package validation.<br />Example: `excludeProjectPath(:specific:project:path)` |
+| `excludeProjectPath` | Excludes a specific project from package validation.<br />Example: `excludeProjectPath(":specific:project:path")` |
 | `excludeResourcesFolder` | By default, all folders in the `src`-folder of each project are validated.<br />Use `excludeResourcesFolder()` to exclude the resource folder (`src/main/resources`) from validation. |
-| `excludeSrcFolders` | By default, all folders in the src-folder of each project are validated.<br />Use `excludeSrcFolders()` to exclude specific folders.<br />Example: To exclude `src/main/generated` use: `excludedSrcFolder("main/generated")` |
+| `excludeSrcFolders` | By default, all folders in the src-folder of each project are validated.<br />Use `excludeSrcFolders()` to exclude specific folders.<br />Examples: To exclude `src/generated` use `excludeSrcFolders("generated")`, to exclude `src/main/generated` use `excludeSrcFolders("main/generated")` |
 
 ### `mapProjectNamesToPackageFragments` [#mapprojectnamestopackagefragments]
 

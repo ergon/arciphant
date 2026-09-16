@@ -13,9 +13,9 @@ clean-architecture-like structure with the domain in the middle:
 
 ![Simple Example](./images/structure-01-modules.drawio.png)
 
-Normally, if you want to build this structure with nested gradle project, you have a lot of duplicated build-setup. With
-arciphant you can configure a template that defines the structure of the components (rings) of a module and then use
-this template to create (instantiate) the 4 modules:
+Normally, if you want to build this structure with nested Gradle projects, you have a lot of duplicated build setup.
+With Arciphant you can configure a template that defines the structure of the components (rings) of a module and then
+use this template to create (instantiate) the 4 modules:
 
 ```kotlin settings.gradle.kts
 arciphant {
@@ -32,7 +32,7 @@ arciphant {
 }
 ```
 
-Above configuration creates the following nested gradle project structure and sets up the dependencies between the
+Above configuration creates the following nested Gradle project structure and sets up the dependencies between the
 components (domain, application, web, db) in each module:
 
 ```text
@@ -83,7 +83,7 @@ image shows this setup (with only two modules for simplicity):
 
 ![Library](./images/structure-02-library.drawio.png)
 
-What you normally have to do is manage all the dependencies manually, which is error prone and pollutes the gradle build
+What you normally have to do is manage all the dependencies manually, which is error prone and pollutes the Gradle build
 setup with a lot of repetitive code.
 
 Instead of having to manage all these dependencies manually, Arciphant provides an out-of-the-box mechanism. You can
@@ -93,7 +93,7 @@ specify a library module:
 library(name = "shared", template = moduleTemplate)
 ```
 
-Each component of each domain module will automatically get a dependency to the respective component in the library
+Each component of each domain module automatically gets an `api` dependency on the same-named component in the library
 module.
 
 The complete sample now looks like the following:
@@ -168,7 +168,7 @@ Even though not all modules require the additional `fs` component, the library c
 ## Individual shapes
 
 Of course, it is also possible to declare individual components in particular modules. E.g. if Module D requires the
-integration of an external API, you want to create a dedicated component 'api' for the integration code:
+integration of an external API, you want to create a dedicated component 'ext-api' for the integration code:
 
 ![Individual shapes](./images/structure-04-individual-shapes.drawio.png)
 
@@ -193,7 +193,7 @@ arciphant {
         .extends(moduleTemplate)
         .createComponent(name = "fs", dependencies = setOf("application"))
 
-    library(name = "shared", template = moduleTemplate)
+    library(name = "shared", template = moduleWithFsTemplate)
 
     module(name = "module-a", template = moduleTemplate)
     module(name = "module-b", template = moduleTemplate)
@@ -201,6 +201,50 @@ arciphant {
     module(name = "module-d", template = moduleWithFsTemplate)
         .createComponent(name = "ext-api", dependencies = setOf("application"))
 }
+```
+
+## Extending components
+
+A template defines which dependencies a component has by default. Sometimes a single module needs an _additional_
+dependency between components it inherited from the template. Continuing the example above: in Module D, the `web`
+component should also be able to use the new `ext-api` component. Declaring `createComponent(name = "web", ...)` again
+would fail because the component already exists — use `extendComponent` instead:
+
+```kotlin {3}
+module(name = "module-d", template = moduleWithFsTemplate)
+    .createComponent(name = "ext-api", dependencies = setOf("application"))
+    .extendComponent(name = "web", dependencies = setOf("ext-api"))
+```
+
+`extendComponent` adds the given `dependencies` and/or `apiDependencies` to the already declared component. Everything
+else (the registered plugin and the existing dependencies) remains untouched. It is also available on templates, so a
+template that `extends` another template can add dependencies to the inherited components as well.
+
+:::note
+`createComponent` and `extendComponent` are strict: creating a component that already exists fails, and so does
+extending a component that does not exist. Each component can be extended at most once per module or template.
+:::
+
+## Multiple templates
+
+A module or library can also be created from _several_ templates at once. The components of all templates are combined:
+
+```kotlin
+val messagingTemplate = template()
+    .createComponent(name = "events", dependencies = setOf("application"))
+
+module(name = "module-e", templates = setOf(moduleTemplate, messagingTemplate))
+```
+
+Each component name may only be declared by one of the combined templates — combining templates that both declare a
+component of the same name is a configuration error.
+
+Templates are optional, by the way: a module can also be declared without any template and consist solely of individual
+components:
+
+```kotlin
+module(name = "tooling")
+    .createComponent(name = "cli")
 ```
 
 ## Bundle modules
@@ -213,7 +257,8 @@ bundle(name = "my-app")
 ```
 
 This creates a module `my-app` that has a dependency to all components of all modules. The bundle module itself does not
-have any components.
+have any components. A convention plugin (e.g. for packaging the application with Spring Boot) can be registered for a
+bundle — see [Bundle plugins](/using-plugins#bundle-plugins).
 
 It is also possible to declare explicit dependencies, e.g. if you need multiple different bundles who should _not_
 automatically depend to all domain modules:
@@ -233,13 +278,13 @@ bundle(name = "bundleY", includes = setOf(coreBundle, specificModuleY))
 
 ## Structurize test code
 
-`java-test-fixtures` is a nice little gradle plugin to deal with reusable test setup code. It basically creates an
+`java-test-fixtures` is a nice little Gradle plugin to deal with reusable test setup code. It basically creates an
 additional source set `testFixtures` in between `main` and `test`. While `test` code should remain isolated, the idea of
-`testFixtures` is that this code can be reused in other gradle projects.
+`testFixtures` is that this code can be reused in other Gradle projects.
 See [official documentation](https://docs.gradle.org/current/userguide/java_testing.html#sec:java_test_fixtures) for
 further information.
 
-Arciphant nicely plays together with `java-test-fixtures`: If `java-test-fixtures` is applied in the gradle build, it
+Arciphant nicely plays together with `java-test-fixtures`: If `java-test-fixtures` is applied in the Gradle build, it
 automatically creates the dependencies for the `testFixtures` source sets between components. So if e.g. the
 _application_ component depends on _domain_, the `testFixtures` of `domain` will be usable in `testFixtures` and `test`
 of `application`. Of course, if it is an api dependency, the transitivity is also taken into account.
@@ -250,6 +295,6 @@ See [Component Layouts](/component-layouts) for configuration details.
 
 ## Debug project dependencies
 
-If you have configured arciphant and you want to verify whether your project's dependencies are as expected, you can use
+If you have configured Arciphant and you want to verify whether your project's dependencies are as expected, you can use
 the `projectDependencies` task from Arciphant. It prints all the dependencies of each project in the whole project
 hierarchy. The task is only available in the root project.

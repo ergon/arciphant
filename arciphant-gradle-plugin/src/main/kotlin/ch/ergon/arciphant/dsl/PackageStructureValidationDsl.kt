@@ -6,12 +6,12 @@ package ch.ergon.arciphant.dsl
  * Example:
  * ```
  * Gradle project path                  | Absolute package name
- * -------------------------------------|-----------------------------------------------
+ * -------------------------------------|----------------------------------------
  * :certificate:domain                  | com.company.project.certificate.domain
- * :certificate:web-api                 | com.company.project.package.certificate.webapi
- * :accounting:domain                   | com.company.project.package.accounting.domain
- * :accounting:web-api                  | com.company.project.package.accounting.webapi
- * :accounting:payment-provider-adapter | com.company.project.package.accounting.ppa
+ * :certificate:web-api                 | com.company.project.certificate.webapi
+ * :accounting:domain                   | com.company.project.accounting.domain
+ * :accounting:web-api                  | com.company.project.accounting.webapi
+ * :accounting:payment-provider-adapter | com.company.project.accounting.ppa
  * ```
  */
 sealed interface PackageStructureValidationDsl {
@@ -60,7 +60,7 @@ sealed interface PackageStructureValidationDsl {
      * basePackageName("com.company.project")
      * mapProjectNameToPackageFragment(
      *   "financial-accounting" to "accounting",
-     *   "payment-provider-adapter", "ppa",
+     *   "payment-provider-adapter" to "ppa",
      * )
      * ```
      * Above config results in the following mapping:
@@ -106,8 +106,8 @@ sealed interface PackageStructureValidationDsl {
      * Use [excludeSrcFolders] to exclude specific folders.
      *
      * Examples:
-     * To exclude 'src/generated' use: excludedSrcFolder("generated")
-     * To exclude 'src/main/generated' use: excludedSrcFolder("main/generated")
+     * To exclude 'src/generated' use: excludeSrcFolders("generated")
+     * To exclude 'src/main/generated' use: excludeSrcFolders("main/generated")
      */
     fun excludeSrcFolders(folderName: String)
 }

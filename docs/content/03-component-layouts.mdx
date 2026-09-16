@@ -6,8 +6,8 @@ icon: layout-grid
 
 Arciphant supports two ways of mapping configured components to Gradle:
 
-- The project layout creates one Gradle project per component. This is the default and preserves the original Arciphant
-  behavior.
+- The project layout creates one Gradle project per component. This is the default (it can also be selected explicitly
+  with `projectSetComponentLayout()`) and preserves the original Arciphant behavior.
 - The source set layout creates one Gradle project per functional module and maps every component to source sets inside
   that project.
 
@@ -46,6 +46,12 @@ source sets.
 The source set layout does not require the `java-test-fixtures` plugin. Arciphant also registers one `Test` task per
 component test source set, named exactly like that source set, and attaches it to the module's standard `test` task.
 Test and test-fixtures directories are marked as test sources in IntelliJ IDEA.
+
+:::note[Component naming]
+In the source set layout, component names become source set names and prefixes of the derived configurations (e.g.
+`domainImplementation`). Therefore, prefer lowerCamelCase component names in this layout — e.g. `webApi` instead of
+`web-api`.
+:::
 
 ## Test source set configuration
 

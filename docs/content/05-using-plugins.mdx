@@ -37,6 +37,18 @@ template()
 Component plugins are available only with `ComponentLayout.PROJECT`. With `ComponentLayout.SOURCE_SET`, components are
 source sets rather than Gradle projects, so plugins must be applied at module-project level instead.
 
+## Bundle plugins
+
+A plugin can also be registered for a [bundle module](/declare-structure#bundle-modules). This is the natural place for
+packaging concerns — e.g. a convention plugin that applies Spring Boot and configures the executable jar:
+
+```kotlin settings.gradle.kts
+bundle(name = "online-learning-platform", plugin = "spring-boot-bundle-module")
+```
+
+Like component plugins, bundle plugins are available only with `ComponentLayout.PROJECT`. With
+`ComponentLayout.SOURCE_SET`, apply the plugin in the bundle project's `build.gradle.kts` instead.
+
 ## Use `includeBuild` instead of `buildSrc`
 
 It is good practice to use a dedicated project for convention plugins instead of using `buildSrc`-folder and include it
@@ -49,8 +61,8 @@ pluginManagement {
 }
 ```
 
-Unfortunately, these plugins won't work together with arciphant out-of-the-box. The problem is that for some reason the
-`pluginManagement` block is only treated by gradle when plugins are applied in the `plugins` block. Since arciphant
+Unfortunately, these plugins won't work together with Arciphant out-of-the-box. The problem is that for some reason the
+`pluginManagement` block is only treated by Gradle when plugins are applied in the `plugins` block. Since Arciphant
 applies plugins programmatically (using `pluginManager.apply("plugin-id")`), the plugin will not be found. To overcome
 this issue you can use the following simple hack: just add one of the convention plugins to the plugins block of your
 `settings.gradle.kts` file with `apply false`:
@@ -62,5 +74,5 @@ plugins {
 }
 ```
 
-This seems to trigger the required plugin resolution strategy and arciphant is able to apply all plugins from the
+This seems to trigger the required plugin resolution strategy and Arciphant is able to apply all plugins from the
 included build (even if only one plugin is referenced in `settings.gradle.kts`).

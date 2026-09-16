@@ -11,13 +11,24 @@ your application is located in a sub-project `backend`:
 
 ```kotlin settings.gradle.kts {2}
 arciphant {
-    basePath = "backend"
+    basePath("backend")
 
     [..]
 }
 ```
 
-The base path can also be a nested path (e.g. `backend:my-service`).
+The base path can also be a nested path (e.g. `backend:my-service` or `backend/my-service`).
+
+In addition to the global base path, every `module`, `library` and `bundle` accepts its own `basePath` parameter. It
+_overrides_ the global base path for that module:
+
+```kotlin settings.gradle.kts {4}
+arciphant {
+    basePath("backend")
+
+    module(name = "reporting", basePath = "backend:services", template = moduleTemplate)
+}
+```
 
 ## Automatic folder creation
 
