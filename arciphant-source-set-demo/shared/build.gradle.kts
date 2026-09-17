@@ -1,3 +1,3 @@
 plugins {
-    `filestore-module`
+    id("filestore-module")
 }

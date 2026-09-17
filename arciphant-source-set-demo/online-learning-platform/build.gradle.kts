@@ -1,3 +1,3 @@
 plugins {
-    `bundle-module`
+    id("bundle-module")
 }

@@ -69,9 +69,9 @@ Both demos implement the same "Online Learning Platform" module structure, once 
 - `arciphant-project-demo/settings.gradle.kts` is the canonical DSL example (project layout);
   `arciphant-source-set-demo/settings.gradle.kts` is the canonical example for the source set layout
   (`sourceSetComponentLayout()`).
-- Convention plugins live in each demo's `build-logic/` (included build). At least one of them must appear with
-  `apply false` in the settings `plugins` block, otherwise Gradle does not resolve them (known workaround, see
-  `docs-zensical`).
+- Convention plugins live in each demo's `build-logic/` (included build). In the **project** demo, one of them must
+  appear with `apply false` in the settings `plugins` block, otherwise the plugins Arciphant applies programmatically
+  (`pluginManager.apply(...)`) are not resolved (known workaround, see the docs).
 - Project layout: component folders normally have **no** `build.gradle.kts` — Arciphant configures them. Only components
   with extra dependencies have one (e.g. `course/domain/build.gradle.kts`). Component-specific convention plugins (e.g.
   `spring-web-component`) are registered in the DSL.

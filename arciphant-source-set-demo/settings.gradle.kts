@@ -14,7 +14,6 @@ dependencyResolutionManagement {
 
 plugins {
     id("ch.ergon.arciphant")
-    id("module") apply false // solely used to ensure plugin resolution mechanism for prebuilt plugins in 'build-logic' is triggered.
 }
 
 arciphant {

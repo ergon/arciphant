@@ -1,3 +1,3 @@
 plugins {
-    `common-module`
+    id("common-module")
 }
