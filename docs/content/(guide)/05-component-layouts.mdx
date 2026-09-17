@@ -109,7 +109,7 @@ DSL accessors available, as for the [`component` notation](#component-dependenci
 
 ```kotlin title="build.gradle.kts or a precompiled script plugin"
 // all components of the module
-configureAllComponents {
+customizeAllComponents {
     productionSourceSet { sourceSet, componentName ->
         sourceSet.java.setSrcDirs(listOf("$componentName/java"))
         sourceSet.resources.setSrcDirs(listOf("$componentName/resources"))
@@ -123,20 +123,20 @@ configureAllComponents {
 }
 
 // a single component, selected by name
-configureComponent("domain") {
+customizeComponent("domain") {
     productionSourceSet { sourceSet ->
         sourceSet.java.setSrcDirs(listOf("domain/java"))
     }
 }
 ```
 
-The lambdas receive the `SourceSet` and — in `configureAllComponents` — the component name as independent
+The lambdas receive the `SourceSet` and — in `customizeAllComponents` — the component name as independent
 parameters. Use `componentName` to derive directories: for test and test-fixtures source sets it differs
-from the source set name (component `domain`, source set `domainTest`). Inside `configureComponent`, the
+from the source set name (component `domain`, source set `domainTest`). Inside `customizeComponent`, the
 component name is available as the `componentName` property.
 
-Components without a test or test-fixtures source set are skipped by `configureAllComponents`; requesting
-such a source set in `configureComponent` is an error, as is an unknown component name.
+Components without a test or test-fixtures source set are skipped by `customizeAllComponents`; requesting
+such a source set in `customizeComponent` is an error, as is an unknown component name.
 
 :::note[Folder creation]
 Arciphant creates the source set folders using the default `src/<sourceSet>` layout. When you relocate the
@@ -146,7 +146,7 @@ folders yourself.
 
 The example <a href="https://github.com/ergon/arciphant/tree/main/examples/source-set-customization" target="_blank" rel="noreferrer">examples/source-set-customization</a>
 in the Arciphant repository shows a complete minimal setup: one module with three components, using
-`configureAllComponents` for all of them and `configureComponent` for one.
+`customizeAllComponents` for all of them and `customizeComponent` for one.
 
 ## Shared dependency configurations
 

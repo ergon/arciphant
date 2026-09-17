@@ -1,23 +1,23 @@
 package ch.ergon.arciphant.core.sourceset
 
-import ch.ergon.arciphant.core.sourceset.ConfigureAllComponentsExtension.Companion.CONFIGURE_ALL_COMPONENTS_EXTENSION_NAME
-import ch.ergon.arciphant.core.sourceset.ConfigureSingleComponentExtension.Companion.CONFIGURE_COMPONENT_EXTENSION_NAME
+import ch.ergon.arciphant.core.sourceset.CustomizeAllComponentsExtension.Companion.CUSTOMIZE_ALL_COMPONENTS_EXTENSION_NAME
+import ch.ergon.arciphant.core.sourceset.CustomizeSingleComponentExtension.Companion.CUSTOMIZE_COMPONENT_EXTENSION_NAME
 import ch.ergon.arciphant.util.arciphantPreconditionError
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 
-internal fun Project.createConfigureComponentExtensions(sourceSetsByComponentName: Map<String, ComponentSourceSets>) {
-    extensions.add(CONFIGURE_ALL_COMPONENTS_EXTENSION_NAME, ConfigureAllComponentsExtension(sourceSetsByComponentName))
-    extensions.add(CONFIGURE_COMPONENT_EXTENSION_NAME, ConfigureSingleComponentExtension(sourceSetsByComponentName))
+internal fun Project.createCustomizeComponentExtensions(sourceSetsByComponentName: Map<String, ComponentSourceSets>) {
+    extensions.add(CUSTOMIZE_ALL_COMPONENTS_EXTENSION_NAME, CustomizeAllComponentsExtension(sourceSetsByComponentName))
+    extensions.add(CUSTOMIZE_COMPONENT_EXTENSION_NAME, CustomizeSingleComponentExtension(sourceSetsByComponentName))
 }
 
 /**
- * Registered as the `configureAllComponents` extension in every module project of the source set layout.
+ * Registered as the `customizeAllComponents` extension in every module project of the source set layout.
  * Configures the source sets of every component of the module — typically used in a precompiled script
  * plugin, where the extension accessor makes it available without imports:
  *
  * ```
- * configureAllComponents {
+ * customizeAllComponents {
  *     productionSourceSet { sourceSet, componentName ->
  *         sourceSet.java.setSrcDirs(listOf("$componentName/java"))
  *     }
@@ -29,7 +29,7 @@ internal fun Project.createConfigureComponentExtensions(sourceSetsByComponentNam
  *
  * Components without a test or test fixtures source set are skipped by the corresponding function.
  */
-open class ConfigureAllComponentsExtension internal constructor(
+open class CustomizeAllComponentsExtension internal constructor(
     private val sourceSetsByComponentName: Map<String, ComponentSourceSets>,
 ) {
 
@@ -52,39 +52,39 @@ open class ConfigureAllComponentsExtension internal constructor(
     }
 
     companion object {
-        internal const val CONFIGURE_ALL_COMPONENTS_EXTENSION_NAME = "configureAllComponents"
+        internal const val CUSTOMIZE_ALL_COMPONENTS_EXTENSION_NAME = "customizeAllComponents"
     }
 }
 
 /**
- * Registered as the `configureComponent` extension in every module project of the source set layout.
+ * Registered as the `customizeComponent` extension in every module project of the source set layout.
  * Its invoke operator configures the source sets of a single component, selected by name:
  *
  * ```
- * configureComponent("domain") {
+ * customizeComponent("domain") {
  *     productionSourceSet { sourceSet ->
  *         sourceSet.java.setSrcDirs(listOf("domain/java"))
  *     }
  * }
  * ```
  */
-open class ConfigureSingleComponentExtension internal constructor(
+open class CustomizeSingleComponentExtension internal constructor(
     private val sourceSetsByComponentName: Map<String, ComponentSourceSets>,
 ) {
 
-    operator fun invoke(componentName: String, configure: SingleComponentConfigurer.() -> Unit) {
+    operator fun invoke(componentName: String, configure: SingleComponentCustomizer.() -> Unit) {
         val sourceSets = sourceSetsByComponentName[componentName] ?: arciphantPreconditionError(
             "unknown component '$componentName' Known components: ${sourceSetsByComponentName.keys.sorted().joinToString { "'$it'" }}."
         )
-        SingleComponentConfigurer(componentName, sourceSets).configure()
+        SingleComponentCustomizer(componentName, sourceSets).configure()
     }
 
     companion object {
-        internal const val CONFIGURE_COMPONENT_EXTENSION_NAME = "configureComponent"
+        internal const val CUSTOMIZE_COMPONENT_EXTENSION_NAME = "customizeComponent"
     }
 }
 
-class SingleComponentConfigurer internal constructor(
+class SingleComponentCustomizer internal constructor(
     val componentName: String,
     private val sourceSets: ComponentSourceSets,
 ) {

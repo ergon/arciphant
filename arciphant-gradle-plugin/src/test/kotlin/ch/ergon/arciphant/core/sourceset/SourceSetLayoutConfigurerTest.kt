@@ -13,8 +13,8 @@ import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.FunctionalModule
 import ch.ergon.arciphant.core.model.ModuleReference
 import ch.ergon.arciphant.core.model.component
-import ch.ergon.arciphant.core.sourceset.ConfigureAllComponentsExtension.Companion.CONFIGURE_ALL_COMPONENTS_EXTENSION_NAME
-import ch.ergon.arciphant.core.sourceset.ConfigureSingleComponentExtension.Companion.CONFIGURE_COMPONENT_EXTENSION_NAME
+import ch.ergon.arciphant.core.sourceset.CustomizeAllComponentsExtension.Companion.CUSTOMIZE_ALL_COMPONENTS_EXTENSION_NAME
+import ch.ergon.arciphant.core.sourceset.CustomizeSingleComponentExtension.Companion.CUSTOMIZE_COMPONENT_EXTENSION_NAME
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.util.projectDependencyConfigurations
 import org.assertj.core.api.Assertions.assertThat
@@ -348,7 +348,7 @@ class SourceSetLayoutConfigurerTest {
             project.applyModuleConfig(module, settings())
 
             val configured = mutableListOf<Pair<String, String>>()
-            project.configureAllComponents().productionSourceSet { sourceSet, componentName ->
+            project.customizeAllComponents().productionSourceSet { sourceSet, componentName ->
                 configured.add(componentName to sourceSet.name)
             }
 
@@ -366,10 +366,10 @@ class SourceSetLayoutConfigurerTest {
 
             val test = mutableListOf<Pair<String, String>>()
             val testFixtures = mutableListOf<Pair<String, String>>()
-            project.configureAllComponents().testSourceSet { sourceSet, componentName ->
+            project.customizeAllComponents().testSourceSet { sourceSet, componentName ->
                 test.add(componentName to sourceSet.name)
             }
-            project.configureAllComponents().testFixturesSourceSet { sourceSet, componentName ->
+            project.customizeAllComponents().testFixturesSourceSet { sourceSet, componentName ->
                 testFixtures.add(componentName to sourceSet.name)
             }
 
@@ -390,8 +390,8 @@ class SourceSetLayoutConfigurerTest {
             project.applyModuleConfig(module, settings())
 
             val configured = mutableListOf<String>()
-            project.configureAllComponents().testSourceSet { _, componentName -> configured.add(componentName) }
-            project.configureAllComponents().testFixturesSourceSet { _, componentName -> configured.add(componentName) }
+            project.customizeAllComponents().testSourceSet { _, componentName -> configured.add(componentName) }
+            project.customizeAllComponents().testFixturesSourceSet { _, componentName -> configured.add(componentName) }
 
             assertThat(configured).isEmpty()
         }
@@ -401,7 +401,7 @@ class SourceSetLayoutConfigurerTest {
             val project = javaProject()
             project.applyModuleConfig(domainModule(component(ComponentReference("domain"))), settings())
 
-            project.configureAllComponents().productionSourceSet { sourceSet, componentName ->
+            project.customizeAllComponents().productionSourceSet { sourceSet, componentName ->
                 sourceSet.java.setSrcDirs(listOf("$componentName/java"))
                 sourceSet.resources.setSrcDirs(listOf("$componentName/resources"))
             }
@@ -420,7 +420,7 @@ class SourceSetLayoutConfigurerTest {
             )
             project.applyModuleConfig(module, settings())
 
-            project.configureComponent()("domain") {
+            project.customizeComponent()("domain") {
                 productionSourceSet { it.java.setSrcDirs(listOf("$componentName/java")) }
                 testSourceSet { it.java.setSrcDirs(listOf("$componentName/test/java")) }
                 testFixturesSourceSet { it.java.setSrcDirs(listOf("$componentName/testFixtures/java")) }
@@ -442,7 +442,7 @@ class SourceSetLayoutConfigurerTest {
             project.applyModuleConfig(domainModule(component(ComponentReference("domain"))), settings())
 
             assertThatThrownBy {
-                project.configureComponent()("unknown") { }
+                project.customizeComponent()("unknown") { }
             }.hasMessageContaining("unknown component 'unknown'")
                 .hasMessageContaining("'domain'")
         }
@@ -460,10 +460,10 @@ class SourceSetLayoutConfigurerTest {
             project.applyModuleConfig(module, settings())
 
             assertThatThrownBy {
-                project.configureComponent()("domain") { testSourceSet { } }
+                project.customizeComponent()("domain") { testSourceSet { } }
             }.hasMessageContaining("component 'domain' has no test source set")
             assertThatThrownBy {
-                project.configureComponent()("domain") { testFixturesSourceSet { } }
+                project.customizeComponent()("domain") { testFixturesSourceSet { } }
             }.hasMessageContaining("component 'domain' has no test fixtures source set")
         }
 
@@ -480,15 +480,15 @@ class SourceSetLayoutConfigurerTest {
                 listOf(GradleBundleModuleProjectConfig(GradleProjectPath.of(listOf("bundle")), bundle)),
             ).configure(project)
 
-            assertThat(project.extensions.findByName(CONFIGURE_ALL_COMPONENTS_EXTENSION_NAME)).isNull()
-            assertThat(project.extensions.findByName(CONFIGURE_COMPONENT_EXTENSION_NAME)).isNull()
+            assertThat(project.extensions.findByName(CUSTOMIZE_ALL_COMPONENTS_EXTENSION_NAME)).isNull()
+            assertThat(project.extensions.findByName(CUSTOMIZE_COMPONENT_EXTENSION_NAME)).isNull()
         }
 
-        private fun Project.configureAllComponents() =
-            extensions.getByName(CONFIGURE_ALL_COMPONENTS_EXTENSION_NAME) as ConfigureAllComponentsExtension
+        private fun Project.customizeAllComponents() =
+            extensions.getByName(CUSTOMIZE_ALL_COMPONENTS_EXTENSION_NAME) as CustomizeAllComponentsExtension
 
-        private fun Project.configureComponent() =
-            extensions.getByName(CONFIGURE_COMPONENT_EXTENSION_NAME) as ConfigureSingleComponentExtension
+        private fun Project.customizeComponent() =
+            extensions.getByName(CUSTOMIZE_COMPONENT_EXTENSION_NAME) as CustomizeSingleComponentExtension
     }
 
     private fun javaProject(

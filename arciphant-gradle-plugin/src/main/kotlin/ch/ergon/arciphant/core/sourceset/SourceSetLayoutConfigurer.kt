@@ -77,7 +77,7 @@ internal class SourceSetLayoutConfigurer(
             )
         }
 
-        moduleProject.createConfigureComponentExtensions(
+        moduleProject.createCustomizeComponentExtensions(
             sourceSetsByComponent.mapKeys { (component, _) -> component.reference.name }
         )
 

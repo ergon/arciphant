@@ -4,7 +4,7 @@ import ch.ergon.arciphant.ArciphantPlugin.Companion.logger
 import ch.ergon.arciphant.core.ComponentDependencyExtension.Companion.COMPONENT_EXTENSION_NAME
 import ch.ergon.arciphant.core.createComponentDependencyExtension
 import ch.ergon.arciphant.core.project.projectLayoutComponentDependency
-import ch.ergon.arciphant.core.sourceset.createConfigureComponentExtensions
+import ch.ergon.arciphant.core.sourceset.createCustomizeComponentExtensions
 import org.gradle.api.Project
 
 /**
@@ -26,7 +26,7 @@ class ArciphantProjectPlugin {
             )
             // empty placeholders with the same purpose; in module projects managed by Arciphant (where the
             // 'component' extension exists), the real extensions are registered by the layout configurer
-            project.createConfigureComponentExtensions(sourceSetsByComponentName = emptyMap())
+            project.createCustomizeComponentExtensions(sourceSetsByComponentName = emptyMap())
         }
     }
 

@@ -4,7 +4,7 @@ plugins {
 
 // relocates the source directories of every component from the default 'src/<sourceSet>/java' layout
 // to '<component>/java', '<component>/test/java' and '<component>/testFixtures/java'
-configureAllComponents {
+customizeAllComponents {
     productionSourceSet { sourceSet, componentName ->
         sourceSet.java.setSrcDirs(listOf("$componentName/java"))
         sourceSet.resources.setSrcDirs(listOf("$componentName/resources"))
@@ -18,7 +18,7 @@ configureAllComponents {
 }
 
 // a single component can be customized further: the 'web' component additionally compiles generated sources
-configureComponent("web") {
+customizeComponent("web") {
     productionSourceSet { sourceSet ->
         sourceSet.java.srcDir("$componentName/generated/java")
     }

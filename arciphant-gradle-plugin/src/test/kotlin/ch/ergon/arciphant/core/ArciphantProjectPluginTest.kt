@@ -182,12 +182,12 @@ class ArciphantProjectPluginTest {
                 `java-library`
             }
 
-            configureAllComponents {
+            customizeAllComponents {
                 productionSourceSet { sourceSet, componentName ->
                     sourceSet.java.setSrcDirs(listOf("${'$'}componentName/java"))
                 }
             }
-            configureComponent("domain") {
+            customizeComponent("domain") {
                 testSourceSet { sourceSet ->
                     sourceSet.java.setSrcDirs(listOf("${'$'}componentName/test/java"))
                 }

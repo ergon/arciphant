@@ -575,13 +575,13 @@ class ArciphantSettingsPluginTest {
         buildFileWithJvmPlugins()
         projectFolder.resolve("test/build.gradle.kts").write(
             """
-            configureAllComponents {
+            customizeAllComponents {
                 productionSourceSet { sourceSet, componentName ->
                     sourceSet.java.setSrcDirs(listOf("${'$'}componentName/java"))
                     sourceSet.resources.setSrcDirs(listOf("${'$'}componentName/resources"))
                 }
             }
-            configureComponent("domain") {
+            customizeComponent("domain") {
                 testSourceSet { sourceSet ->
                     sourceSet.java.setSrcDirs(listOf("${'$'}componentName/test/java"))
                 }
