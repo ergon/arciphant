@@ -157,6 +157,90 @@ class ArciphantProjectPluginTest {
     }
 
     @Test
+    fun `test that component source sets can be customized in a precompiled script plugin`() {
+        settingsFile.write(
+            """
+            pluginManagement {
+                includeBuild("build-logic")
+            }
+
+            plugins {
+                id("ch.ergon.arciphant")
+            }
+
+            arciphant {
+                sourceSetComponentLayout()
+
+                module("module").createComponent("domain")
+            }
+            """
+        )
+        buildLogicWithConventionPlugin(
+            """
+            plugins {
+                id("ch.ergon.arciphant")
+                `java-library`
+            }
+
+            configureAllComponents {
+                productionSourceSet { sourceSet, componentName ->
+                    sourceSet.java.setSrcDirs(listOf("${'$'}componentName/java"))
+                }
+            }
+            configureComponent("domain") {
+                testSourceSet { sourceSet ->
+                    sourceSet.java.setSrcDirs(listOf("${'$'}componentName/test/java"))
+                }
+            }
+
+            dependencies {
+                "domainTestImplementation"("org.junit.jupiter:junit-jupiter:5.11.3")
+                "domainTestRuntimeOnly"("org.junit.platform:junit-platform-launcher")
+            }
+            """
+        )
+        buildFileWithJvmPlugins()
+        projectFolder.resolve("module/build.gradle.kts").write(
+            """
+            plugins {
+                id("arciphant-convention")
+            }
+
+            tasks.withType<Test>().configureEach { useJUnitPlatform() }
+            """
+        )
+        projectFolder.resolve("module/domain/java/example/Domain.java").write(
+            """
+            package example;
+
+            public class Domain {}
+            """
+        )
+        projectFolder.resolve("module/domain/test/java/example/DomainTest.java").write(
+            """
+            package example;
+
+            import org.junit.jupiter.api.Test;
+
+            import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+            class DomainTest {
+                @Test
+                void createsDomain() {
+                    assertNotNull(new Domain());
+                }
+            }
+            """
+        )
+
+        val result = gradleRunner.withArguments(":module:test").build()
+
+        assertThat(result.task(":module:compileDomainJava")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":module:domainTest")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.output).doesNotContain(MISSING_SETTINGS_PLUGIN_WARNING)
+    }
+
+    @Test
     fun `test that a warning is logged when the plugin is applied without the settings plugin`() {
         settingsFile.write(
             """

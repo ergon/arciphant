@@ -100,6 +100,50 @@ The component parameters override the global flags.
 
 Source-set settings and component source-set options are rejected in `PROJECT` mode rather than being silently ignored.
 
+## Customizing source directories
+
+The component source sets can be customized per module project — in its `build.gradle.kts` or in a
+convention plugin. Arciphant registers two extensions in every functional module project of the source set layout, so
+no imports are required (in precompiled script plugins, apply `id("ch.ergon.arciphant")` to make the Kotlin
+DSL accessors available, as for the [`component` notation](#component-dependencies-in-build-scripts)):
+
+```kotlin title="build.gradle.kts or a precompiled script plugin"
+// all components of the module
+configureAllComponents {
+    productionSourceSet { sourceSet, componentName ->
+        sourceSet.java.setSrcDirs(listOf("$componentName/java"))
+        sourceSet.resources.setSrcDirs(listOf("$componentName/resources"))
+    }
+    testSourceSet { sourceSet, componentName ->
+        sourceSet.java.setSrcDirs(listOf("$componentName/test/java"))
+    }
+    testFixturesSourceSet { sourceSet, componentName ->
+        sourceSet.java.setSrcDirs(listOf("$componentName/testFixtures/java"))
+    }
+}
+
+// a single component, selected by name
+configureComponent("domain") {
+    productionSourceSet { sourceSet ->
+        sourceSet.java.setSrcDirs(listOf("domain/java"))
+    }
+}
+```
+
+The lambdas receive the `SourceSet` and — in `configureAllComponents` — the component name as independent
+parameters. Use `componentName` to derive directories: for test and test-fixtures source sets it differs
+from the source set name (component `domain`, source set `domainTest`). Inside `configureComponent`, the
+component name is available as the `componentName` property.
+
+Components without a test or test-fixtures source set are skipped by `configureAllComponents`; requesting
+such a source set in `configureComponent` is an error, as is an unknown component name.
+
+:::note[Folder creation]
+Arciphant creates the source set folders using the default `src/<sourceSet>` layout. When you relocate the
+source directories, disable this with [`disableFolderCreation()`](/additional-settings) and create the
+folders yourself.
+:::
+
 ## Shared dependency configurations
 
 External dependencies can be declared once for all component source sets of the same kind. In every Arciphant module

@@ -13,9 +13,12 @@ import ch.ergon.arciphant.core.model.DomainModule
 import ch.ergon.arciphant.core.model.FunctionalModule
 import ch.ergon.arciphant.core.model.ModuleReference
 import ch.ergon.arciphant.core.model.component
+import ch.ergon.arciphant.core.sourceset.ConfigureAllComponentsExtension.Companion.CONFIGURE_ALL_COMPONENTS_EXTENSION_NAME
+import ch.ergon.arciphant.core.sourceset.ConfigureSingleComponentExtension.Companion.CONFIGURE_COMPONENT_EXTENSION_NAME
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.util.projectDependencyConfigurations
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.project
@@ -330,6 +333,162 @@ class SourceSetLayoutConfigurerTest {
             assertThat(bundleProject.extensions.findByType(ComponentDependencyExtension::class.java)).isNull()
             assertThat(moduleProject.extensions.findByType(ComponentDependencyExtension::class.java)).isNotNull()
         }
+    }
+
+    @Nested
+    inner class ComponentSourceSetCustomizationTest {
+
+        @Test
+        fun `it should configure the production source set of every component`() {
+            val project = javaProject()
+            val module = domainModule(
+                component(reference = ComponentReference("domain")),
+                component(reference = ComponentReference("api")),
+            )
+            project.applyModuleConfig(module, settings())
+
+            val configured = mutableListOf<Pair<String, String>>()
+            project.configureAllComponents().productionSourceSet { sourceSet, componentName ->
+                configured.add(componentName to sourceSet.name)
+            }
+
+            assertThat(configured).containsExactlyInAnyOrder("domain" to "domain", "api" to "api")
+        }
+
+        @Test
+        fun `it should pass the component name of renamed test source sets`() {
+            val project = javaProject()
+            val settings = settings {
+                testSourceSetName { "test-$it" }
+                testFixturesSourceSetName { "fixtures-$it" }
+            }
+            project.applyModuleConfig(domainModule(component(ComponentReference("domain"))), settings)
+
+            val test = mutableListOf<Pair<String, String>>()
+            val testFixtures = mutableListOf<Pair<String, String>>()
+            project.configureAllComponents().testSourceSet { sourceSet, componentName ->
+                test.add(componentName to sourceSet.name)
+            }
+            project.configureAllComponents().testFixturesSourceSet { sourceSet, componentName ->
+                testFixtures.add(componentName to sourceSet.name)
+            }
+
+            assertThat(test).containsExactly("domain" to "test-domain")
+            assertThat(testFixtures).containsExactly("domain" to "fixtures-domain")
+        }
+
+        @Test
+        fun `it should skip components without a test or test fixtures source set`() {
+            val project = javaProject()
+            val module = domainModule(
+                component(
+                    reference = ComponentReference("domain"),
+                    withTestSourceSet = false,
+                    withTestFixturesSourceSet = false,
+                )
+            )
+            project.applyModuleConfig(module, settings())
+
+            val configured = mutableListOf<String>()
+            project.configureAllComponents().testSourceSet { _, componentName -> configured.add(componentName) }
+            project.configureAllComponents().testFixturesSourceSet { _, componentName -> configured.add(componentName) }
+
+            assertThat(configured).isEmpty()
+        }
+
+        @Test
+        fun `it should customize the source directories of all components`() {
+            val project = javaProject()
+            project.applyModuleConfig(domainModule(component(ComponentReference("domain"))), settings())
+
+            project.configureAllComponents().productionSourceSet { sourceSet, componentName ->
+                sourceSet.java.setSrcDirs(listOf("$componentName/java"))
+                sourceSet.resources.setSrcDirs(listOf("$componentName/resources"))
+            }
+
+            val production = project.sourceSets().getByName("domain")
+            assertThat(production.java.srcDirs).containsExactly(project.projectDir.resolve("domain/java"))
+            assertThat(production.resources.srcDirs).containsExactly(project.projectDir.resolve("domain/resources"))
+        }
+
+        @Test
+        fun `it should configure a single component by name`() {
+            val project = javaProject()
+            val module = domainModule(
+                component(reference = ComponentReference("domain")),
+                component(reference = ComponentReference("api")),
+            )
+            project.applyModuleConfig(module, settings())
+
+            project.configureComponent()("domain") {
+                productionSourceSet { it.java.setSrcDirs(listOf("$componentName/java")) }
+                testSourceSet { it.java.setSrcDirs(listOf("$componentName/test/java")) }
+                testFixturesSourceSet { it.java.setSrcDirs(listOf("$componentName/testFixtures/java")) }
+            }
+
+            assertThat(project.sourceSets().getByName("domain").java.srcDirs)
+                .containsExactly(project.projectDir.resolve("domain/java"))
+            assertThat(project.sourceSets().getByName("domainTest").java.srcDirs)
+                .containsExactly(project.projectDir.resolve("domain/test/java"))
+            assertThat(project.sourceSets().getByName("domainTestFixtures").java.srcDirs)
+                .containsExactly(project.projectDir.resolve("domain/testFixtures/java"))
+            assertThat(project.sourceSets().getByName("api").java.srcDirs)
+                .containsExactly(project.projectDir.resolve("src/api/java"))
+        }
+
+        @Test
+        fun `it should fail for an unknown component name`() {
+            val project = javaProject()
+            project.applyModuleConfig(domainModule(component(ComponentReference("domain"))), settings())
+
+            assertThatThrownBy {
+                project.configureComponent()("unknown") { }
+            }.hasMessageContaining("unknown component 'unknown'")
+                .hasMessageContaining("'domain'")
+        }
+
+        @Test
+        fun `it should fail when a single component has no requested source set`() {
+            val project = javaProject()
+            val module = domainModule(
+                component(
+                    reference = ComponentReference("domain"),
+                    withTestSourceSet = false,
+                    withTestFixturesSourceSet = false,
+                )
+            )
+            project.applyModuleConfig(module, settings())
+
+            assertThatThrownBy {
+                project.configureComponent()("domain") { testSourceSet { } }
+            }.hasMessageContaining("component 'domain' has no test source set")
+            assertThatThrownBy {
+                project.configureComponent()("domain") { testFixturesSourceSet { } }
+            }.hasMessageContaining("component 'domain' has no test fixtures source set")
+        }
+
+        @Test
+        fun `it should not register the extensions in bundle module projects`() {
+            val project = javaProject(name = "bundle")
+            val bundle = BundleModule(
+                reference = ModuleReference(name = "bundle"),
+                plugin = null,
+                includes = emptySet(),
+            )
+            SourceSetLayoutConfigurer(
+                settings(),
+                listOf(GradleBundleModuleProjectConfig(GradleProjectPath.of(listOf("bundle")), bundle)),
+            ).configure(project)
+
+            assertThat(project.extensions.findByName(CONFIGURE_ALL_COMPONENTS_EXTENSION_NAME)).isNull()
+            assertThat(project.extensions.findByName(CONFIGURE_COMPONENT_EXTENSION_NAME)).isNull()
+        }
+
+        private fun Project.configureAllComponents() =
+            extensions.getByName(CONFIGURE_ALL_COMPONENTS_EXTENSION_NAME) as ConfigureAllComponentsExtension
+
+        private fun Project.configureComponent() =
+            extensions.getByName(CONFIGURE_COMPONENT_EXTENSION_NAME) as ConfigureSingleComponentExtension
     }
 
     private fun javaProject(

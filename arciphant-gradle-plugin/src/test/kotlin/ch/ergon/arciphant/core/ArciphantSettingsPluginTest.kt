@@ -564,6 +564,66 @@ class ArciphantSettingsPluginTest {
     }
 
     @Test
+    fun `test that component source sets can be customized`() {
+        settingsFileWithArciphant(
+            """
+            sourceSetComponentLayout()
+
+            module("test").createComponent("domain")
+            """
+        )
+        buildFileWithJvmPlugins()
+        projectFolder.resolve("test/build.gradle.kts").write(
+            """
+            configureAllComponents {
+                productionSourceSet { sourceSet, componentName ->
+                    sourceSet.java.setSrcDirs(listOf("${'$'}componentName/java"))
+                    sourceSet.resources.setSrcDirs(listOf("${'$'}componentName/resources"))
+                }
+            }
+            configureComponent("domain") {
+                testSourceSet { sourceSet ->
+                    sourceSet.java.setSrcDirs(listOf("${'$'}componentName/test/java"))
+                }
+            }
+
+            dependencies {
+                add("domainTestImplementation", "org.junit.jupiter:junit-jupiter:5.11.3")
+                add("domainTestRuntimeOnly", "org.junit.platform:junit-platform-launcher")
+            }
+            """
+        )
+        projectFolder.resolve("test/domain/java/example/Domain.java").write(
+            """
+            package example;
+
+            public class Domain {}
+            """
+        )
+        projectFolder.resolve("test/domain/test/java/example/DomainTest.java").write(
+            """
+            package example;
+
+            import org.junit.jupiter.api.Test;
+
+            import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+            class DomainTest {
+                @Test
+                void createsDomain() {
+                    assertNotNull(new Domain());
+                }
+            }
+            """
+        )
+
+        val result = gradleRunner.withArguments(":test:test").build()
+
+        assertThat(result.task(":test:compileDomainJava")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(result.task(":test:domainTest")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    }
+
+    @Test
     fun `test that source set folders are created according to configuration`() {
         settingsFileWithArciphant(
             """

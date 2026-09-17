@@ -77,6 +77,10 @@ internal class SourceSetLayoutConfigurer(
             )
         }
 
+        moduleProject.createConfigureComponentExtensions(
+            sourceSetsByComponent.mapKeys { (component, _) -> component.reference.name }
+        )
+
         val dependencyFactory = SourceSetDependencyFactory(moduleProject, sourceSetComponentSettings)
 
         // completes component dependencies declared with the 'component' notation in dependencies blocks

@@ -153,7 +153,10 @@ internal class SourceSetFactory(private val project: Project) {
     private fun markAsTestSources(vararg sourceSets: SourceSet?) {
         project.pluginManager.withPlugin(IDEA) {
             val testSources = project.extensions.getByType(IdeaModel::class.java).module.testSources
-            sourceSets.filterNotNull().forEach { testSources.from(it.allSource.srcDirs) }
+            // resolved lazily, so that later source directory customizations are still reflected
+            sourceSets.filterNotNull().forEach { sourceSet ->
+                testSources.from(project.provider { sourceSet.allSource.srcDirs })
+            }
         }
     }
 
