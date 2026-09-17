@@ -1,15 +1,11 @@
 package ch.ergon.arciphant.core
 
 import ch.ergon.arciphant.core.ComponentDependencyExtension.Companion.COMPONENT_EXTENSION_NAME
-import ch.ergon.arciphant.core.model.Component
-import ch.ergon.arciphant.core.model.FunctionalModule
-import ch.ergon.arciphant.core.model.Module
-import ch.ergon.arciphant.core.model.getByName
-import ch.ergon.arciphant.core.model.getComponent
+import ch.ergon.arciphant.core.model.*
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.plugins.ExtensionContainer
-import java.util.IdentityHashMap
+import java.util.*
 
 /**
  * Registered as the `component` extension in every project. Its invoke operator creates dependency
@@ -45,19 +41,17 @@ open class ComponentDependencyExtension internal constructor(
     }
 }
 
-/**
- * Keep parameters of this method in sync with constructor of [ComponentDependencyExtension].
- */
 internal fun ExtensionContainer.createComponentDependencyExtension(
     modules: List<Module>,
     componentDependencyFactory: ComponentDependencyFactory,
 ) {
-    create(
+    add(
         COMPONENT_EXTENSION_NAME,
-        ComponentDependencyExtension::class.java,
-        modules,
-        ComponentDependencyRegistry(),
-        componentDependencyFactory,
+        ComponentDependencyExtension(
+            modules = modules,
+            registry = ComponentDependencyRegistry(),
+            componentDependencyFactory = componentDependencyFactory,
+        )
     )
 }
 

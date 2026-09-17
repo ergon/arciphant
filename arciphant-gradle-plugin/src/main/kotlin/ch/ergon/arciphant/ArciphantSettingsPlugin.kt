@@ -17,7 +17,7 @@ class ArciphantSettingsPlugin {
 
     fun apply(settings: Settings) {
         with(settings) {
-            val dsl = extensions.create(ARCIPHANT_EXTENSION_NAME, ArciphantDsl::class.java)
+            val dsl = ArciphantDsl().also { extensions.add(ARCIPHANT_EXTENSION_NAME, it) }
 
             gradle.settingsEvaluated {
                 val settings = GlobalSettingsRepository(dsl).load()
