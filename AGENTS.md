@@ -11,6 +11,7 @@ The repository root is a composite build with no tasks of its own:
 - `arciphant-gradle-plugin/`: the Kotlin Gradle plugin.
 - `arciphant-project-demo/`: an example application for the usage of Arciphant with component layout 'project'
 - `arciphant-source-set-demo/`: an example application for the usage of Arciphant with component layout 'source set'
+- `examples/`: small, feature-focused example builds (one folder per feature)
 - `docs`: user documentation ([Blume](https://useblume.dev), published to GitHub Pages)
 
 ## Build and Verification

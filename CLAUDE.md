@@ -9,13 +9,15 @@ structure with a DSL directly in `settings.gradle.kts`: module *templates* defin
 dependencies), modules are instantiated from templates, and Arciphant generates the Gradle multi-project structure from
 that.
 
-Four parts (the root is a composite build via `includeBuild`):
+Five parts (the root is a composite build via `includeBuild`):
 
 - `arciphant-gradle-plugin/` — the plugin itself (Kotlin)
 - `arciphant-project-demo/` — example app "Online Learning Platform" (Kotlin + Spring Boot) with component layout
   **project**, reference for DSL usage
 - `arciphant-source-set-demo/` — the same example app with component layout **source set** (components are source sets
   inside one Gradle project per module)
+- `examples/` — small, feature-focused example builds (one folder per feature), as
+  opposed to the two complete demo apps
 - `docs` — user documentation ([Blume](https://useblume.dev), published to GitHub Pages)
 
 ## Build & Test Commands
