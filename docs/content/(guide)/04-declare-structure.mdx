@@ -11,7 +11,11 @@ sidebar:
 Assume you have a modulithic application with 4 domain modules. In each module, you want to have a
 clean-architecture-like structure with the domain in the middle:
 
-![Simple Example](../images/structure-01-modules.drawio.png)
+<Frame caption="Four modules sharing the same clean-architecture-like component structure.">
+
+![Four modules with the components domain, application, web and db](../images/structure-01-modules.drawio.png)
+
+</Frame>
 
 Building this structure with plain nested Gradle projects means a lot of duplicated build setup. With Arciphant you can
 configure a template that defines the structure of the components (rings) of a module and then use this template to
@@ -79,7 +83,11 @@ Now assume that for each of the components (rings) you need some shared code (e.
 db-components). So what you can do is create a shared library module with the same component structure. The following
 image shows this setup (with only two modules for simplicity):
 
-![Library](../images/structure-02-library.drawio.png)
+<Frame caption="A shared library module with the same component structure (shown with two modules for simplicity).">
+
+![Two modules whose components depend on the same-named components of a shared library module](../images/structure-02-library.drawio.png)
+
+</Frame>
 
 Normally you would have to manage all these dependencies manually, which is error-prone and pollutes the Gradle build
 setup with repetitive code.
@@ -124,7 +132,11 @@ Since Arciphant is a tool and not a methodology, it provides the ability without
 Now assume that some modules (e.g. Module C and Module D) need access to a file store (e.g. MinIO). You want to put this
 code into a separate component called `fs` like the following:
 
-![Different shapes](../images/structure-03-different-shapes.drawio.png)
+<Frame caption="Modules C and D with an additional `fs` component.">
+
+![Modules C and D with an additional fs component, modules A and B without](../images/structure-03-different-shapes.drawio.png)
+
+</Frame>
 
 You can solve this problem by creating another template, extending from the existing template:
 
@@ -167,7 +179,11 @@ Even though not all modules require the additional `fs` component, the library c
 Of course, it is also possible to declare individual components in particular modules. E.g. if Module D requires the
 integration of an external API, you want to create a dedicated component 'ext-api' for the integration code:
 
-![Individual shapes](../images/structure-04-individual-shapes.drawio.png)
+<Frame caption="Module D with an individual `ext-api` component.">
+
+![Module D with an individual ext-api component](../images/structure-04-individual-shapes.drawio.png)
+
+</Frame>
 
 To do so, you can create a component for the specific module:
 
