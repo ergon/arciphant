@@ -27,8 +27,6 @@ Create a `settings.gradle.kts` and apply Arciphant:
 In the same file, declare a template and instantiate the modules from it:
 
 ```kotlin settings.gradle.kts
-rootProject.name = "arciphant-quickstart"
-
 arciphant {
     val moduleTemplate = template()
         .createComponent(name = "domain")
