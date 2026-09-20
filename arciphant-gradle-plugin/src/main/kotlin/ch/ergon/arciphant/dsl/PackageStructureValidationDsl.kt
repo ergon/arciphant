@@ -58,7 +58,7 @@ sealed interface PackageStructureValidationDsl {
      * Example:
      * ```
      * basePackageName("com.company.project")
-     * mapProjectNameToPackageFragment(
+     * mapProjectNamesToPackageFragments(
      *   "financial-accounting" to "accounting",
      *   "payment-provider-adapter" to "ppa",
      * )
@@ -80,7 +80,7 @@ sealed interface PackageStructureValidationDsl {
      *
      * Example:
      * ```
-     * mapProjectPathToAbsolutePackage(
+     * mapProjectPathsToAbsolutePackages(
      *   ":specific:project:path" to "com.specific.package.name",
      *   ":any:other:path" to "com.any.other.package.name",
      * )
