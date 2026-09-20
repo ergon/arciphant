@@ -1,24 +1,46 @@
 ---
 title: Introduction
-description: What Arciphant is, why it exists, and the technologies behind it.
+description: Declare your module structure once — Arciphant turns it into a complete Gradle multi-project build.
 icon: book-open
 ---
 
 import icon from "../public/icon.svg";
 
-## About Arciphant
+<div style={{ display: "flex", justifyContent: "center" }}>
+  <img src={icon.src} alt="Arciphant logo" width="220" data-no-zoom />
+</div>
 
-Arciphant is a Gradle plugin that lets you declare the module structure of a complex software project with a simple
-DSL:
+Arciphant is a Gradle **settings plugin** for projects built from many modules that share the same technical structure —
+moduliths, Clean Architecture, Hexagonal Architecture and friends. Instead of maintaining dozens of `include(...)`
+statements and near-identical `build.gradle.kts` files, you describe that structure **once**, as a template, directly in
+`settings.gradle.kts`:
 
-- Module templates define the technical structure (components and their dependencies) of modules
-- These templates can be configured using a simple DSL directly in the Gradle settings file
-- Modules can be instantiated based on templates and further components can be added as required
+```kotlin settings.gradle.kts
+plugins {
+    id("ch.ergon.arciphant") version "0.2.0"
+}
 
-## The problem
+arciphant {
+    val moduleTemplate = template()
+        .createComponent(name = "domain")
+        .createComponent(name = "application", apiDependencies = setOf("domain"))
+        .createComponent(name = "web", dependencies = setOf("application"))
+        .createComponent(name = "db", dependencies = setOf("application"))
 
-Suppose your application consists of 4 domain modules, each with the same clean-architecture-like structure of 4
-components. Mapping this onto a plain Gradle multi-project build means writing 16 `include(...)` statements:
+    module(name = "module-a", template = moduleTemplate)
+    module(name = "module-b", template = moduleTemplate)
+    module(name = "module-c", template = moduleTemplate)
+    module(name = "module-d", template = moduleTemplate)
+}
+```
+
+From this single declaration Arciphant generates the whole multi-project build: 16 Gradle projects, their folders on
+disk, and every component dependency — test fixtures included. The component projects need **no `build.gradle.kts` at
+all**, and adding a fifth module is one line.
+
+<Expandable title="What this replaces in plain Gradle">
+
+Mapping the same structure onto a plain Gradle build means 16 `include(...)` statements:
 
 ```kotlin settings.gradle.kts
 include("module-a:domain")
@@ -44,74 +66,66 @@ The architecture rule ("_web_ depends on _application_, which exposes _domain_")
 to be kept consistent manually, test-fixture dependencies come on top, and every new module means copying the whole
 boilerplate again.
 
-## The Arciphant way
+</Expandable>
 
-With Arciphant, the same structure is declared **once** — as a template in `settings.gradle.kts`:
-
-```kotlin settings.gradle.kts
-arciphant {
-    val moduleTemplate = template()
-        .createComponent(name = "domain")
-        .createComponent(name = "application", apiDependencies = setOf("domain"))
-        .createComponent(name = "web", dependencies = setOf("application"))
-        .createComponent(name = "db", dependencies = setOf("application"))
-
-    module(name = "module-a", template = moduleTemplate)
-    module(name = "module-b", template = moduleTemplate)
-    module(name = "module-c", template = moduleTemplate)
-    module(name = "module-d", template = moduleTemplate)
-}
-```
-
-Arciphant generates the Gradle projects, wires all component dependencies (including test fixtures) and even creates the
-folders on disk — the component projects need no `build.gradle.kts` at all. Adding a fifth module is one line.
-
-This brings several advantages:
-
-- Architecture styles (e.g. Clean Architecture) can be mapped cleanly and declaratively as a Gradle Multi-Project Build
-- The boilerplate part in the Gradle code is minimized
-- The effort required to introduce a new module is negligible
-- No further tools (such as ArchUnit) are required to define the basic architectural units (modules and components) and
-  map their dependencies
-- Thanks to the interaction with the java-test-fixtures plugin (optional), testing dependencies work out-of-the-box
-  without further effort
-
-Arciphant offers the greatest benefit for software projects that consist of many modules sharing the same or a similar
-technical structure (e.g. Clean Architecture, Hexagonal Architecture, Onion Architecture, Layered Architecture) — as,
-for example, in a modulith architecture.
+## Why Arciphant
 
 <CardGroup cols={2}>
-  <Card title="Quickstart" href="/getting-started" icon="rocket">
-    Create a first Arciphant project from scratch in five minutes.
+  <Card title="Templates instead of boilerplate" icon="component">
+    Define your architecture style once as a template — every module instantiated from it gets the same shape.
+    Introducing a new module is a one-liner.
   </Card>
-  <Card title="Declare structure" href="/declare-structure" icon="component">
-    The full tour: templates, modules, libraries and bundles.
+  <Card title="Dependencies wired automatically" icon="cable">
+    Component dependencies become `implementation` and `api` dependencies, shared libraries are exposed to every
+    module, and test-fixture dependencies work out of the box.
+  </Card>
+  <Card title="Two component layouts" icon="layout-grid">
+    Realize components as separate Gradle projects or as source sets inside one project per module — same DSL, your
+    choice per build.
+  </Card>
+  <Card title="Architecture verified at build time" icon="package-check">
+    The `validatePackageStructure` task checks that code lives in the packages your module structure prescribes — no
+    extra tools like ArchUnit needed for the basics.
   </Card>
 </CardGroup>
 
-## Technologies
+:::tip[Is Arciphant for you?]
+Arciphant offers the greatest benefit when many modules share the same or a similar technical structure — for example
+in a modulith with a Clean, Hexagonal, Onion or Layered Architecture. For a build with a handful of heterogeneous
+projects, plain Gradle is just fine.
+:::
 
-The Arciphant Gradle Plugin is written in Kotlin.
+## Start here
 
-<div style={{ display: "flex", gap: "0.5rem" }}>
-  <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white" alt="Gradle" style={{ margin: 0 }} data-no-zoom />
+<CardGroup cols={2}>
+  <Card title="Setup" href="/setup" icon="monitor-cog">
+    Prerequisites, compatibility and how to apply the plugin.
+  </Card>
+  <Card title="Quickstart" href="/getting-started" icon="rocket">
+    Create a first Arciphant project from scratch in five minutes.
+  </Card>
+  <Card title="Concepts" href="/concepts" icon="layout-panel-top">
+    Modules, components, templates and bundles — the building blocks.
+  </Card>
+  <Card title="Demo projects" href="/demo-project" icon="circle-play">
+    A complete example application, once per component layout.
+  </Card>
+</CardGroup>
+
+## About the project
+
+Arciphant is written in Kotlin, developed by <a href="https://www.ergon.ch" target="_blank" rel="noreferrer">Ergon
+Informatik AG</a> and released under the <a href="https://github.com/ergon/arciphant/blob/main/LICENSE" target="_blank"
+rel="noreferrer">MIT License</a>. The publisher does _not_ guarantee active maintenance and further development — we
+work on the plugin to the extent that we need for our own projects.
+
+The name combines **arc**hitecture and ele**phant** — the elephant being both a metaphor for a large project and a nod
+to the Gradle logo.
+
+<div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+  <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white" alt="Gradle" style={{ margin: 0 }} data-no-zoom />
   <img src="https://img.shields.io/badge/Kotlin-B125EA?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin" style={{ margin: 0 }} data-no-zoom />
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="MIT License" style={{ margin: 0 }} data-no-zoom />
 </div>
 
-## License
-
-Arciphant is released under the <a href="https://github.com/ergon/arciphant/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT License</a>.
-
-<img src="https://img.shields.io/badge/MIT-green?style=for-the-badge" alt="MIT" style={{ margin: 0 }} data-no-zoom />
-
-## Maintenance
-
-The publisher (Ergon Informatik AG) does _NOT_ guarantee active maintenance and further development. We only work on the
-plugin to the extent that we need for our own projects.
-
-## About the name
-
-The name Arciphant combines architecture and elephant — the elephant being both a metaphor for a large project and a
-nod to the Gradle logo.
-
-<img src={icon.src} alt="Arciphant logo" width="300" />
+<GithubInfo />
