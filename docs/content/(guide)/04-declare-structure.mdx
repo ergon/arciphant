@@ -36,31 +36,6 @@ Above configuration creates the following structure and sets up the dependencies
 application, web, db) in each module. How the components are mapped to Gradle depends on the configured
 [component layout](/component-layouts):
 
-
-
-<Tabs>
-    <Tab title="Project layout">
-        foo
-        ```ts blume.config.ts
-        import { defineConfig } from "blume";
-
-        export default defineConfig({
-        title: "My docs",
-    });
-        ```
-    </Tab>
-    <Tab title="Source set layout">
-        foo 2
-        ```ts blume.config.ts
-        import { defineConfig } from "blume";
-
-        export default defineConfig({
-        title: "My docs",
-    });
-        ```
-    </Tab>
-</Tabs>
-
 <Tabs>
   <Tab title="Project layout">
     Every component becomes its own nested Gradle project (<Icon class="inline" name="package" size={15} />) with the
