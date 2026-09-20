@@ -8,15 +8,25 @@ This walkthrough sets up a minimal Arciphant build from scratch: two modules tha
 clean-architecture-like component structure. All you need is an empty directory with a Gradle wrapper (see
 [Setup](/setup#compatibility) for the compatibility requirements).
 
-## 1. Declare the module structure
+<Steps>
 
-Create the following `settings.gradle.kts`:
+<Step title="Apply the plugin">
+
+Create a `settings.gradle.kts` and apply Arciphant:
 
 ```kotlin settings.gradle.kts
 plugins {
     id("ch.ergon.arciphant") version "0.2.0"
 }
+```
 
+</Step>
+
+<Step title="Declare the module structure">
+
+In the same file, declare a template and instantiate the modules from it:
+
+```kotlin settings.gradle.kts
 rootProject.name = "arciphant-quickstart"
 
 arciphant {
@@ -33,7 +43,9 @@ arciphant {
 The template defines the technical structure that all modules share — three components and their dependencies —
 and each `module(...)` call instantiates it as a domain module.
 
-## 2. Apply a JVM plugin
+</Step>
+
+<Step title="Apply a JVM plugin">
 
 Arciphant requires the Java or Kotlin JVM plugin on all managed projects (see
 [Setup](/setup#prerequisites)). Create the following `build.gradle.kts` in the root directory:
@@ -52,7 +64,9 @@ subprojects {
 }
 ```
 
-## 3. Inspect the generated project structure
+</Step>
+
+<Step title="Inspect the generated project structure">
 
 That's it — Arciphant now generates the whole Gradle multi-project structure. Verify it with:
 
@@ -77,7 +91,9 @@ Arciphant also created the component folders on disk (see
 production code into `orders/domain/src/main/kotlin` etc. — without writing a single `build.gradle.kts` for any of the
 components.
 
-## 4. Verify the wired dependencies
+</Step>
+
+<Step title="Verify the wired dependencies">
 
 Arciphant has also wired the dependencies between the components, exactly as declared in the template. The
 `projectDependencies` task prints them:
@@ -98,6 +114,10 @@ Project ':orders:application'
 ```
 
 `application` exposes `domain` to its consumers as an `api` dependency, so `web` has access to both.
+
+</Step>
+
+</Steps>
 
 ## Where to go next
 

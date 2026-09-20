@@ -52,10 +52,22 @@ In larger builds, the JVM plugin is typically applied by convention plugins inst
 
 ## Compatibility
 
-| Requirement                    | Supported versions                                                                                                                                                                                                                                                                             |
-|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Gradle                         | At least Gradle 8.8 (Arciphant relies on lifecycle callbacks introduced in 8.8); developed and tested against Gradle 8.12. For Gradle 9+, all project folders must exist on disk — Arciphant's [automatic folder creation](/additional-settings#automatic-folder-creation) takes care of this. |
-| Java                           | 17 or newer. The plugin is compiled for Java 17; the minimum version is recorded in the plugin metadata and enforced by Gradle.                                                                                                                                                                |
-| Gradle DSL                     | The Arciphant DSL is designed for the Gradle Kotlin DSL (`settings.gradle.kts`); all examples in this documentation use it. The plugin has *not* been tested with the groovy DSL.                                                                                                              |
-| Configuration cache            | Supported in both [component layouts](/component-layouts).                                                                                                                                                                                                                                     |
-| Isolated projects (incubating) | Supported with the source set component layout (covered by an automated compatibility test). The project layout configures projects via `allprojects` and is not compatible with isolated projects.                                                                                            |
+| Requirement                    | Supported                                          |
+| ------------------------------ | -------------------------------------------------- |
+| Gradle                         | 8.8 or newer (developed and tested against 8.12)   |
+| Java                           | 17 or newer                                        |
+| Gradle DSL                     | Kotlin DSL                                         |
+| Configuration cache            | supported (both component layouts)                 |
+| Isolated projects (incubating) | supported with the source set component layout     |
+
+Some details behind these requirements:
+
+- **Gradle**: Arciphant relies on lifecycle callbacks introduced in Gradle 8.8. For Gradle 9+, all project folders must
+  exist on disk — Arciphant's [automatic folder creation](/additional-settings#automatic-folder-creation) takes care of
+  this.
+- **Java**: The plugin is compiled for Java 17; the minimum version is recorded in the plugin metadata and enforced by
+  Gradle.
+- **Gradle DSL**: The Arciphant DSL is designed for the Gradle Kotlin DSL (`settings.gradle.kts`); all examples in this
+  documentation use it. The plugin has _not_ been tested with the Groovy DSL.
+- **Isolated projects**: Support for the source set layout is covered by an automated compatibility test. The project
+  layout configures projects via `allprojects` and is not compatible with isolated projects.

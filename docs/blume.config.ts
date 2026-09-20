@@ -13,8 +13,9 @@ export default defineConfig({
     dir: "docs",
   },
   // GitHub Pages serves the site under /arciphant; local dev stays at the root.
+  // `site` gives sitemap, canonical URLs and Open Graph images an absolute origin.
   deployment:
     process.env.DEPLOY_TARGET === "github-pages"
-      ? { base: "/arciphant" }
+      ? { site: "https://ergon.github.io", base: "/arciphant" }
       : undefined,
 });

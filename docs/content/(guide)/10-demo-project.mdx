@@ -1,0 +1,86 @@
+---
+title: Demo projects
+description: Two demo projects showcase Arciphant, one for each component layout.
+icon: circle-play
+---
+
+:::info[Disclaimer]
+The demo application is neither complete nor useful in any way. No emphasis was placed on clean code or meaningful patterns.
+It's just some sample code split into modules/components to showcase the possibilities of Arciphant.
+:::
+
+The <a href="https://github.com/ergon/arciphant" target="_blank" rel="noreferrer">Arciphant repository</a> contains two demo projects. Both
+implement the same online learning platform with the following module structure, one for
+each [component layout](/component-layouts):
+
+![Structure of the Demo-Project](../images/demo-project.drawio.png)
+
+## Project component layout demo
+
+The sub-project `arciphant-project-demo` uses the default project layout: every component is a separate Gradle project.
+The arciphant configuration is specified in
+its <a href="https://github.com/ergon/arciphant/blob/main/arciphant-project-demo/settings.gradle.kts" target="_blank" rel="noreferrer">settings.gradle.kts</a> —
+the whole module structure shown in the diagram above boils down to this declaration:
+
+```kotlin arciphant-project-demo/settings.gradle.kts
+arciphant {
+    val commonModuleTemplate = template()
+        .createComponent(name = "api", plugin = "spring-component")
+        .createComponent(name = "domain", plugin = "spring-component", apiDependencies = setOf("api"))
+        .createComponent(name = "db", plugin = "jooq-component", dependencies = setOf("domain"))
+        .createComponent(name = "web-api", plugin = "spring-web-component")
+        .createComponent(name = "web", plugin = "spring-web-component", dependencies = setOf("web-api", "domain"))
+
+    val moduleWithFilestoreTemplate = template()
+        .extends(commonModuleTemplate)
+        .createComponent(name = "filestore", plugin = "minio-component", dependencies = setOf("domain"))
+
+    library(name = "shared", template = moduleWithFilestoreTemplate)
+
+    module(name = "course", template = commonModuleTemplate)
+    module(name = "exam", template = commonModuleTemplate)
+    module(name = "certificate", template = moduleWithFilestoreTemplate)
+        .createComponent(name = "certificate-authority-adapter", plugin = "spring-component", dependencies = setOf("domain"))
+    module(name = "accounting", template = moduleWithFilestoreTemplate)
+        .createComponent(name = "payment-provider-adapter", plugin = "spring-component", dependencies = setOf("domain"))
+        .extendComponent(name = "web", dependencies = setOf("payment-provider-adapter"))
+
+    bundle(name = "online-learning-platform", plugin = "spring-boot-bundle-module")
+
+    packageStructureValidation {
+        // …
+    }
+}
+```
+
+Things worth a look in this demo:
+
+- <a href="https://github.com/ergon/arciphant/tree/main/arciphant-project-demo/build-logic" target="_blank" rel="noreferrer">`build-logic/`</a> —
+  the convention plugins registered per component type (`spring-component`, `spring-web-component`, `jooq-component`,
+  `minio-component`) and the bundle plugin `spring-boot-bundle-module` that packages the application with Spring Boot.
+  See [Using Plugins](/using-plugins).
+- The `plugins` block of the settings file references one convention plugin with `apply false` — the
+  [workaround](/using-plugins#use-includebuild-instead-of-buildsrc) required for plugins from an included build.
+- `certificate` and `accounting` show [individual components](/declare-structure#individual-shapes) and
+  [`extendComponent`](/declare-structure#extending-components) on top of a shared template.
+- The [`packageStructureValidation`](/verify-project-structure) block, hooked into every compilation.
+
+## Source set component layout demo
+
+The sub-project `arciphant-source-set-demo` implements the same module structure with
+the [source set component layout](/component-layouts): every functional module is a single Gradle project whose
+components are source sets (with lowerCamelCase names such as `webApi`). The arciphant configuration is specified in
+its <a href="https://github.com/ergon/arciphant/blob/main/arciphant-source-set-demo/settings.gradle.kts" target="_blank" rel="noreferrer">settings.gradle.kts</a>.
+Since plugins cannot be applied per component in this layout, each module project applies a convention plugin in its
+`build.gradle.kts`, and module-wide external dependencies are declared via Arciphant's
+[shared dependency configurations](/component-layouts#shared-dependency-configurations).
+
+## Feature examples
+
+Besides the two complete demo applications, the
+<a href="https://github.com/ergon/arciphant/tree/main/examples" target="_blank" rel="noreferrer">`examples`</a> folder
+contains small, feature-focused example builds — one folder per feature:
+
+- <a href="https://github.com/ergon/arciphant/tree/main/examples/source-set-customization" target="_blank" rel="noreferrer">`source-set-customization`</a> —
+  relocating the source directories of components in the source set layout with `customizeAllComponents` and
+  `customizeComponent`. See [Customizing source directories](/component-layouts#customizing-source-directories).

@@ -16,10 +16,6 @@ statements and near-identical `build.gradle.kts` files, you describe that struct
 `settings.gradle.kts`:
 
 ```kotlin settings.gradle.kts
-plugins {
-    id("ch.ergon.arciphant") version "0.2.0"
-}
-
 arciphant {
     val moduleTemplate = template()
         .createComponent(name = "domain")

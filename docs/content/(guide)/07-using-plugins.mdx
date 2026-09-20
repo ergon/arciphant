@@ -26,13 +26,32 @@ for the respective component types:
 - `spring-web-component.gradle.kts`
 - `jooq-component.gradle.kts`
 
-You can register these plugins for the components in Arciphant and they will be applied:
+Such a convention plugin is a plain precompiled script plugin — it applies the JVM plugin and declares whatever the
+component type needs, for example:
+
+```kotlin buildSrc/src/main/kotlin/spring-web-component.gradle.kts
+plugins {
+    kotlin("jvm")
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+}
+```
+
+You can register these plugins for the components in Arciphant and they will be applied to every component project
+created from the template — the architecture-specific Gradle setup is written once per component _type_, not once per
+component:
 
 ```kotlin settings.gradle.kts
 template()
     .createComponent(name = "web", plugin = "spring-web-component")
     .createComponent(name = "db", plugin = "jooq-component")
 ```
+
+For complete, working convention plugins (Spring, jOOQ, MinIO, a Spring Boot bundle) see the
+<a href="https://github.com/ergon/arciphant/tree/main/arciphant-project-demo/build-logic" target="_blank" rel="noreferrer">`build-logic`
+of the demo project</a>.
 
 Component plugins are available only with `ComponentLayout.PROJECT`. With `ComponentLayout.SOURCE_SET`, components are
 source sets rather than Gradle projects, so plugins must be applied at module-project level instead.
@@ -56,23 +75,27 @@ it with `includeBuild`:
 
 ```kotlin settings.gradle.kts {3}
 pluginManagement {
-  [..]
+  // …
   includeBuild("./build-logic")
 }
 ```
 
-Unfortunately, these plugins won't work together with Arciphant out-of-the-box. The problem is that the
-`pluginManagement` block is only honored by Gradle when plugins are applied in the `plugins` block. Since Arciphant
-applies plugins programmatically (using `pluginManager.apply("plugin-id")`), the plugin will not be found. To overcome
-this issue you can use the following simple hack: just add one of the convention plugins to the plugins block of your
-`settings.gradle.kts` file with `apply false`:
+:::warning[One plugin must appear in the settings `plugins` block]
+Gradle only resolves plugins from builds included via `pluginManagement` when at least one plugin is referenced in a
+`plugins` block. Arciphant applies the registered plugins programmatically (`pluginManager.apply("plugin-id")`), which
+bypasses that resolution — so without further ado, Gradle fails with `Plugin [id: '…'] was not found`.
+:::
+
+The workaround is simple: reference **one** of the convention plugins in the `plugins` block of your
+`settings.gradle.kts` with `apply false`:
 
 ```kotlin settings.gradle.kts {3}
 plugins {
-  [..]
-  id("my-plugin") apply false // overcome plugin resolution limitation of Gradle by adding the plugin without applying it
+  // …
+  id("my-plugin") apply false // makes Gradle resolve plugins from the included build; the plugin is not applied here
 }
 ```
 
-This seems to trigger the required plugin resolution strategy and Arciphant is able to apply all plugins from the
-included build (even if only one plugin is referenced in `settings.gradle.kts`).
+This triggers Gradle's plugin resolution for the included build, and Arciphant can then apply _all_ plugins it provides —
+referencing a single plugin is enough. Both demo projects use this workaround; see also
+[Troubleshooting](/troubleshooting#convention-plugin-not-found).
