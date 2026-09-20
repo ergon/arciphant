@@ -16,15 +16,15 @@ Arciphant supports two ways of mapping configured components to Gradle:
 Both layouts enforce the same component structure and dependencies — they differ in how the structure is mapped to
 Gradle:
 
-|                                | Project layout                                                                                 | Source set layout                                                                     |
-| ------------------------------ | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Gradle projects                | one per component                                                                              | one per functional module                                                             |
-| Plugins per component          | yes — registered in the DSL, see [Using Plugins](/using-plugins)                               | no — plugins are applied per module project                                           |
-| Artifacts                      | one jar per component, with [qualified names](/additional-settings#qualified-archive-base-name) | one jar per module                                                                    |
-| Test fixtures                  | via the `java-test-fixtures` plugin (optional)                                                 | built-in source sets, no plugin required                                              |
-| External dependencies          | declared per component project                                                                 | declared per component configuration, or [shared](#shared-dependency-configurations)  |
-| Configuration cache            | supported                                                                                      | supported                                                                             |
-| Isolated projects (incubating) | not supported                                                                                  | supported                                                                             |
+|                                | Project component layout                                                                        | Source set component layout                                                          |
+|--------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| Gradle projects                | one per component                                                                               | one per functional module                                                            |
+| Plugins per component          | yes — registered in the DSL, see [Using Plugins](/using-plugins)                                | no — plugins are applied per module project                                          |
+| Artifacts                      | one jar per component, with [qualified names](/additional-settings#qualified-archive-base-name) | one jar per module                                                                   |
+| Test fixtures                  | via the `java-test-fixtures` plugin (optional)                                                  | built-in source sets, no plugin required                                             |
+| External dependencies          | declared per component project                                                                  | declared per component configuration, or [shared](#shared-dependency-configurations) |
+| Configuration cache            | supported                                                                                       | supported                                                                            |
+| Isolated projects (incubating) | not supported                                                                                   | supported                                                                            |
 
 As a rule of thumb: choose the **project layout** if your components need their own convention plugins or artifacts —
 each component being a full Gradle project gives you the complete Gradle feature set per component. Choose the

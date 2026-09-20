@@ -24,8 +24,8 @@ internal fun Project.projectLayoutComponentDependency() = ComponentDependencyFac
  *
  * A declaration like `"api"(component(module = "exam", component = "api"))` puts a single project
  * dependency on the target component's Gradle project into the `api` configuration. Compile and runtime
- * classpath resolve correctly through Gradle's variant selection, so unlike in the source set layout no
- * runtime leg is needed. What is missing is the test fixtures dependency
+ * classpath resolve correctly through Gradle's variant selection, so unlike in the source set component
+ * layout no runtime leg is needed. What is missing is the test fixtures dependency
  * (`testFixtures(project(":exam:api"))`), which the notation itself cannot add because it does not know
  * which configuration it is assigned to.
  *

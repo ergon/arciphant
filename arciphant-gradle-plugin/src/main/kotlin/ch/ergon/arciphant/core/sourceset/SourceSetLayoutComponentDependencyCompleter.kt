@@ -18,7 +18,7 @@ internal fun Project.sourceSetLayoutComponentDependency() = ComponentDependencyF
 }
 
 /**
- * Completes component dependencies of the source set layout that are declared in a `dependencies` block.
+ * Completes component dependencies of the source set component layout that are declared in a `dependencies` block.
  *
  * A declaration like `"domainApi"(component(module = "exam", component = "api"))` puts a single project
  * dependency on the target component's `…ApiElements` configuration into the `domainApi` configuration.
