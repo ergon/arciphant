@@ -1,9 +1,9 @@
 package ch.ergon.arciphant.example.certificate.domain
 
-import ch.ergon.arciphant.example.exam.api.ExamResultId
+import ch.ergon.arciphant.example.course.api.CourseId
 
 interface CertificateAuthority {
 
-    fun issueCertificate(examResultId: ExamResultId): Certificate
+    fun issueCertificate(courseId: CourseId): Certificate
 
 }

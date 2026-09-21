@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    // the certificate domain uses the exam module's public API
-    "domainApi"(component(module = "exam", component = "api"))
+    // the certificate domain uses the course module's public API
+    "domainApi"(component(module = "course", component = "api"))
 }

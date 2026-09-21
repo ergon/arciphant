@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.example.certificate.domain
 
-import ch.ergon.arciphant.example.exam.api.ExamResultId
+import ch.ergon.arciphant.example.course.api.CourseId
 import org.springframework.stereotype.Service
 
 @Service
@@ -10,8 +10,8 @@ class CertificateService(
     private val certificateRepository: CertificateRepository,
 ) {
 
-    fun issueAndPersistCertificate(examResultId: ExamResultId) {
-        val certificate = certificateAuthority.issueCertificate(examResultId)
+    fun issueAndPersistCertificate(courseId: CourseId) {
+        val certificate = certificateAuthority.issueCertificate(courseId)
         certificateFileStore.persistCertificateDocument(certificate.id, certificate.document)
         certificateRepository.addCertificate(certificate)
     }

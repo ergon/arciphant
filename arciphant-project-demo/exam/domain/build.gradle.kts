@@ -1,4 +1,4 @@
 dependencies {
-    // the certificate domain uses the course module's public API
+    // the exam domain uses the course module's public API
     "api"(component(module = "course", component = "api"))
 }

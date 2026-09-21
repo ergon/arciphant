@@ -1,5 +1,6 @@
 package ch.ergon.arciphant.example.exam.db
 
+import ch.ergon.arciphant.example.course.api.CourseIdFixtures
 import ch.ergon.arciphant.example.exam.api.ExamId
 import ch.ergon.arciphant.example.exam.api.ExamIdFixtures
 import ch.ergon.arciphant.example.exam.domain.Exam
@@ -21,7 +22,7 @@ class ExamRepositoryImplTest :
     @Test
     fun `it should get exams`() {
         val exam1 = ExamFixtures.anyExam
-        val exam2 = Exam(ExamIdFixtures.random(), DisciplineIdFixtures.any, "Professional Level")
+        val exam2 = Exam(ExamIdFixtures.random(), CourseIdFixtures.any, DisciplineIdFixtures.any, "Professional Level")
         repository.addExam(exam1)
         repository.addExam(exam2)
 

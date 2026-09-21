@@ -1,6 +1,6 @@
 package ch.ergon.arciphant.example.certificate.domain
 
-import ch.ergon.arciphant.example.exam.api.ExamResultIdFixtures
+import ch.ergon.arciphant.example.course.api.CourseIdFixtures
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -21,9 +21,9 @@ class CertificateServiceTest {
 
     @Test
     fun `it should persist issued certificate`() {
-        whenever(certificateAuthorityMock.issueCertificate(ExamResultIdFixtures.any)).thenReturn(CertificateFixtures.anyCertificate)
+        whenever(certificateAuthorityMock.issueCertificate(CourseIdFixtures.any)).thenReturn(CertificateFixtures.anyCertificate)
 
-        certificateService.issueAndPersistCertificate(ExamResultIdFixtures.any)
+        certificateService.issueAndPersistCertificate(CourseIdFixtures.any)
 
         verify(certificateFileStoreMock)
             .persistCertificateDocument(
