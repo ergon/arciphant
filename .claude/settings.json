@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "drawio": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/jgraph/drawio-mcp.git"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "drawio@drawio": true
+  }
+}
