@@ -309,4 +309,9 @@ See [Component Layouts](/component-layouts) for configuration details.
 ## Debug project dependencies
 
 To verify whether the dependencies Arciphant wired are as expected, run the `projectDependencies` task — see
-[Gradle tasks](/tasks#projectdependencies).
+[Gradle tasks](/tasks#projectdependencies). 
+
+:::note
+Note that the task only prints dependencies between Gradle projects. 
+In the source set layout, the component wiring inside a module does not appear.
+:::

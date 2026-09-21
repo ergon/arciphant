@@ -5,7 +5,8 @@ icon: circle-help
 ---
 
 A good first step when a build behaves unexpectedly is to print the wired dependencies with the
-[`projectDependencies` task](/tasks#projectdependencies).
+[`projectDependencies` task](/tasks#projectdependencies) (in the source set layout it only shows dependencies between
+Gradle projects, not the component wiring inside a module).
 
 Configuration errors detected by Arciphant fail the build during the initialization phase with a message prefixed
 `Arciphant configuration error: …` — these indicate a problem in the `arciphant { }` block itself. The most common
@@ -17,7 +18,8 @@ errors and symptoms:
 provided by a build included via `includeBuild` in `pluginManagement`.
 
 Gradle only resolves plugins from included builds when at least one plugin is referenced in the settings `plugins`
-block. Add one of the convention plugins with `apply false` to `settings.gradle.kts` — see
+block. This affects the project layout, where Arciphant applies the plugins registered in the DSL programmatically.
+Add one of the convention plugins with `apply false` to `settings.gradle.kts` — see
 [Use includeBuild instead of buildSrc](/using-plugins#use-includebuild-instead-of-buildsrc).
 
 ## Duplicate jar entries when bundling

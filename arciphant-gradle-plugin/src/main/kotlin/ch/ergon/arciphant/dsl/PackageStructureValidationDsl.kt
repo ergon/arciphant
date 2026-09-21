@@ -97,7 +97,8 @@ sealed interface PackageStructureValidationDsl {
 
     /**
      * By default, all folders in the src-folder of each project are validated.
-     * Use [excludeResourcesFolder] to exclude the resource folder ('src/main/resources') from validation.
+     * Use [excludeResourcesFolder] to exclude the resources folder of every source set
+     * (e.g. 'src/main/resources') from validation.
      */
     fun excludeResourcesFolder()
 

@@ -6,6 +6,14 @@ sidebar:
   label: Using Plugins
 ---
 
+:::info[Project layout only]
+Gradle plugins can only be applied to projects, so registering them in the Arciphant DSL works only in the
+[project layout](/component-layouts), where every component and bundle is its own Gradle project — everything on this
+page applies to that layout. In the source set layout, convention plugins are applied in the `build.gradle.kts` of each
+module or bundle project instead and configure the components via
+[shared dependency configurations](/component-layouts#shared-dependency-configurations).
+:::
+
 ## Component plugins
 
 The real power of Arciphant comes into play when you use it in combination with convention plugins that configure your
@@ -55,9 +63,6 @@ For complete, working convention plugins (Spring, jOOQ, MinIO, a Spring Boot bun
 <a href="https://github.com/ergon/arciphant/tree/main/arciphant-project-demo/build-logic" target="_blank" rel="noreferrer">`build-logic`
 of the demo project</a>.
 
-Component plugins are available only with `ComponentLayout.PROJECT`. With `ComponentLayout.SOURCE_SET`, components are
-source sets rather than Gradle projects, so plugins must be applied at module-project level instead.
-
 ## Bundle plugins
 
 A plugin can also be registered for a [bundle module](/declare-structure#bundle-modules). This is the natural place for
@@ -66,9 +71,6 @@ packaging concerns — e.g. a convention plugin that applies Spring Boot and con
 ```kotlin settings.gradle.kts
 bundle(name = "online-learning-platform", plugin = "spring-boot-bundle-module")
 ```
-
-Like component plugins, bundle plugins are available only with `ComponentLayout.PROJECT`. With
-`ComponentLayout.SOURCE_SET`, apply the plugin in the bundle project's `build.gradle.kts` instead.
 
 ## Use `includeBuild` instead of `buildSrc`
 
@@ -99,5 +101,4 @@ plugins {
 ```
 
 This triggers Gradle's plugin resolution for the included build, and Arciphant can then apply _all_ plugins it provides —
-referencing a single plugin is enough. Both demo projects use this workaround; see also
-[Troubleshooting](/troubleshooting#convention-plugin-not-found).
+referencing a single plugin is enough. See also [Troubleshooting](/troubleshooting#convention-plugin-not-found).
