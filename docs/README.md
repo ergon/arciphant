@@ -31,8 +31,13 @@ The diagrams exist in two forms:
   by hand; re-export them after changing a source.
 
 The SVGs are exported with the *automatic* appearance, so all colors use CSS `light-dark(…)` and the diagrams adapt to
-the light/dark theme of the docs site. Keep diagram colors at their draw.io defaults (no hardcoded black/white) so this
-keeps working.
+the light/dark theme of the docs site. Keep diagram colors either at their draw.io defaults or as explicit
+`light-dark(<light>,<dark>)` pairs (never a plain hex color) so this keeps working. 
+
+### Color palette
+The diagrams use a palette derived from the Arciphant logo blue `#2078A4`: stroke `light-dark(#2078A4,#7FB5D1)`, fills from outer to inner
+`light-dark(#EAF3F8,#12303E)`, `light-dark(#CEE4F0,#1B4358)`, `light-dark(#A9D2E6,#2A6A8C)`, title text
+`light-dark(#19607F,#93C3DB)`.
 
 ### Export a diagram
 
