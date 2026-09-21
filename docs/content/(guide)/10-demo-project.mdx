@@ -19,73 +19,10 @@ compare the two [component layouts](/component-layouts) side by side:
 
 </Frame>
 
-## Project component layout demo
-
-The sub-project `arciphant-project-demo` uses the default project layout: every component is a separate Gradle project.
-The Arciphant configuration is specified in
-its <a href="https://github.com/ergon/arciphant/blob/main/arciphant-project-demo/settings.gradle.kts" target="_blank" rel="noreferrer">settings.gradle.kts</a> —
-the whole module structure shown in the diagram above boils down to this declaration:
-
-```kotlin arciphant-project-demo/settings.gradle.kts
-arciphant {
-    val commonModuleTemplate = template()
-        .createComponent(name = "api", plugin = "spring-component")
-        .createComponent(name = "domain", plugin = "spring-component", apiDependencies = setOf("api"))
-        .createComponent(name = "db", plugin = "jooq-component", dependencies = setOf("domain"))
-        .createComponent(name = "web-api", plugin = "spring-web-component")
-        .createComponent(name = "web", plugin = "spring-web-component", dependencies = setOf("web-api", "domain"))
-
-    val moduleWithFilestoreTemplate = template()
-        .extends(commonModuleTemplate)
-        .createComponent(name = "filestore", plugin = "minio-component", dependencies = setOf("domain"))
-
-    library(name = "shared", template = moduleWithFilestoreTemplate)
-
-    module(name = "course", template = commonModuleTemplate)
-    module(name = "exam", template = commonModuleTemplate)
-    module(name = "certificate", template = moduleWithFilestoreTemplate)
-        .createComponent(name = "certificate-authority-adapter", plugin = "spring-component", dependencies = setOf("domain"))
-    module(name = "accounting", template = moduleWithFilestoreTemplate)
-        .createComponent(name = "payment-provider-adapter", plugin = "spring-component", dependencies = setOf("domain"))
-        .extendComponent(name = "web", dependencies = setOf("payment-provider-adapter"))
-
-    bundle(name = "online-learning-platform", plugin = "spring-boot-bundle-module")
-
-    packageStructureValidation {
-        // …
-    }
-}
-```
-
-Each `module(...)` line is one of the functional modules in the diagram; the two templates capture the component
-structure they share.
-
-Worth a look in this demo:
-
-- <a href="https://github.com/ergon/arciphant/tree/main/arciphant-project-demo/build-logic" target="_blank" rel="noreferrer">`build-logic/`</a> —
-  the convention plugins registered per component type (`spring-component`, `spring-web-component`, `jooq-component`,
-  `minio-component`) and the bundle plugin `spring-boot-bundle-module` that packages the application with Spring Boot.
-  See [Using Plugins](/using-plugins).
-- The `plugins` block of the settings file references one convention plugin with `apply false` — the
-  [workaround](/using-plugins#use-includebuild-instead-of-buildsrc) required for plugins from an included build.
-- `certificate` and `accounting` show [individual components](/declare-structure#individual-shapes) and
-  [`extendComponent`](/declare-structure#extending-components) on top of a shared template.
-- The [`packageStructureValidation`](/verify-project-structure) block, hooked into every compilation.
-
-## Source set component layout demo
-
-`arciphant-source-set-demo` implements the same module structure with
-the [source set component layout](/component-layouts). Here, every functional module is a single Gradle project, and its
-components are source sets — with lowerCamelCase names such as `webApi`. The declaration in
-its <a href="https://github.com/ergon/arciphant/blob/main/arciphant-source-set-demo/settings.gradle.kts" target="_blank" rel="noreferrer">settings.gradle.kts</a> is
-almost identical to the one above — apart from the `sourceSetComponentLayout()` call, what differs is how the
-components are configured:
-
-- Plugins cannot be applied per component in this layout, so each module project applies a convention plugin in its
-  `build.gradle.kts`: `common-module` for functional modules (`filestore-module` for those with a filestore component)
-  and `bundle-module` for the bundle.
-- Module-wide external dependencies are declared via Arciphant's
-  [shared dependency configurations](/component-layouts#shared-dependency-configurations).
+| Demo project | Description |
+|---|---|
+| <a href="https://github.com/ergon/arciphant/blob/main/arciphant-project-demo/settings.gradle.kts" target="_blank" rel="noreferrer"><code style={{whiteSpace: 'nowrap'}}>arciphant-project-demo</code></a> | Uses the default **project layout**: every component is a separate Gradle project, configured through convention plugins registered per component type in the DSL. |
+| <a href="https://github.com/ergon/arciphant/blob/main/arciphant-source-set-demo/settings.gradle.kts" target="_blank" rel="noreferrer"><code style={{whiteSpace: 'nowrap'}}>arciphant-source-set-demo</code></a> | Uses the **source set layout**: every module is a single Gradle project whose components are source sets. Each module applies a convention plugin in its `build.gradle.kts`, which configures the components via [shared dependency configurations](/component-layouts#shared-dependency-configurations). |
 
 ## Feature examples
 
