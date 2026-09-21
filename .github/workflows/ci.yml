@@ -33,7 +33,9 @@ jobs:
         run: ./gradlew --no-daemon -p arciphant-source-set-demo clean build
 
       - name: Build examples
-        run: ./gradlew --no-daemon -p examples/source-set-customization clean build
+        run: |
+          ./gradlew --no-daemon -p examples/source-set-customization clean build
+          ./gradlew --no-daemon -p examples/test-source-set-configuration clean build
 
       - name: Upload test reports on failure
         if: failure()
