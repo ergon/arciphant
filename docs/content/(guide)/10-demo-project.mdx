@@ -4,14 +4,14 @@ description: Two demo projects showcase Arciphant, one for each component layout
 icon: circle-play
 ---
 
-:::info[Disclaimer]
+:::info
 The demo application is neither complete nor useful in any way. No emphasis was placed on clean code or meaningful patterns.
-It's just some sample code split into modules/components to showcase the possibilities of Arciphant.
+It's just some sample code split into modules/components to showcase the usage of Arciphant.
 :::
 
-The <a href="https://github.com/ergon/arciphant" target="_blank" rel="noreferrer">Arciphant repository</a> contains two demo projects. Both
-implement the same online learning platform with the following module structure, one for
-each [component layout](/component-layouts):
+The <a href="https://github.com/ergon/arciphant" target="_blank" rel="noreferrer">Arciphant repository</a> contains two demo projects.
+Both implement the same possible module structure for an online learning platform (course management, exams, certificates, accounting) - so you can
+compare the two [component layouts](/component-layouts) side by side:
 
 <Frame caption="Module structure of the Online Learning Platform demo application.">
 
@@ -22,7 +22,7 @@ each [component layout](/component-layouts):
 ## Project component layout demo
 
 The sub-project `arciphant-project-demo` uses the default project layout: every component is a separate Gradle project.
-The arciphant configuration is specified in
+The Arciphant configuration is specified in
 its <a href="https://github.com/ergon/arciphant/blob/main/arciphant-project-demo/settings.gradle.kts" target="_blank" rel="noreferrer">settings.gradle.kts</a> —
 the whole module structure shown in the diagram above boils down to this declaration:
 
@@ -57,7 +57,10 @@ arciphant {
 }
 ```
 
-Things worth a look in this demo:
+Each `module(...)` line is one of the functional modules in the diagram; the two templates capture the component
+structure they share.
+
+Worth a look in this demo:
 
 - <a href="https://github.com/ergon/arciphant/tree/main/arciphant-project-demo/build-logic" target="_blank" rel="noreferrer">`build-logic/`</a> —
   the convention plugins registered per component type (`spring-component`, `spring-web-component`, `jooq-component`,
@@ -71,19 +74,24 @@ Things worth a look in this demo:
 
 ## Source set component layout demo
 
-The sub-project `arciphant-source-set-demo` implements the same module structure with
-the [source set component layout](/component-layouts): every functional module is a single Gradle project whose
-components are source sets (with lowerCamelCase names such as `webApi`). The arciphant configuration is specified in
-its <a href="https://github.com/ergon/arciphant/blob/main/arciphant-source-set-demo/settings.gradle.kts" target="_blank" rel="noreferrer">settings.gradle.kts</a>.
-Since plugins cannot be applied per component in this layout, each module project applies a convention plugin in its
-`build.gradle.kts`, and module-wide external dependencies are declared via Arciphant's
-[shared dependency configurations](/component-layouts#shared-dependency-configurations).
+`arciphant-source-set-demo` implements the same module structure with
+the [source set component layout](/component-layouts). Here, every functional module is a single Gradle project, and its
+components are source sets — with lowerCamelCase names such as `webApi`. The declaration in
+its <a href="https://github.com/ergon/arciphant/blob/main/arciphant-source-set-demo/settings.gradle.kts" target="_blank" rel="noreferrer">settings.gradle.kts</a> is
+almost identical to the one above — apart from the `sourceSetComponentLayout()` call, what differs is how the
+components are configured:
+
+- Plugins cannot be applied per component in this layout, so each module project applies a convention plugin in its
+  `build.gradle.kts`: `common-module` for functional modules (`filestore-module` for those with a filestore component)
+  and `bundle-module` for the bundle.
+- Module-wide external dependencies are declared via Arciphant's
+  [shared dependency configurations](/component-layouts#shared-dependency-configurations).
 
 ## Feature examples
 
 Besides the two complete demo applications, the
 <a href="https://github.com/ergon/arciphant/tree/main/examples" target="_blank" rel="noreferrer">`examples`</a> folder
-contains small, feature-focused example builds — one folder per feature:
+contains small example builds, each focused on a single feature:
 
 - <a href="https://github.com/ergon/arciphant/tree/main/examples/source-set-customization" target="_blank" rel="noreferrer">`source-set-customization`</a> —
   relocating the source directories of components in the source set layout with `customizeAllComponents` and

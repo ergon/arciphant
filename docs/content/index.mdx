@@ -75,11 +75,11 @@ module. Arciphant removes exactly this structural duplication.
     Component dependencies become `implementation` and `api` dependencies, shared libraries are exposed to every
     module, and test-fixture dependencies work out of the box.
   </Card>
-  <Card title="Two component layouts" icon="layout-grid">
-    Realize components as separate Gradle projects or as source sets inside one project per module — same DSL, your
-    choice per build.
+  <Card title="The compiler enforces the architecture" icon="shield-check">
+    Components are separate build units, so code that violates the declared dependencies does not even compile. And 
+    framework/libary code is only on the classpath of the components that declare it.
   </Card>
-  <Card title="Architecture verified at build time" icon="package-check">
+  <Card title="Clean package structure" icon="package-check">
     The `validatePackageStructure` task checks that code lives in the packages your module structure prescribes — no
     extra tools like ArchUnit needed for the basics.
   </Card>

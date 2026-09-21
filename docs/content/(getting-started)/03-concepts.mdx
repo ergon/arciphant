@@ -33,6 +33,11 @@ either as `implementation` or as `api` dependencies — see
 How a component is realized in Gradle depends on the [component layout](/component-layouts): as a separate Gradle
 project (project layout, the default) or as source sets inside the module's Gradle project (source set layout).
 
+Either way, a component is a separate build unit with its own compile classpath — not just a package convention. The
+compiler therefore enforces the declared architecture: code that accesses a component it does not depend on does not
+compile, and an external framework is only visible to the components that declare it (the web framework in `web`, the
+database library in `db` — the `domain` component stays framework-free).
+
 ## Template
 
 A template defines a reusable technical structure — a set of components and their dependencies — that modules are
