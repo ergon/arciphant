@@ -40,31 +40,27 @@ all**, and adding a fifth module is one line.
 
 <Expandable title="What this replaces in plain Gradle">
 
-Mapping the same structure onto a plain Gradle build means 16 `include(...)` statements:
+Mapping the same structure onto a plain Gradle build means 16 `include(...)` statements and 17 hand-written build
+scripts — all repeating the same architecture rule, kept consistent by hand:
 
-```kotlin settings.gradle.kts
-include("module-a:domain")
-include("module-a:application")
-include("module-a:web")
-include("module-a:db")
-include("module-b:domain")
-// … 8 more include(…) lines for module-b and module-c …
-include("module-d:web")
-include("module-d:db")
-```
+<Frame caption="The same structure, side by side: plain Gradle versus one `arciphant` declaration.">
 
-…and, more importantly, a `build.gradle.kts` in every one of the 16 component projects, each wiring its dependencies by
-hand:
+![Side-by-side comparison: 16 near-identical build scripts, a settings file with 16 includes and a bundle build script in plain Gradle — versus a single arciphant declaration](images/boilerplate-comparison.svg)
 
-```kotlin module-a/web/build.gradle.kts
-dependencies {
-    implementation(project(":module-a:application"))
-}
-```
+</Frame>
 
 The architecture rule ("_web_ depends on _application_, which exposes _domain_") is duplicated once per module. It has
 to be kept consistent manually, test-fixture dependencies come on top, and every new module means copying the whole
 boilerplate again.
+
+### Beyond convention plugins
+
+Convention plugins are Gradle's own answer to duplicated build logic — and Arciphant builds on them,
+[registering them per component type](/using-plugins). But convention plugins deduplicate build **logic**, not build
+**structure**: a plugin does not know _which_ projects exist or how they relate. Even with convention plugins in place,
+every component still needs its `include(...)` statement and a build script wiring its project dependencies (test
+fixtures included), and the architecture rule is still repeated — and kept consistent only by discipline — in every
+module. Arciphant removes exactly this structural duplication.
 
 </Expandable>
 
