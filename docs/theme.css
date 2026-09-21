@@ -13,15 +13,3 @@
 .prose blume-tabs [data-blume-tab-panel] > pre[data-title]::before {
   content: attr(data-title);
 }
-
-/*
- * The draw.io diagram exports are monochrome (black strokes and text, white
- * shape fills) on a transparent background — a raster image cannot follow the
- * theme by itself. Inverting it in dark mode turns the black lines light gray
- * and the white shape fills near-black; 0.92 instead of a full invert avoids
- * glaring pure white. Keyed on the ".drawio." filename convention so it also
- * covers the lightbox clone and any future diagram exports.
- */
-:root[data-theme="dark"] img[src*=".drawio."] {
-  filter: invert(0.92);
-}
