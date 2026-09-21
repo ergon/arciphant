@@ -186,17 +186,23 @@ directly in the `dependencies` block — in the same style as external dependenc
 by Arciphant creates the dependency notation; it is available in both component layouts, in every project managed by
 Arciphant except bundle projects — bundles bundle whole modules and must not depend on individual components:
 
-```kotlin title="build.gradle.kts (source set layout, in the module project)"
+<CodeGroup>
+
+```kotlin title="Project layout"
+// build.gradle.kts of the component project
+dependencies {
+    "implementation"(component(module = "contracts", component = "api"))
+}
+```
+
+```kotlin title="Source set layout"
+// build.gradle.kts of the module project
 dependencies {
     "applicationImplementation"(component(module = "contracts", component = "api"))
 }
 ```
 
-```kotlin title="build.gradle.kts (project layout, in the component project)"
-dependencies {
-    "implementation"(component(module = "contracts", component = "api"))
-}
-```
+</CodeGroup>
 
 Arciphant resolves the target Gradle project path from the module configuration, so no project path has to be spelled
 out, and completes the dependency automatically:

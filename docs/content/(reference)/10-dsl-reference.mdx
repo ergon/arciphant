@@ -203,11 +203,23 @@ Inherits all components of another template — see [Different shapes](/declare-
 
 ### component
 
-```kotlin
+<CodeGroup>
+
+```kotlin title="Project layout"
+// build.gradle.kts of the component project
 dependencies {
     "implementation"(component(module = "contracts", component = "api"))
 }
 ```
+
+```kotlin title="Source set layout"
+// build.gradle.kts of the module project
+dependencies {
+    "applicationImplementation"(component(module = "contracts", component = "api"))
+}
+```
+
+</CodeGroup>
 
 The `component(module, component)` extension creates a dependency notation for a component of another module, resolved
 from the Arciphant configuration. It is registered on every project managed by Arciphant except bundle projects and is
