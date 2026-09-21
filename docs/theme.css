@@ -13,3 +13,63 @@
 .prose blume-tabs [data-blume-tab-panel] > pre[data-title]::before {
   content: attr(data-title);
 }
+
+/*
+ * Align Mermaid diagrams with the draw.io diagram palette (derived from the
+ * Arciphant logo blue #2078A4, see docs/README.md). Mermaid renders client-side
+ * per color theme (blume-mermaid re-renders on toggle) and injects its own
+ * <style> into the SVG, so these overrides use !important plus light-dark() —
+ * Blume sets color-scheme per theme on :root, and text colors adapt via
+ * mermaid's own default/dark themes.
+ */
+blume-mermaid .node rect,
+blume-mermaid .node path,
+blume-mermaid g.classGroup rect {
+  fill: light-dark(#eaf3f8, #12303e) !important;
+  stroke: light-dark(#2078a4, #7fb5d1) !important;
+}
+
+blume-mermaid .divider,
+blume-mermaid g.classGroup line {
+  stroke: light-dark(#2078a4, #7fb5d1) !important;
+}
+
+blume-mermaid .relation {
+  stroke: light-dark(#2078a4, #7fb5d1) !important;
+}
+
+/*
+ * Arrow heads: mermaid colors the <marker> elements with id-prefixed
+ * !important rules that outrank any class selector, so these rules style the
+ * markers' path/polygon children directly — a value declared on the child
+ * beats one inherited from the marker, with no specificity contest.
+ * Composition/dependency markers are filled, extension/aggregation hollow.
+ */
+blume-mermaid .marker.composition :is(path, polygon),
+blume-mermaid .marker.dependency :is(path, polygon) {
+  fill: light-dark(#2078a4, #7fb5d1);
+  stroke: light-dark(#2078a4, #7fb5d1);
+}
+
+blume-mermaid .marker.extension :is(path, polygon),
+blume-mermaid .marker.aggregation :is(path, polygon) {
+  fill: transparent;
+  stroke: light-dark(#2078a4, #7fb5d1);
+}
+
+/*
+ * No background plate behind edge labels. Mermaid derives the plate from
+ * mainBkg — the same variable that fills the class boxes — so there is no
+ * themeVariable that turns only the plate off. The plate is drawn on the
+ * div.labelBkg (html labels) or on a rect, depending on the renderer.
+ */
+blume-mermaid .edgeLabel,
+blume-mermaid .edgeLabel p,
+blume-mermaid .edgeLabel .label span,
+blume-mermaid .labelBkg {
+  background: transparent !important;
+}
+
+blume-mermaid .edgeLabel .label rect {
+  fill: transparent !important;
+}
