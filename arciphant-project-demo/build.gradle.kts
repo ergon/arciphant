@@ -9,6 +9,8 @@ allprojects {
     plugins.apply("org.jetbrains.kotlin.plugin.spring")
     plugins.apply("org.springframework.boot")
     plugins.apply("io.spring.dependency-management")
+    // lets Arciphant mark the component test and test fixtures source sets as test sources in IntelliJ IDEA
+    plugins.apply("idea")
 
     tasks.named("bootJar") { enabled = false }
     tasks.named("jar") { enabled = true }
