@@ -6,7 +6,8 @@ internal data class PackageStructureValidationSettings(
     val basePackagePath: String?,
     val useLowerCase: Boolean,
     val removedSpecialCharacters: Set<String>,
-    val relativePackagePathsByProjectName: Map<String, String>,
+    val packageFragmentsByModuleName: Map<String, String>,
+    val packageFragmentsByComponentName: Map<String, String>,
     val absolutePackagePathsByProjectPath: Map<String, String>,
     val excludedProjectPaths: Set<String>,
     val excludedSrcFolders: Set<String>,
@@ -27,7 +28,7 @@ internal data class PackageStructureValidationSettings(
     ): String {
         val projectPackage = absolutePackagePathsByProjectPath[projectPath]
             ?: projectPackagePath(projectPath, project)
-        val componentFragment = componentName?.mappedPackageFragment()
+        val componentFragment = componentName?.mappedPackageFragment(packageFragmentsByComponentName)
         return listOfNotNull(projectPackage.takeIf { it.isNotEmpty() }, componentFragment).joinToString("/")
     }
 
@@ -63,7 +64,10 @@ internal data class PackageStructureValidationSettings(
                 .map { it.normalizedPackageFragment() }
         } else {
             project.basePathFragments.map { it.normalizedPackageFragment() } +
-                project.mappableNames.mapNotNull { it.mappedPackageFragment() }
+                listOfNotNull(
+                    project.moduleName.mappedPackageFragment(packageFragmentsByModuleName),
+                    project.componentName?.mappedPackageFragment(packageFragmentsByComponentName),
+                )
         }
         return fragments.joinToString("/").withBasePackage()
     }
@@ -71,9 +75,9 @@ internal data class PackageStructureValidationSettings(
     private fun sourceFolderPattern(sourceSetName: String, packagePath: String) =
         "src/$sourceSetName/*/$packagePath/**"
 
-    /** Maps a module or component name to its package fragment, honoring the configured name mappings. */
-    private fun String.mappedPackageFragment(): String? {
-        val configuredPackageFragment = relativePackagePathsByProjectName[this]
+    /** Maps a module or component name to its package fragment, honoring the given name mappings. */
+    private fun String.mappedPackageFragment(packageFragmentsByName: Map<String, String>): String? {
+        val configuredPackageFragment = packageFragmentsByName[this]
         if (configuredPackageFragment != null) {
             return configuredPackageFragment.ifEmpty { null }
         }

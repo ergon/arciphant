@@ -16,8 +16,10 @@ import java.io.Serializable
 internal data class ValidatedProject(
     /** The base path segments of the project path; normalized, but not subject to name mappings. */
     val basePathFragments: List<String>,
-    /** The module name and — for a component project of the project layout — the component name. */
-    val mappableNames: List<String>,
+    /** The module name; subject to the configured module name mappings. */
+    val moduleName: String,
+    /** The component name of a component project (project layout); subject to the component name mappings. */
+    val componentName: String?,
     /** The component source sets of a functional module in the source set layout, null otherwise. */
     val componentSourceSets: List<ComponentSourceSets>?,
 ) : Serializable
@@ -38,7 +40,8 @@ internal fun List<GradleProjectConfig>.validatedProjectsByPath(
             is GradleComponentProjectConfig -> {
                 result[config.path.value] = ValidatedProject(
                     basePathFragments = config.module.reference.parentProjectPath,
-                    mappableNames = listOf(config.module.reference.name, config.component.reference.name),
+                    moduleName = config.module.reference.name,
+                    componentName = config.component.reference.name,
                     componentSourceSets = null,
                 )
                 // the intermediate module project created by including the component projects
@@ -46,7 +49,8 @@ internal fun List<GradleProjectConfig>.validatedProjectsByPath(
                     config.module.gradleProjectPath().value,
                     ValidatedProject(
                         basePathFragments = config.module.reference.parentProjectPath,
-                        mappableNames = listOf(config.module.reference.name),
+                        moduleName = config.module.reference.name,
+                        componentName = null,
                         componentSourceSets = null,
                     ),
                 )
@@ -54,7 +58,8 @@ internal fun List<GradleProjectConfig>.validatedProjectsByPath(
 
             is GradleFunctionalModuleProjectConfig -> result[config.path.value] = ValidatedProject(
                 basePathFragments = config.module.reference.parentProjectPath,
-                mappableNames = listOf(config.module.reference.name),
+                moduleName = config.module.reference.name,
+                componentName = null,
                 componentSourceSets = config.module.components.map { component ->
                     ComponentSourceSets(
                         componentName = component.reference.name,
@@ -65,7 +70,8 @@ internal fun List<GradleProjectConfig>.validatedProjectsByPath(
 
             is GradleBundleModuleProjectConfig -> result[config.path.value] = ValidatedProject(
                 basePathFragments = config.module.reference.parentProjectPath,
-                mappableNames = listOf(config.module.reference.name),
+                moduleName = config.module.reference.name,
+                componentName = null,
                 componentSourceSets = null,
             )
         }

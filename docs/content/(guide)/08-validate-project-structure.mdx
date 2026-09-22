@@ -16,7 +16,7 @@ In a multi-project setup, you typically want a distinct package for each project
 
 Most of these mappings follow Arciphant's defaults (lower case, hyphens removed — e.g. `web-api` → `webapi`). A custom
 fragment like `ppa` is configured with
-[`mapProjectNamesToPackageFragments`](#mapprojectnamestopackagefragments).
+[`mapComponentNamesToPackageFragments`](#mapcomponentnamestopackagefragments).
 
 Arciphant provides the [task `validatePackageStructure`](/tasks#validatepackagestructure) to validate correct package
 structure. The task is registered on every project; the root project's task aggregates the validation of all
@@ -52,32 +52,36 @@ The `packageStructureValidation` block provides the following configuration opti
 | `disableUseLowerCase`               | By default, upper case letters are converted to lower case when mapping project names to corresponding package fragments.<br />Example: project name `FileStore` is mapped to package fragment `filestore`.<br />Use `disableUseLowerCase()` to deactivate this behavior.                      |
 | `disableRemoveUnderscore`           | By default, underscores '\_' are removed when mapping project name to corresponding package fragment.<br />Example: project name `file_store` is mapped to package fragment `filestore`.<br />Use `disableRemoveUnderscore()` to deactivate this behavior.                                     |
 | `disableRemoveHyphen`               | By default, hyphens '-' are removed when mapping project name to corresponding package fragment.<br />Example: project name `file-store` is mapped to package fragment `filestore`.<br />Use `disableRemoveHyphen` to deactivate this behavior.                                                |
-| `mapProjectNamesToPackageFragments` | Configure mappings for specific module and component names. See detailed description [below](#mapprojectnamestopackagefragments).                                                                                                                                                                           |
+| `mapModuleNamesToPackageFragments` | Configure mappings for specific module names. See detailed description [below](#mapmodulenamestopackagefragments).                                                                                                                                                                              |
+| `mapComponentNamesToPackageFragments` | Configure mappings for specific component names. See detailed description [below](#mapcomponentnamestopackagefragments).                                                                                                                                                                     |
 | `mapProjectPathsToAbsolutePackages` | Completely overrides the package name for the given Gradle project path. See detailed description [below](#mapprojectpathstoabsolutepackages).                                                                                                                                                 |
 | `excludeProjectPath`                | Excludes a specific project from package validation.<br />Example: `excludeProjectPath(":specific:project:path")`                                                                                                                                                                              |
 | `excludeResourcesFolder`            | By default, all folders in the `src`-folder of each project are validated.<br />Use `excludeResourcesFolder()` to exclude the resources folder of every source set (`src/*/resources`, e.g. `src/main/resources`) from validation.                                                                                                          |
 | `excludeSrcFolders`                 | By default, all folders in the src-folder of each project are validated.<br />Use `excludeSrcFolders()` to exclude specific folders.<br />Examples: To exclude `src/generated` use `excludeSrcFolders("generated")`, to exclude `src/main/generated` use `excludeSrcFolders("main/generated")` |
 
-### `mapProjectNamesToPackageFragments` [#mapprojectnamestopackagefragments]
+### `mapModuleNamesToPackageFragments` [#mapmodulenamestopackagefragments]
 
-Configure mappings for specific module and component names. The mappings apply only to the names of arciphant modules
-and components (in both component layouts) — not to [base path](/additional-settings#custom-base-path) segments or
-other projects. The `basePackageName` is still used. The configured value replaces only the package fragment related
-to the specified module or component.
+Configure mappings for specific module names. The mappings apply only to the names of arciphant modules (in both
+component layouts) — not to components, [base path](/additional-settings#custom-base-path) segments or other projects.
+The `basePackageName` is still used. The configured value replaces only the package fragment related to the specified
+module.
 
-Example:
+### `mapComponentNamesToPackageFragments` [#mapcomponentnamestopackagefragments]
 
-```kotlin settings.gradle.kts {7-10}
+The same as [`mapModuleNamesToPackageFragments`](#mapmodulenamestopackagefragments), but for component names —
+regardless of whether the component is a Gradle project (project layout) or a source set (source set layout).
+
+An example using both mappings:
+
+```kotlin settings.gradle.kts {7-8}
 arciphant {
   // …
 
   packageStructureValidation {
     basePackageName("com.company.project")
 
-    mapProjectNamesToPackageFragments(
-      "financial-accounting" to "accounting",
-      "payment-provider-adapter" to "ppa",
-    )
+    mapModuleNamesToPackageFragments("financial-accounting" to "accounting")
+    mapComponentNamesToPackageFragments("payment-provider-adapter" to "ppa")
   }
 }
 ```
@@ -92,8 +96,8 @@ The above config results in the following mapping:
 
 ### `mapProjectPathsToAbsolutePackages` [#mapprojectpathstoabsolutepackages]
 
-Completely overrides the package name for the given Gradle project path. Other than with
-`mapProjectNamesToPackageFragments`, the `basePackageName` is NOT used.
+Completely overrides the package name for the given Gradle project path. Other than with the name mappings, the
+`basePackageName` is NOT used.
 
 Example:
 

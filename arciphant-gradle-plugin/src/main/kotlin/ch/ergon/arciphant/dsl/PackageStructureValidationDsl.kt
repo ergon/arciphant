@@ -51,33 +51,50 @@ sealed interface PackageStructureValidationDsl {
     fun disableRemoveHyphen()
 
     /**
-     * Configure mappings for specific module and component names. The mappings apply only to the names of
-     * arciphant modules and components (in both component layouts) — not to base path segments or other projects.
+     * Configure mappings for specific module names. The mappings apply only to the names of arciphant
+     * modules (in both component layouts) — not to base path segments or other projects.
      * The [basePackageName] is still used. The configured value replaces only the package fragment related to the
-     * specified module or component.
+     * specified module.
      *
      * Example:
      * ```
      * basePackageName("com.company.project")
-     * mapProjectNamesToPackageFragments(
-     *   "financial-accounting" to "accounting",
-     *   "payment-provider-adapter" to "ppa",
-     * )
+     * mapModuleNamesToPackageFragments("financial-accounting" to "accounting")
      * ```
      * Above config results in the following mapping:
      * ```
-     * Gradle project path                            | Absolute package name
-     * -----------------------------------------------|--------------------------------------
-     * :financial-accounting:domain                   | com.company.project.accounting.domain
-     * :financial-accounting:web-api                  | com.company.project.accounting.webapi
-     * :financial-accounting:payment-provider-adapter | com.company.project.accounting.ppa
+     * Gradle project path           | Absolute package name
+     * ------------------------------|--------------------------------------
+     * :financial-accounting:domain  | com.company.project.accounting.domain
+     * :financial-accounting:web-api | com.company.project.accounting.webapi
      * ```
      */
-    fun mapProjectNamesToPackageFragments(vararg projectNameToPackageFragment: Pair<String, String>)
+    fun mapModuleNamesToPackageFragments(vararg moduleNameToPackageFragment: Pair<String, String>)
+
+    /**
+     * Configure mappings for specific component names. The mappings apply only to the names of arciphant
+     * components (in both component layouts) — not to modules, base path segments or other projects.
+     * The [basePackageName] is still used. The configured value replaces only the package fragment related to the
+     * specified component.
+     *
+     * Example:
+     * ```
+     * basePackageName("com.company.project")
+     * mapComponentNamesToPackageFragments("payment-provider-adapter" to "ppa")
+     * ```
+     * Above config results in the following mapping:
+     * ```
+     * Gradle project path                  | Absolute package name
+     * -------------------------------------|----------------------------------
+     * :accounting:domain                   | com.company.project.accounting.domain
+     * :accounting:payment-provider-adapter | com.company.project.accounting.ppa
+     * ```
+     */
+    fun mapComponentNamesToPackageFragments(vararg componentNameToPackageFragment: Pair<String, String>)
 
     /**
      * Completely overrides the package name for the given Gradle project path.
-     * Other than with [mapProjectNamesToPackageFragments], the [basePackageName] is NOT used.
+     * Other than with the name mappings, the [basePackageName] is NOT used.
      * In the source set layout, the override applies to the module project; the component fragments are still
      * appended for the component source sets.
      *

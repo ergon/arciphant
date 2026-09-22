@@ -213,17 +213,15 @@ class PackageStructureValidationPluginTest {
         }
 
         @Test
-        fun `it should apply project name mappings to module and component names`() {
+        fun `it should apply module and component name mappings`() {
             settingsFileWithArciphant(
                 """
                 sourceSetComponentLayout()
 
                 packageStructureValidation {
                     basePackageName("com.example")
-                    mapProjectNamesToPackageFragments(
-                        "financial-accounting" to "accounting",
-                        "webApi" to "web",
-                    )
+                    mapModuleNamesToPackageFragments("financial-accounting" to "accounting")
+                    mapComponentNamesToPackageFragments("webApi" to "web")
                 }
 
                 module("financial-accounting").createComponent("webApi")
@@ -324,7 +322,7 @@ class PackageStructureValidationPluginTest {
 
                 packageStructureValidation {
                     basePackageName("com.example")
-                    mapProjectNamesToPackageFragments("backend" to "short")
+                    mapModuleNamesToPackageFragments("backend" to "short")
                 }
 
                 module("orders").createComponent("domain")

@@ -40,9 +40,9 @@ class PackageStructureValidationSettingsTest {
         }
 
         @Test
-        fun `it should apply name mappings to module names`() {
+        fun `it should apply module name mappings to module names`() {
             val settings = settings(
-                relativePackagePathsByProjectName = mapOf("financial-accounting" to "accounting"),
+                packageFragmentsByModuleName = mapOf("financial-accounting" to "accounting"),
             )
             val (projectPath, project) = componentProject(":financial-accounting:web", "financial-accounting", "web")
             assertThat(settings.determinePackageFor(projectPath, project))
@@ -50,9 +50,9 @@ class PackageStructureValidationSettingsTest {
         }
 
         @Test
-        fun `it should apply name mappings to component names`() {
+        fun `it should apply component name mappings to component names`() {
             val settings = settings(
-                relativePackagePathsByProjectName = mapOf("payment-provider-adapter" to "ppa"),
+                packageFragmentsByComponentName = mapOf("payment-provider-adapter" to "ppa"),
             )
             val (projectPath, project) = moduleProject(":accounting", "accounting")
             assertThat(settings.determinePackageFor(projectPath, project, componentName = "payment-provider-adapter"))
@@ -60,8 +60,19 @@ class PackageStructureValidationSettingsTest {
         }
 
         @Test
+        fun `it should not apply module name mappings to components and vice versa`() {
+            val settings = settings(
+                packageFragmentsByModuleName = mapOf("api" to "moduleapi"),
+                packageFragmentsByComponentName = mapOf("api" to "componentapi"),
+            )
+            val (projectPath, project) = componentProject(":api:api", "api", "api")
+            assertThat(settings.determinePackageFor(projectPath, project))
+                .isEqualTo("com/example/moduleapi/componentapi")
+        }
+
+        @Test
         fun `it should not apply name mappings to base path segments`() {
-            val settings = settings(relativePackagePathsByProjectName = mapOf("backend" to "b"))
+            val settings = settings(packageFragmentsByModuleName = mapOf("backend" to "b"))
             val (projectPath, project) = moduleProject(":backend:orders", "orders", basePath = listOf("backend"))
             assertThat(settings.determinePackageFor(projectPath, project))
                 .isEqualTo("com/example/backend/orders")
@@ -69,14 +80,14 @@ class PackageStructureValidationSettingsTest {
 
         @Test
         fun `it should not apply name mappings to unmanaged projects`() {
-            val settings = settings(relativePackagePathsByProjectName = mapOf("tooling" to "t"))
+            val settings = settings(packageFragmentsByModuleName = mapOf("tooling" to "t"))
             assertThat(settings.determinePackageFor(":tooling", project = null))
                 .isEqualTo("com/example/tooling")
         }
 
         @Test
         fun `it should skip a component fragment that is mapped to an empty string`() {
-            val settings = settings(relativePackagePathsByProjectName = mapOf("api" to ""))
+            val settings = settings(packageFragmentsByComponentName = mapOf("api" to ""))
             val (projectPath, project) = moduleProject(":module", "module")
             assertThat(settings.determinePackageFor(projectPath, project, componentName = "api"))
                 .isEqualTo("com/example/module")
@@ -127,7 +138,8 @@ class PackageStructureValidationSettingsTest {
         fun `it should validate component source sets against the component package`() {
             val project = ValidatedProject(
                 basePathFragments = emptyList(),
-                mappableNames = listOf("module"),
+                moduleName = "module",
+                componentName = null,
                 componentSourceSets = listOf(
                     ComponentSourceSets("domain", listOf("domain", "domainTest", "domainTestFixtures")),
                     ComponentSourceSets("webApi", listOf("webApi")),
@@ -151,7 +163,8 @@ class PackageStructureValidationSettingsTest {
         basePath: List<String> = emptyList(),
     ): Pair<String, ValidatedProject> = projectPath to ValidatedProject(
         basePathFragments = basePath,
-        mappableNames = listOf(moduleName),
+        moduleName = moduleName,
+        componentName = null,
         componentSourceSets = null,
     )
 
@@ -162,7 +175,8 @@ class PackageStructureValidationSettingsTest {
         basePath: List<String> = emptyList(),
     ): Pair<String, ValidatedProject> = projectPath to ValidatedProject(
         basePathFragments = basePath,
-        mappableNames = listOf(moduleName, componentName),
+        moduleName = moduleName,
+        componentName = componentName,
         componentSourceSets = null,
     )
 
@@ -170,13 +184,15 @@ class PackageStructureValidationSettingsTest {
         basePackagePath: String? = "com/example",
         useLowerCase: Boolean = true,
         removedSpecialCharacters: Set<String> = setOf("_", "-"),
-        relativePackagePathsByProjectName: Map<String, String> = emptyMap(),
+        packageFragmentsByModuleName: Map<String, String> = emptyMap(),
+        packageFragmentsByComponentName: Map<String, String> = emptyMap(),
         absolutePackagePathsByProjectPath: Map<String, String> = emptyMap(),
     ) = PackageStructureValidationSettings(
         basePackagePath = basePackagePath,
         useLowerCase = useLowerCase,
         removedSpecialCharacters = removedSpecialCharacters,
-        relativePackagePathsByProjectName = relativePackagePathsByProjectName,
+        packageFragmentsByModuleName = packageFragmentsByModuleName,
+        packageFragmentsByComponentName = packageFragmentsByComponentName,
         absolutePackagePathsByProjectPath = absolutePackagePathsByProjectPath,
         excludedProjectPaths = emptySet(),
         excludedSrcFolders = emptySet(),

@@ -10,7 +10,8 @@ internal class PackageStructureValidationBuilder : PackageStructureValidationDsl
     private var removeUnderscore: Boolean = true
     private var removeHyphen: Boolean = true
 
-    private val relativePackagesByProjectName = mutableMapOf<String, String>()
+    private val packageFragmentsByModuleName = mutableMapOf<String, String>()
+    private val packageFragmentsByComponentName = mutableMapOf<String, String>()
     private val absolutePackagesByProjectPath = mutableMapOf<String, String>()
     private val excludedProjectPaths = mutableSetOf<String>()
 
@@ -33,8 +34,12 @@ internal class PackageStructureValidationBuilder : PackageStructureValidationDsl
         this.removeHyphen = false
     }
 
-    override fun mapProjectNamesToPackageFragments(vararg projectNameToPackageFragment: Pair<String, String>) {
-        this.relativePackagesByProjectName.putAll(projectNameToPackageFragment)
+    override fun mapModuleNamesToPackageFragments(vararg moduleNameToPackageFragment: Pair<String, String>) {
+        this.packageFragmentsByModuleName.putAll(moduleNameToPackageFragment)
+    }
+
+    override fun mapComponentNamesToPackageFragments(vararg componentNameToPackageFragment: Pair<String, String>) {
+        this.packageFragmentsByComponentName.putAll(componentNameToPackageFragment)
     }
 
     override fun mapProjectPathsToAbsolutePackages(vararg projectPathToAbsolutePackage: Pair<String, String>) {
@@ -63,7 +68,8 @@ internal class PackageStructureValidationBuilder : PackageStructureValidationDsl
                 if (removeUnderscore) "_" else null,
                 if (removeHyphen) "-" else null,
             ),
-            relativePackagePathsByProjectName = relativePackagesByProjectName.mapValues { it.value.packageToFolderPath() },
+            packageFragmentsByModuleName = packageFragmentsByModuleName.mapValues { it.value.packageToFolderPath() },
+            packageFragmentsByComponentName = packageFragmentsByComponentName.mapValues { it.value.packageToFolderPath() },
             absolutePackagePathsByProjectPath = absolutePackagesByProjectPath.mapValues { it.value.packageToFolderPath() },
             excludedProjectPaths = excludedProjectPaths,
             excludedSrcFolders = excludedSrcFolders,
