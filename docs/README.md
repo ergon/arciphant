@@ -32,12 +32,7 @@ The diagrams exist in two forms:
 
 The SVGs are exported with the *automatic* appearance, so all colors use CSS `light-dark(…)` and the diagrams adapt to
 the light/dark theme of the docs site. Keep diagram colors either at their draw.io defaults or as explicit
-`light-dark(<light>,<dark>)` pairs (never a plain hex color) so this keeps working. 
-
-### Color palette
-The diagrams use a palette derived from the Arciphant logo blue `#2078A4`: stroke `light-dark(#2078A4,#7FB5D1)`, fills from outer to inner
-`light-dark(#EAF3F8,#12303E)`, `light-dark(#CEE4F0,#1B4358)`, `light-dark(#A9D2E6,#2A6A8C)`, title text
-`light-dark(#19607F,#93C3DB)`.
+`light-dark(<light>,<dark>)` pairs (never a plain hex color) so this keeps working.
 
 ### Export a diagram
 
@@ -84,3 +79,36 @@ To install it manually instead:
 
 * https://www.drawio.com/docs/manual/generate/drawio-mcp-server/
 * https://github.com/jgraph/drawio-mcp/blob/main/plugins/README.md
+
+## Design Guidelines
+
+### Color palette
+The diagrams use a palette derived from the Arciphant logo blue `#2078A4`: stroke `light-dark(#2078A4,#7FB5D1)`, fills from outer to inner
+`light-dark(#EAF3F8,#12303E)`, `light-dark(#CEE4F0,#1B4358)`, `light-dark(#A9D2E6,#2A6A8C)`, title text
+`light-dark(#19607F,#93C3DB)`.
+
+### Reserved icons
+
+The following [Lucide](https://lucide.dev/icons/) icons have a fixed meaning throughout the docs — use them only for that and
+nowhere else:
+
+| Icon            | Meaning                                                   |
+|-----------------|-----------------------------------------------------------|
+| `package`       | Gradle project, and thus the **project** component layout |
+| `folder-code`   | Source set, and thus the **source set** component layout  |
+| `layout-grid`   | Component layouts                                         |
+| `component`     | Templates / declaring the module structure                |
+| `cable`         | Dependencies                                              |
+| `shield-check`  | Architecture enforced by the compiler                     |
+| `blocks`        | Gradle plugins                                            |
+| `package-check` | Package structure validation (`validatePackageStructure`) |
+| `circle-play`   | Demo projects                                             |
+
+
+### Badges
+Options that are only available in one component layout are marked with a badge:
+
+```mdx
+<Badge icon="package" size="sm" tooltip="Only available in the project component layout">Project layout</Badge>
+<Badge icon="folder-code" size="sm" tooltip="Only available in the source set component layout">Source set layout</Badge>
+```
