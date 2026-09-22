@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-plugin:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +26,30 @@ jobs:
       - name: Build plugin
         run: ./gradlew --no-daemon -p arciphant-gradle-plugin clean build
 
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v6.0.0
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests/test/**
+            **/build/test-results/test/**
+          if-no-files-found: ignore
+
+  build-demos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.1
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5.1.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
       - name: Build project demo
         run: ./gradlew --no-daemon -p arciphant-project-demo clean build validatePackageStructure
 
@@ -36,16 +60,6 @@ jobs:
         run: |
           ./gradlew --no-daemon -p examples/source-set-customization clean build
           ./gradlew --no-daemon -p examples/test-source-set-configuration clean build
-
-      - name: Upload test reports on failure
-        if: failure()
-        uses: actions/upload-artifact@v6.0.0
-        with:
-          name: test-reports
-          path: |
-            **/build/reports/tests/test/**
-            **/build/test-results/test/**
-          if-no-files-found: ignore
 
   docs:
     uses: ./.github/workflows/build-docs.yml
