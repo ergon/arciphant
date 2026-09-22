@@ -79,15 +79,16 @@ class ArciphantSettingsPluginTest {
             module("test", template = sampleTemplate)
             """
         )
-        projectFolder.resolve("test/api/src/main/kotlin/com/example/test/api/Valid.kt").write(
+        buildFileWithJvmPlugins()
+        projectFolder.resolve("test/api/src/main/java/com/example/test/api/Valid.java").write(
             """
-            package com.example.test.api
+            package com.example.test.api;
             """
         )
-        val invalidSourceFile = projectFolder.resolve("test/domain/src/main/kotlin/wrong/Invalid.kt")
+        val invalidSourceFile = projectFolder.resolve("test/domain/src/main/java/wrong/Invalid.java")
         invalidSourceFile.write(
             """
-            package wrong
+            package wrong;
             """
         )
 

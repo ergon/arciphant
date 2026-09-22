@@ -21,35 +21,30 @@ import javax.inject.Inject
 internal data class ValidatedSourceDirectory(
     val directoryPath: String,
     val expectedPackagePath: String,
+    val resources: Boolean,
 ) : Serializable
 
+/**
+ * Validates that every source file lies in one of the project's source directories, below the expected
+ * package of that directory. The source directories are the actual directories of the project's source
+ * sets, so relocated directories (e.g. via 'customizeAllComponents') are validated at their location.
+ * Files under 'src/' that do not belong to any source set are reported as well.
+ */
 @DisableCachingByDefault(because = "The task validates source files and does not produce outputs.")
 internal abstract class PackageStructureValidationTask @Inject constructor(
     private val objects: ObjectFactory,
 ) : SimpleTask() {
-    /**
-     * The directories of the project's source sets, validated against their expected package. Relocated
-     * source directories (e.g. via 'customizeAllComponents') are validated at their actual location.
-     * Empty when the project has no source sets — the 'src' tree scan then falls back to convention patterns.
-     */
+    /** The directories of the project's source sets and the expected package of each. */
     @get:Input
     abstract val validatedSourceDirectories: ListProperty<ValidatedSourceDirectory>
 
-    /**
-     * Patterns (relative to the project directory) excluded from the 'src' tree scan: excluded folders,
-     * the directories already validated per source set, and — without source sets — the convention
-     * patterns of correctly packaged files.
-     */
-    @get:Input
-    abstract val srcTreeExcludedPatterns: SetProperty<String>
-
-    /** Absolute roots configured via 'excludeSrcFolders', also applied within validated source directories. */
+    /** Absolute roots configured via 'excludeSrcFolders'; their files are skipped. */
     @get:Input
     abstract val excludedSourceRoots: SetProperty<String>
 
-    /** True when the project's source sets were resolved — files outside of them are reported as unassigned. */
+    /** Whether files in resources directories are skipped ('excludeResourcesFolder'). */
     @get:Input
-    abstract val sourceSetsResolved: Property<Boolean>
+    abstract val excludeResourcesFolders: Property<Boolean>
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -58,20 +53,32 @@ internal abstract class PackageStructureValidationTask @Inject constructor(
     @TaskAction
     fun validatePackageStructure() {
         logger.info("Validate package structure of project '$projectPath'.")
+        val directories = validatedSourceDirectories.get()
+            .map { SourceDirectory(File(it.directoryPath).toPath(), it.expectedPackageSegments(), it.resources) }
+            .sortedByDescending { it.path.nameCount } // the innermost directory owns a file of nested directories
+        directories.forEach {
+            logger.info("Expected package '{}' in source directory '{}'.", it.packageSegments.joinToString("/"), it.path)
+        }
         val excludedRoots = excludedSourceRoots.get().map { File(it).toPath() }
 
-        val invalidPackageFiles = validateSourceDirectories(excludedRoots)
-        val unassignedFiles = validateSrcTree()
+        val invalidPackageFiles = mutableListOf<File>()
+        val unassignedFiles = mutableListOf<File>()
+        collectSourceFiles(directories).forEach { file ->
+            val path = file.toPath()
+            if (excludedRoots.any { path.startsWith(it) }) return@forEach
+            val directory = directories.firstOrNull { path.startsWith(it.path) }
+            when {
+                directory == null -> unassignedFiles.add(file)
+                directory.resources && excludeResourcesFolders.get() -> {}
+                !directory.containsInExpectedPackage(path) -> invalidPackageFiles.add(file)
+            }
+        }
 
         invalidPackageFiles.sortedBy { it.path }.forEach {
             logger.error("Source file '${it.path}' has invalid package name.")
         }
         unassignedFiles.sortedBy { it.path }.forEach {
-            if (sourceSetsResolved.get()) {
-                logger.error("Source file '${it.path}' does not belong to any source set.")
-            } else {
-                logger.error("Source file '${it.path}' has invalid package name.")
-            }
+            logger.error("Source file '${it.path}' does not belong to any source set.")
         }
         if (invalidPackageFiles.isNotEmpty() || unassignedFiles.isNotEmpty()) {
             throw GradleException("There are source files with invalid package names. See error log above.")
@@ -79,32 +86,33 @@ internal abstract class PackageStructureValidationTask @Inject constructor(
         logger.info("Package structure of project '$projectPath' is valid.")
     }
 
-    private fun validateSourceDirectories(excludedRoots: List<Path>): List<File> {
-        return validatedSourceDirectories.get().flatMap { directory ->
-            logger.info(
-                "Expected package '{}' in source directory '{}'.",
-                directory.expectedPackagePath,
-                directory.directoryPath,
-            )
+    /** All files under 'src/' plus the files of source directories located elsewhere. */
+    private fun collectSourceFiles(directories: List<SourceDirectory>): Set<File> {
+        val files = mutableSetOf<File>()
+        files += sourceFiles.files
+        directories.forEach { directory ->
             val tree = objects.fileTree()
-            tree.setDir(File(directory.directoryPath))
-            tree.matching {
-                if (directory.expectedPackagePath.isEmpty()) {
-                    exclude("**")
-                } else {
-                    exclude("${directory.expectedPackagePath}/**")
-                }
-            }.files.filter { file -> excludedRoots.none { file.toPath().startsWith(it) } }
+            tree.setDir(directory.path.toFile())
+            files += tree.files
+        }
+        return files
+    }
+
+    private data class SourceDirectory(
+        val path: Path,
+        val packageSegments: List<String>,
+        val resources: Boolean,
+    ) {
+        /** True when the file lies below this directory's expected package. */
+        fun containsInExpectedPackage(file: Path): Boolean {
+            val relative = path.relativize(file)
+            return relative.nameCount > packageSegments.size &&
+                packageSegments.withIndex().all { (index, segment) -> relative.getName(index).toString() == segment }
         }
     }
 
-    private fun validateSrcTree(): Set<File> {
-        val excludedPatterns = srcTreeExcludedPatterns.get()
-        logger.info("Exclude from 'src' tree scan: {}", excludedPatterns)
-        return sourceFiles.matching {
-            excludedPatterns.forEach { exclude(it) }
-        }.files
-    }
+    private fun ValidatedSourceDirectory.expectedPackageSegments() =
+        expectedPackagePath.split("/").filter { it.isNotEmpty() }
 }
 
 internal fun Project.registerValidatePackageStructureTask(
@@ -139,77 +147,38 @@ private fun Project.registerValidatePackageStructureExecutionTask(
 
         // resolved lazily: the task is configured after the project is evaluated, so customized source
         // directories and source sets added by plugins are final at that point
-        val config = project.provider { resolveValidationConfig(project, settings, validatedProject, projectPath) }
-        validatedSourceDirectories.set(config.map { it.validatedSourceDirectories })
-        srcTreeExcludedPatterns.set(config.map { it.srcTreeExcludedPatterns })
-        sourceSetsResolved.set(config.map { it.sourceSetsResolved })
+        validatedSourceDirectories.set(
+            project.provider { resolveValidatedSourceDirectories(project, settings, validatedProject, projectPath) }
+        )
         excludedSourceRoots.set(
             settings.excludedSrcFolders.map { projectDir.resolve("src/$it").absolutePath }.toSet()
         )
+        excludeResourcesFolders.set(settings.excludeResourcesFolder)
         sourceFiles.from(projectDir)
         sourceFiles.include("src/**")
     }
 }
 
-private data class ValidationConfig(
-    val validatedSourceDirectories: List<ValidatedSourceDirectory>,
-    val srcTreeExcludedPatterns: Set<String>,
-    val sourceSetsResolved: Boolean,
-)
-
-private fun resolveValidationConfig(
+private fun resolveValidatedSourceDirectories(
     project: Project,
     settings: PackageStructureValidationSettings,
     validatedProject: ValidatedProject?,
     projectPath: String,
-): ValidationConfig {
-    val excludedFolderPatterns = settings.excludedSrcFolders.map { "src/$it/**" }.toSet() +
-        setOfNotNull(if (settings.excludeResourcesFolder) "src/*/resources/**" else null)
-
-    val sourceSets = project.extensions.findByName("sourceSets") as? SourceSetContainer
-        ?: return ValidationConfig(
-            validatedSourceDirectories = emptyList(),
-            srcTreeExcludedPatterns = excludedFolderPatterns +
-                settings.determineValidSourceFolderPatterns(projectPath, validatedProject),
-            sourceSetsResolved = false,
-        )
-
+): List<ValidatedSourceDirectory> {
+    val sourceSets = project.extensions.findByName("sourceSets") as? SourceSetContainer ?: return emptyList()
     val componentBySourceSetName = validatedProject?.componentSourceSets.orEmpty()
         .flatMap { component -> component.sourceSetNames.map { it to component.componentName } }
         .toMap()
-    val projectDir = project.projectDir.toPath()
     val buildDir = project.layout.buildDirectory.get().asFile.toPath()
-    val excludedRoots = settings.excludedSrcFolders.map { projectDir.resolve("src").resolve(it) }
 
-    val sourceDirectories = mutableSetOf<File>()
-    val validatedDirectories = sourceSets.flatMap { sourceSet ->
+    return sourceSets.flatMap { sourceSet ->
         val expectedPackage =
             settings.determinePackageFor(projectPath, validatedProject, componentBySourceSetName[sourceSet.name])
         val resourceDirs = sourceSet.resources.srcDirs
         sourceSet.sourceDirectories()
-            .onEach { sourceDirectories.add(it) }
-            .filterNot { it.toPath().startsWith(buildDir) }
-            .filterNot { settings.excludeResourcesFolder && it in resourceDirs }
-            .filterNot { dir -> excludedRoots.any { dir.toPath().startsWith(it) } }
-            .map { ValidatedSourceDirectory(it.absolutePath, expectedPackage) }
+            .filterNot { it.toPath().startsWith(buildDir) } // generated sources are not validated
+            .map { ValidatedSourceDirectory(it.absolutePath, expectedPackage, resources = it in resourceDirs) }
     }.distinctBy { it.directoryPath }
-
-    // every source set directory below the project directory is covered by its own validation (or an
-    // exclusion) and therefore not part of the 'src' tree scan for unassigned files
-    val sourceDirectoryPatterns = sourceDirectories.mapNotNull { dir ->
-        val path = dir.toPath()
-        if (path.startsWith(projectDir) && path != projectDir) {
-            projectDir.relativize(path).joinToString("/") + "/**"
-        } else {
-            null
-        }
-    }.toSet()
-
-    return ValidationConfig(
-        validatedSourceDirectories = validatedDirectories,
-        srcTreeExcludedPatterns = excludedFolderPatterns + sourceDirectoryPatterns,
-        sourceSetsResolved = true,
-    )
 }
 
 /** All source directories of the source set: java and resources, plus the Kotlin directories if present. */

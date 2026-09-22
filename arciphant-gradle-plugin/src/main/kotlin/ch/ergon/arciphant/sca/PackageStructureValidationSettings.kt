@@ -32,30 +32,6 @@ internal data class PackageStructureValidationSettings(
         return listOfNotNull(projectPackage.takeIf { it.isNotEmpty() }, componentFragment).joinToString("/")
     }
 
-    /**
-     * Determines the source folder patterns that contain correctly packaged files. Without component
-     * source sets (project layout, or a project without components such as a bundle), every source set is
-     * validated against the project's package. With component source sets (functional module in the source
-     * set layout), each component source set is validated against the component's package, while the
-     * standard 'main' and 'test' source sets are validated against the module's package.
-     */
-    fun determineValidSourceFolderPatterns(projectPath: String, project: ValidatedProject?): Set<String> {
-        val componentSourceSets = project?.componentSourceSets
-        if (componentSourceSets == null) {
-            return setOf(sourceFolderPattern("*", determinePackageFor(projectPath, project)))
-        }
-        val modulePackage = determinePackageFor(projectPath, project)
-        val standardSourceSetPatterns = setOf(
-            sourceFolderPattern("main", modulePackage),
-            sourceFolderPattern("test", modulePackage),
-        )
-        val componentSourceSetPatterns = componentSourceSets.flatMap { component ->
-            val componentPackage = determinePackageFor(projectPath, project, component.componentName)
-            component.sourceSetNames.map { sourceFolderPattern(it, componentPackage) }
-        }
-        return standardSourceSetPatterns + componentSourceSetPatterns
-    }
-
     private fun projectPackagePath(projectPath: String, project: ValidatedProject?): String {
         val fragments = if (project == null) {
             projectPath
@@ -71,9 +47,6 @@ internal data class PackageStructureValidationSettings(
         }
         return fragments.joinToString("/").withBasePackage()
     }
-
-    private fun sourceFolderPattern(sourceSetName: String, packagePath: String) =
-        "src/$sourceSetName/*/$packagePath/**"
 
     /** Maps a module or component name to its package fragment, honoring the given name mappings. */
     private fun String.mappedPackageFragment(packageFragmentsByName: Map<String, String>): String? {

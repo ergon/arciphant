@@ -45,10 +45,11 @@ class PackageStructureValidationPluginTest {
                     .createComponent("web-api")
                 """
             )
-            sourceFile("orders/domain/src/main/kotlin/com/example/orders/domain/Order.kt")
-            sourceFile("orders/domain/src/main/kotlin/com/example/orders/domain/sub/Nested.kt")
-            sourceFile("orders/domain/src/test/kotlin/com/example/orders/domain/OrderTest.kt")
-            sourceFile("orders/web-api/src/main/kotlin/com/example/orders/webapi/OrderController.kt")
+            buildFileWithJvmPlugins()
+            sourceFile("orders/domain/src/main/java/com/example/orders/domain/Order.java")
+            sourceFile("orders/domain/src/main/java/com/example/orders/domain/sub/Nested.java")
+            sourceFile("orders/domain/src/test/java/com/example/orders/domain/OrderTest.java")
+            sourceFile("orders/web-api/src/main/java/com/example/orders/webapi/OrderController.java")
 
             val result = gradleRunner.withArguments("validatePackageStructure").build()
 
@@ -71,8 +72,9 @@ class PackageStructureValidationPluginTest {
                     .createComponent("web")
                 """
             )
-            val wrongModule = sourceFile("orders/domain/src/main/kotlin/com/example/other/domain/Order.kt")
-            val missingComponent = sourceFile("orders/web/src/main/kotlin/com/example/orders/OrderController.kt")
+            buildFileWithJvmPlugins()
+            val wrongModule = sourceFile("orders/domain/src/main/java/com/example/other/domain/Order.java")
+            val missingComponent = sourceFile("orders/web/src/main/java/com/example/orders/OrderController.java")
 
             val result = gradleRunner.withArguments("validatePackageStructure", "--continue").buildAndFail()
 
@@ -306,7 +308,8 @@ class PackageStructureValidationPluginTest {
                 module("orders").createComponent("domain")
                 """
             )
-            sourceFile("orders/domain/src/main/kotlin/com/special/Order.kt")
+            buildFileWithJvmPlugins()
+            sourceFile("orders/domain/src/main/java/com/special/Order.java")
 
             val result = gradleRunner.withArguments("validatePackageStructure").build()
 
@@ -328,14 +331,15 @@ class PackageStructureValidationPluginTest {
                 module("orders").createComponent("domain")
                 """
             )
-            sourceFile("backend/orders/domain/src/main/kotlin/com/example/backend/orders/domain/Order.kt")
+            buildFileWithJvmPlugins()
+            sourceFile("backend/orders/domain/src/main/java/com/example/backend/orders/domain/Order.java")
 
             val validResult = gradleRunner.withArguments("validatePackageStructure").build()
             assertThat(validResult.task(":backend:orders:domain:validatePackageStructure")?.outcome)
                 .isEqualTo(TaskOutcome.SUCCESS)
 
             val invalidFile =
-                sourceFile("backend/orders/domain/src/main/kotlin/com/example/short/orders/domain/Order.kt")
+                sourceFile("backend/orders/domain/src/main/java/com/example/short/orders/domain/Order.java")
             val invalidResult = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
             assertThat(invalidResult.output)
                 .contains("Source file '${invalidFile.path}' has invalid package name.")
@@ -362,6 +366,26 @@ class PackageStructureValidationPluginTest {
         }
 
         @Test
+        fun `it should report files of projects without source sets`() {
+            settingsFileWithArciphant(
+                """
+                packageStructureValidation {
+                    basePackageName("com.example")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            // no JVM plugin applied — the project has no source sets, so no source location is valid
+            val file = sourceFile("orders/domain/src/main/java/com/example/orders/domain/Order.java")
+
+            val result = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
+
+            assertThat(result.output)
+                .contains("Source file '${file.path}' does not belong to any source set.")
+        }
+
+        @Test
         fun `it should keep names unnormalized when normalization is disabled`() {
             settingsFileWithArciphant(
                 """
@@ -375,8 +399,9 @@ class PackageStructureValidationPluginTest {
                 module("File_Store").createComponent("web-api")
                 """
             )
-            sourceFile("File_Store/web-api/src/main/kotlin/com/example/File_Store/web-api/Store.kt")
-            val invalidFile = sourceFile("File_Store/web-api/src/test/kotlin/com/example/filestore/webapi/Store.kt")
+            buildFileWithJvmPlugins()
+            sourceFile("File_Store/web-api/src/main/java/com/example/File_Store/web-api/Store.java")
+            val invalidFile = sourceFile("File_Store/web-api/src/test/java/com/example/filestore/webapi/Store.java")
 
             val result = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
 

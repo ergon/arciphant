@@ -124,39 +124,6 @@ class PackageStructureValidationSettingsTest {
         }
     }
 
-    @Nested
-    inner class DetermineValidSourceFolderPatterns {
-
-        @Test
-        fun `it should validate every source set against the project package without component source sets`() {
-            val (projectPath, project) = componentProject(":module:component", "module", "component")
-            assertThat(settings().determineValidSourceFolderPatterns(projectPath, project))
-                .containsExactly("src/*/*/com/example/module/component/**")
-        }
-
-        @Test
-        fun `it should validate component source sets against the component package`() {
-            val project = ValidatedProject(
-                basePathFragments = emptyList(),
-                moduleName = "module",
-                componentName = null,
-                componentSourceSets = listOf(
-                    ComponentSourceSets("domain", listOf("domain", "domainTest", "domainTestFixtures")),
-                    ComponentSourceSets("webApi", listOf("webApi")),
-                ),
-            )
-            assertThat(settings().determineValidSourceFolderPatterns(":module", project))
-                .containsExactlyInAnyOrder(
-                    "src/main/*/com/example/module/**",
-                    "src/test/*/com/example/module/**",
-                    "src/domain/*/com/example/module/domain/**",
-                    "src/domainTest/*/com/example/module/domain/**",
-                    "src/domainTestFixtures/*/com/example/module/domain/**",
-                    "src/webApi/*/com/example/module/webapi/**",
-                )
-        }
-    }
-
     private fun moduleProject(
         projectPath: String,
         moduleName: String,
