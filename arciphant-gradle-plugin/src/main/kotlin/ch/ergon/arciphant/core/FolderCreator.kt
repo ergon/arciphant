@@ -26,21 +26,9 @@ internal class FolderCreator(
     }
 
     private fun File.createSourceSetFoldersIfNotExists(component: Component) {
-        component.sourceSetNames().forEach {
+        component.sourceSetNames(settings.sourceSetComponentSettings).forEach {
             resolve("src").resolve(it).createDirectoryIfNotExists()
         }
-    }
-
-    private fun Component.sourceSetNames(): List<String> {
-        val sourceSetSettings = settings.sourceSetComponentSettings
-        val name = reference.name
-        return listOfNotNull(
-            name,
-            sourceSetSettings.testSourceSetName(name)
-                .takeIf { withTestSourceSet ?: sourceSetSettings.withTestSourceSet },
-            sourceSetSettings.testFixturesSourceSetName(name)
-                .takeIf { withTestFixturesSourceSet ?: sourceSetSettings.withTestFixturesSourceSet },
-        )
     }
 
     private val GradleProjectConfig.folderPath get() = path.folderPath

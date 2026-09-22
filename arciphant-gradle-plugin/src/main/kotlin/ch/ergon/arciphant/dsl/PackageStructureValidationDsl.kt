@@ -52,8 +52,9 @@ sealed interface PackageStructureValidationDsl {
 
     /**
      * Configure mappings for specific project names.
-     * The project name can be either a leaf project (e.g., an arciphant component) or a parent project (e.g., an arciphant module).
-     * The [basePackageName] is still used. The configured value replaces only the package fragment related to the specified project.
+     * The name can be either a leaf project (e.g., an arciphant component) or a parent project (e.g., an arciphant module).
+     * In the source set layout, component names are mapped the same way, even though components are not projects there.
+     * The [basePackageName] is still used. The configured value replaces only the package fragment related to the specified project or component.
      *
      * Example:
      * ```
@@ -77,6 +78,8 @@ sealed interface PackageStructureValidationDsl {
     /**
      * Completely overrides the package name for the given Gradle project path.
      * Other than with [mapProjectNamesToPackageFragments], the [basePackageName] is NOT used.
+     * In the source set layout, the override applies to the module project; the component fragments are still
+     * appended for the component source sets.
      *
      * Example:
      * ```

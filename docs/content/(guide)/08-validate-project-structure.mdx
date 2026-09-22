@@ -22,13 +22,6 @@ Arciphant provides the [task `validatePackageStructure`](/tasks#validatepackages
 structure. The task is registered on every project; the root project's task aggregates the validation of all
 subprojects, so a single invocation on the root project validates the whole build.
 
-:::note[Component layouts]
-The examples on this page use the project layout, where every component is its own Gradle project. In the
-[source set layout](/component-layouts), the validated projects are the module projects, so the expected package is
-derived from the module name only (e.g. `:accounting` → `com.company.project.accounting`) — all component source
-sets of a module are validated against the same module package, component names are not part of the validation.
-:::
-
 To configure it, add a `packageStructureValidation` block to the _arciphant_ configuration, for example:
 
 ```kotlin settings.gradle.kts {4-6}
@@ -62,9 +55,10 @@ The `packageStructureValidation` block provides the following configuration opti
 
 ### `mapProjectNamesToPackageFragments` [#mapprojectnamestopackagefragments]
 
-Configure mappings for specific project names. The project name can be either a leaf project (e.g., an arciphant
-component) or a parent project (e.g., an arciphant module). The `basePackageName` is still used. The configured value
-replaces only the package fragment related to the specified project.
+Configure mappings for specific project names. The name can be either a leaf project (e.g., an arciphant
+component) or a parent project (e.g., an arciphant module). In the source set layout, component names are mapped the
+same way, even though components are not projects there. The `basePackageName` is still used. The configured value
+replaces only the package fragment related to the specified project or component.
 
 Example:
 

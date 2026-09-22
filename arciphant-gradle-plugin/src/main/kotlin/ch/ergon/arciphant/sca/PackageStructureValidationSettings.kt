@@ -12,17 +12,53 @@ internal data class PackageStructureValidationSettings(
     val excludedSourceFolders: Set<String>,
 ) : Serializable {
 
-    fun determinePackageFor(projectPath: String): String {
-        val configuredAbsolutePath = absolutePackagePathsByProjectPath[projectPath]
-        return configuredAbsolutePath ?: projectPath
-            .replaceFirst(":", "")
-            .split(":")
-            .mapNotNull { it.projectNameToPackageFragment() }
-            .joinToString("/")
-            .withBasePackage()
+    /**
+     * Determines the expected package (as folder path) for the given project — with [componentName],
+     * for the given component of that project (source set layout): the component name is mapped to a
+     * package fragment with the same rules as project names and appended to the project's package.
+     */
+    fun determinePackageFor(projectPath: String, componentName: String? = null): String {
+        val projectPackage = absolutePackagePathsByProjectPath[projectPath]
+            ?: projectPath
+                .replaceFirst(":", "")
+                .split(":")
+                .mapNotNull { it.nameToPackageFragment() }
+                .joinToString("/")
+                .withBasePackage()
+        val componentFragment = componentName?.nameToPackageFragment()
+        return listOfNotNull(projectPackage.takeIf { it.isNotEmpty() }, componentFragment).joinToString("/")
     }
 
-    private fun String.projectNameToPackageFragment(): String? {
+    /**
+     * Determines the source folder patterns that contain correctly packaged files. Without
+     * [componentSourceSets] (project layout, or a project without components such as a bundle), every
+     * source set is validated against the project's package. With [componentSourceSets] (functional
+     * module in the source set layout), each component source set is validated against the component's
+     * package, while the standard 'main' and 'test' source sets are validated against the module's package.
+     */
+    fun determineValidSourceFolderPatterns(
+        projectPath: String,
+        componentSourceSets: List<ComponentSourceSets>?,
+    ): Set<String> {
+        if (componentSourceSets == null) {
+            return setOf(sourceFolderPattern("*", determinePackageFor(projectPath)))
+        }
+        val modulePackage = determinePackageFor(projectPath)
+        val standardSourceSetPatterns = setOf(
+            sourceFolderPattern("main", modulePackage),
+            sourceFolderPattern("test", modulePackage),
+        )
+        val componentSourceSetPatterns = componentSourceSets.flatMap { component ->
+            val componentPackage = determinePackageFor(projectPath, component.componentName)
+            component.sourceSetNames.map { sourceFolderPattern(it, componentPackage) }
+        }
+        return standardSourceSetPatterns + componentSourceSetPatterns
+    }
+
+    private fun sourceFolderPattern(sourceSetName: String, packagePath: String) =
+        "src/$sourceSetName/*/$packagePath/**"
+
+    private fun String.nameToPackageFragment(): String? {
         val configuredPackageFragment = relativePackagePathsByProjectName[this]
         if (configuredPackageFragment != null) {
             return configuredPackageFragment.ifEmpty { null }

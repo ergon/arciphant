@@ -1,5 +1,7 @@
 package ch.ergon.arciphant.core
 
+import ch.ergon.arciphant.core.model.Component
+
 internal data class GlobalSettings(
     val disableFolderCreation: Boolean,
     val componentLayout: ComponentLayout,
@@ -27,4 +29,15 @@ internal data class SourceSetComponentSettings(
             testFixturesSourceSetName = { "${it}TestFixtures" },
         )
     }
+}
+
+internal fun Component.sourceSetNames(settings: SourceSetComponentSettings): List<String> {
+    val name = reference.name
+    return listOfNotNull(
+        name,
+        settings.testSourceSetName(name)
+            .takeIf { withTestSourceSet ?: settings.withTestSourceSet },
+        settings.testFixturesSourceSetName(name)
+            .takeIf { withTestFixturesSourceSet ?: settings.withTestFixturesSourceSet },
+    )
 }

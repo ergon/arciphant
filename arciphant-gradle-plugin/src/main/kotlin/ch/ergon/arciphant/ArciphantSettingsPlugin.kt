@@ -10,6 +10,7 @@ import ch.ergon.arciphant.core.project.ProjectLayoutConfigurer
 import ch.ergon.arciphant.core.sourceset.SourceSetLayoutConfigurer
 import ch.ergon.arciphant.core.toProjectConfigs
 import ch.ergon.arciphant.dsl.ArciphantDsl
+import ch.ergon.arciphant.sca.componentSourceSetsByProjectPath
 import ch.ergon.arciphant.sca.registerValidatePackageStructureTask
 import org.gradle.api.initialization.Settings
 
@@ -48,8 +49,12 @@ class ArciphantSettingsPlugin {
                     }
                 }
 
+                val componentSourceSetsByProjectPath = projectConfigs.componentSourceSetsByProjectPath(settings)
                 gradle.lifecycle.beforeProject {
-                    registerValidatePackageStructureTask(packageStructureValidationSettings)
+                    registerValidatePackageStructureTask(
+                        packageStructureValidationSettings,
+                        componentSourceSetsByProjectPath[path],
+                    )
                 }
             }
 

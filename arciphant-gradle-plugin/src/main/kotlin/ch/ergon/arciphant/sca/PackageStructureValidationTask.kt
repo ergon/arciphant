@@ -5,7 +5,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.*
 import org.gradle.work.DisableCachingByDefault
@@ -16,7 +15,7 @@ internal abstract class PackageStructureValidationTask @Inject constructor(
     objects: ObjectFactory,
 ) : SimpleTask() {
     @get:Input
-    abstract val expectedPackage: Property<String>
+    abstract val validSourceFolderPatterns: SetProperty<String>
 
     @get:Input
     abstract val excludedSourceFolders: SetProperty<String>
@@ -31,12 +30,12 @@ internal abstract class PackageStructureValidationTask @Inject constructor(
         val excludedSourceFolderPatterns = excludedSourceFolders.get().map { "src/$it/**" }
         logger.info("Exclude source folders: {}", excludedSourceFolderPatterns)
 
-        val correctSourceFolderPattern = "src/*/*/${expectedPackage.get()}/**"
-        logger.info("Expected source folder: {}", correctSourceFolderPattern)
+        val correctSourceFolderPatterns = validSourceFolderPatterns.get()
+        logger.info("Expected source folders: {}", correctSourceFolderPatterns)
 
         val invalidFiles = sourceFiles.matching {
             excludedSourceFolderPatterns.forEach { exclude(it) }
-            exclude(correctSourceFolderPattern)
+            correctSourceFolderPatterns.forEach { exclude(it) }
         }.files
 
         if (invalidFiles.isNotEmpty()) {
@@ -51,11 +50,14 @@ internal abstract class PackageStructureValidationTask @Inject constructor(
     }
 }
 
-internal fun Project.registerValidatePackageStructureTask(settings: PackageStructureValidationSettings) {
+internal fun Project.registerValidatePackageStructureTask(
+    settings: PackageStructureValidationSettings,
+    componentSourceSets: List<ComponentSourceSets>?,
+) {
     if (project.path == project.rootProject.path) {
         project.registerValidatePackageStructureAggregateTask()
     } else {
-        project.registerValidatePackageStructureExecutionTask(settings)
+        project.registerValidatePackageStructureExecutionTask(settings, componentSourceSets)
     }
 }
 
@@ -68,12 +70,15 @@ private fun Project.registerValidatePackageStructureAggregateTask() {
     }
 }
 
-private fun Project.registerValidatePackageStructureExecutionTask(settings: PackageStructureValidationSettings) {
+private fun Project.registerValidatePackageStructureExecutionTask(
+    settings: PackageStructureValidationSettings,
+    componentSourceSets: List<ComponentSourceSets>?,
+) {
     val projectPath = path
     tasks.register(VALIDATE_PACKAGE_STRUCTURE_TASK, PackageStructureValidationTask::class.java) {
         group = GROUP
         description = "Validates the package structure of project '$projectPath'."
-        expectedPackage.set(settings.determinePackageFor(projectPath))
+        validSourceFolderPatterns.set(settings.determineValidSourceFolderPatterns(projectPath, componentSourceSets))
         enabled = projectPath !in settings.excludedProjectPaths
         excludedSourceFolders.set(settings.excludedSourceFolders)
         sourceFiles.from(projectDir)
