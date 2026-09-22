@@ -2,6 +2,7 @@ package ch.ergon.arciphant.core
 
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -26,12 +27,12 @@ class ArciphantGradleCompatibilityTest {
         createSourceSetComponentLayoutBuild()
 
         val arguments = arrayOf(
-            "help",
+            "validatePackageStructure",
             "--configuration-cache",
             "--configuration-cache-problems=fail",
         )
 
-        gradleRunner
+        val firstRun = gradleRunner
             .withArguments(*arguments)
             .build()
 
@@ -39,6 +40,8 @@ class ArciphantGradleCompatibilityTest {
             .withArguments(*arguments)
             .build()
 
+        assertThat(firstRun.task(":test:validatePackageStructure")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(secondRun.task(":test:validatePackageStructure")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
         assertThat(secondRun.output).contains("Reusing configuration cache.")
     }
 
@@ -46,15 +49,40 @@ class ArciphantGradleCompatibilityTest {
     fun `source set component layout is compatible with isolated projects`() {
         createSourceSetComponentLayoutBuild()
 
-        gradleRunner
+        val result = gradleRunner
             .withArguments(
-                "help",
+                "validatePackageStructure",
                 // Gradle 8.12 still uses the experimental property name. Once the wrapper is updated to
                 // Gradle 9.7+, this can be replaced with the --isolated-projects command-line option.
                 "-Dorg.gradle.unsafe.isolated-projects=true",
                 "--configuration-cache-problems=fail",
             )
             .build()
+
+        assertThat(result.task(":test:validatePackageStructure")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    }
+
+    @Test
+    fun `project component layout reuses configuration cache`() {
+        createProjectComponentLayoutBuild()
+
+        val arguments = arrayOf(
+            "validatePackageStructure",
+            "--configuration-cache",
+            "--configuration-cache-problems=fail",
+        )
+
+        val firstRun = gradleRunner
+            .withArguments(*arguments)
+            .build()
+
+        val secondRun = gradleRunner
+            .withArguments(*arguments)
+            .build()
+
+        assertThat(firstRun.task(":test:domain:validatePackageStructure")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(secondRun.task(":test:domain:validatePackageStructure")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(secondRun.output).contains("Reusing configuration cache.")
     }
 
     private fun createSourceSetComponentLayoutBuild() {
@@ -79,6 +107,34 @@ class ArciphantGradleCompatibilityTest {
             """
         )
         buildFile.write("")
+        // a correctly packaged source file, so the validation task exercises its full path
+        sourceFile("test/src/domain/java/test/domain/Domain.java")
+    }
+
+    private fun createProjectComponentLayoutBuild() {
+        settingsFile.write(
+            """
+            plugins {
+                id("ch.ergon.arciphant")
+            }
+
+            gradle.lifecycle.beforeProject {
+                pluginManager.apply("java-library")
+            }
+
+            arciphant {
+                module("test")
+                    .createComponent("domain")
+            }
+            """
+        )
+        buildFile.write("")
+        sourceFile("test/domain/src/main/java/test/domain/Domain.java")
+    }
+
+    private fun sourceFile(relativePath: String) {
+        projectFolder.resolve(relativePath)
+            .write("// content is irrelevant — the validation only checks the folder structure")
     }
 
     private fun File.write(content: String) {
