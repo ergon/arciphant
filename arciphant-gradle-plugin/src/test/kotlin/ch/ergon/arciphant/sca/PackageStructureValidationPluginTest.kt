@@ -85,6 +85,106 @@ class PackageStructureValidationPluginTest {
             assertThat(result.output).contains("Source file '${wrongModule.path}' has invalid package name.")
             assertThat(result.output).contains("Source file '${missingComponent.path}' has invalid package name.")
         }
+
+        @Test
+        fun `it should validate resources folders by default`() {
+            settingsFileWithArciphant(
+                """
+                packageStructureValidation {
+                    basePackageName("com.example")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            buildFileWithJvmPlugins()
+            val validFile =
+                sourceFile("orders/domain/src/main/resources/com/example/orders/domain/messages.properties")
+            val invalidFile = sourceFile("orders/domain/src/main/resources/config.properties")
+
+            val result = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
+
+            assertThat(result.output).contains("Source file '${invalidFile.path}' has invalid package name.")
+            assertThat(result.output).doesNotContain("Source file '${validFile.path}'")
+        }
+
+        @Test
+        fun `it should validate test fixtures source sets`() {
+            settingsFileWithArciphant(
+                """
+                packageStructureValidation {
+                    basePackageName("com.example")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            buildFileWithJvmPlugins()
+            projectFolder.resolve("orders/domain/build.gradle.kts").write(
+                """
+                plugins {
+                    `java-test-fixtures`
+                }
+                """
+            )
+            val validFile = sourceFile("orders/domain/src/testFixtures/java/com/example/orders/domain/Fixture.java")
+            val invalidFile = sourceFile("orders/domain/src/testFixtures/java/com/example/orders/Fixture.java")
+
+            val result = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
+
+            assertThat(result.output).contains("Source file '${invalidFile.path}' has invalid package name.")
+            assertThat(result.output).doesNotContain("Source file '${validFile.path}'")
+        }
+
+        @Test
+        fun `it should skip generated source directories below the build directory`() {
+            settingsFileWithArciphant(
+                """
+                packageStructureValidation {
+                    basePackageName("com.example")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            buildFileWithJvmPlugins()
+            projectFolder.resolve("orders/domain/build.gradle.kts").write(
+                """
+                sourceSets["main"].java.srcDir(layout.buildDirectory.dir("generated/sources"))
+                """
+            )
+            sourceFile("orders/domain/build/generated/sources/anything/Generated.java")
+            sourceFile("orders/domain/src/main/java/com/example/orders/domain/Order.java")
+
+            val result = gradleRunner.withArguments("validatePackageStructure").build()
+
+            assertThat(result.task(":orders:domain:validatePackageStructure")?.outcome)
+                .isEqualTo(TaskOutcome.SUCCESS)
+        }
+
+        @Test
+        fun `it should validate the intermediate module project`() {
+            settingsFileWithArciphant(
+                """
+                packageStructureValidation {
+                    basePackageName("com.example")
+                    mapModuleNamesToPackageFragments("financial-orders" to "orders")
+                }
+
+                module("financial-orders").createComponent("domain")
+                """
+            )
+            buildFileWithJvmPlugins()
+            val validFile = sourceFile("financial-orders/src/main/java/com/example/orders/Shared.java")
+            val invalidFile = sourceFile("financial-orders/src/main/java/com/example/other/Shared.java")
+
+            val result = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
+
+            assertThat(result.task(":financial-orders:validatePackageStructure")?.outcome)
+                .isEqualTo(TaskOutcome.FAILED)
+            assertThat(result.output).contains("Source file '${invalidFile.path}' has invalid package name.")
+            assertThat(result.output).doesNotContain("Source file '${validFile.path}'")
+        }
     }
 
     @Nested
@@ -239,6 +339,63 @@ class PackageStructureValidationPluginTest {
         }
 
         @Test
+        fun `it should validate Kotlin source directories`() {
+            settingsFileWithArciphant(
+                """
+                sourceSetComponentLayout()
+
+                packageStructureValidation {
+                    basePackageName("com.example")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            buildFile.write(
+                """
+                plugins {
+                    kotlin("jvm") version "2.2.0" apply false
+                }
+
+                allprojects {
+                    pluginManager.apply("org.jetbrains.kotlin.jvm")
+                    repositories { mavenCentral() }
+                }
+                """
+            )
+            val validFile = sourceFile("orders/src/domain/kotlin/com/example/orders/domain/Order.kt")
+            val invalidFile = sourceFile("orders/src/domain/kotlin/com/example/orders/Order.kt")
+
+            val result = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
+
+            assertThat(result.output).contains("Source file '${invalidFile.path}' has invalid package name.")
+            assertThat(result.output).doesNotContain("Source file '${validFile.path}'")
+        }
+
+        @Test
+        fun `it should skip excluded module projects`() {
+            settingsFileWithArciphant(
+                """
+                sourceSetComponentLayout()
+
+                packageStructureValidation {
+                    basePackageName("com.example")
+                    excludeProjectPath(":orders")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            buildFileWithJvmPlugins()
+            sourceFile("orders/src/domain/java/wrong/Order.java")
+
+            val result = gradleRunner.withArguments("validatePackageStructure").build()
+
+            assertThat(result.task(":orders:validatePackageStructure")?.outcome)
+                .isEqualTo(TaskOutcome.SKIPPED)
+        }
+
+        @Test
         fun `it should exclude resources and configured source folders`() {
             settingsFileWithArciphant(
                 """
@@ -363,6 +520,31 @@ class PackageStructureValidationPluginTest {
 
             assertThat(result.task(":orders:domain:validatePackageStructure")?.outcome)
                 .isEqualTo(TaskOutcome.SKIPPED)
+        }
+
+        @Test
+        fun `it should exclude configured src folders anywhere below src`() {
+            settingsFileWithArciphant(
+                """
+                packageStructureValidation {
+                    basePackageName("com.example")
+                    excludeSrcFolders("main/generated")
+                    excludeSrcFolders("main/java/generated")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            buildFileWithJvmPlugins()
+            // a folder next to the source directories …
+            sourceFile("orders/domain/src/main/generated/Generated.java")
+            // … and one inside a source directory
+            sourceFile("orders/domain/src/main/java/generated/Generated.java")
+
+            val result = gradleRunner.withArguments("validatePackageStructure").build()
+
+            assertThat(result.task(":orders:domain:validatePackageStructure")?.outcome)
+                .isEqualTo(TaskOutcome.SUCCESS)
         }
 
         @Test
