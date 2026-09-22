@@ -317,6 +317,33 @@ class PackageStructureValidationPluginTest {
         }
 
         @Test
+        fun `it should not apply name mappings to base path segments`() {
+            settingsFileWithArciphant(
+                """
+                basePath("backend")
+
+                packageStructureValidation {
+                    basePackageName("com.example")
+                    mapProjectNamesToPackageFragments("backend" to "short")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            sourceFile("backend/orders/domain/src/main/kotlin/com/example/backend/orders/domain/Order.kt")
+
+            val validResult = gradleRunner.withArguments("validatePackageStructure").build()
+            assertThat(validResult.task(":backend:orders:domain:validatePackageStructure")?.outcome)
+                .isEqualTo(TaskOutcome.SUCCESS)
+
+            val invalidFile =
+                sourceFile("backend/orders/domain/src/main/kotlin/com/example/short/orders/domain/Order.kt")
+            val invalidResult = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
+            assertThat(invalidResult.output)
+                .contains("Source file '${invalidFile.path}' has invalid package name.")
+        }
+
+        @Test
         fun `it should skip excluded projects`() {
             settingsFileWithArciphant(
                 """

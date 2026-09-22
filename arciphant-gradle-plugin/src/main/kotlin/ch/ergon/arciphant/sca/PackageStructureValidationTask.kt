@@ -109,12 +109,12 @@ internal abstract class PackageStructureValidationTask @Inject constructor(
 
 internal fun Project.registerValidatePackageStructureTask(
     settings: PackageStructureValidationSettings,
-    componentSourceSets: List<ComponentSourceSets>?,
+    validatedProject: ValidatedProject?,
 ) {
     if (project.path == project.rootProject.path) {
         project.registerValidatePackageStructureAggregateTask()
     } else {
-        project.registerValidatePackageStructureExecutionTask(settings, componentSourceSets)
+        project.registerValidatePackageStructureExecutionTask(settings, validatedProject)
     }
 }
 
@@ -129,7 +129,7 @@ private fun Project.registerValidatePackageStructureAggregateTask() {
 
 private fun Project.registerValidatePackageStructureExecutionTask(
     settings: PackageStructureValidationSettings,
-    componentSourceSets: List<ComponentSourceSets>?,
+    validatedProject: ValidatedProject?,
 ) {
     val projectPath = path
     tasks.register(VALIDATE_PACKAGE_STRUCTURE_TASK, PackageStructureValidationTask::class.java) {
@@ -139,7 +139,7 @@ private fun Project.registerValidatePackageStructureExecutionTask(
 
         // resolved lazily: the task is configured after the project is evaluated, so customized source
         // directories and source sets added by plugins are final at that point
-        val config = project.provider { resolveValidationConfig(project, settings, componentSourceSets, projectPath) }
+        val config = project.provider { resolveValidationConfig(project, settings, validatedProject, projectPath) }
         validatedSourceDirectories.set(config.map { it.validatedSourceDirectories })
         srcTreeExcludedPatterns.set(config.map { it.srcTreeExcludedPatterns })
         sourceSetsResolved.set(config.map { it.sourceSetsResolved })
@@ -160,7 +160,7 @@ private data class ValidationConfig(
 private fun resolveValidationConfig(
     project: Project,
     settings: PackageStructureValidationSettings,
-    componentSourceSets: List<ComponentSourceSets>?,
+    validatedProject: ValidatedProject?,
     projectPath: String,
 ): ValidationConfig {
     val excludedFolderPatterns = settings.excludedSrcFolders.map { "src/$it/**" }.toSet() +
@@ -170,11 +170,11 @@ private fun resolveValidationConfig(
         ?: return ValidationConfig(
             validatedSourceDirectories = emptyList(),
             srcTreeExcludedPatterns = excludedFolderPatterns +
-                settings.determineValidSourceFolderPatterns(projectPath, componentSourceSets),
+                settings.determineValidSourceFolderPatterns(projectPath, validatedProject),
             sourceSetsResolved = false,
         )
 
-    val componentBySourceSetName = componentSourceSets.orEmpty()
+    val componentBySourceSetName = validatedProject?.componentSourceSets.orEmpty()
         .flatMap { component -> component.sourceSetNames.map { it to component.componentName } }
         .toMap()
     val projectDir = project.projectDir.toPath()
@@ -183,7 +183,8 @@ private fun resolveValidationConfig(
 
     val sourceDirectories = mutableSetOf<File>()
     val validatedDirectories = sourceSets.flatMap { sourceSet ->
-        val expectedPackage = settings.determinePackageFor(projectPath, componentBySourceSetName[sourceSet.name])
+        val expectedPackage =
+            settings.determinePackageFor(projectPath, validatedProject, componentBySourceSetName[sourceSet.name])
         val resourceDirs = sourceSet.resources.srcDirs
         sourceSet.sourceDirectories()
             .onEach { sourceDirectories.add(it) }

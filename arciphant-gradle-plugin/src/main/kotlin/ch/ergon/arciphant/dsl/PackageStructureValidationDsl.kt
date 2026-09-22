@@ -51,10 +51,10 @@ sealed interface PackageStructureValidationDsl {
     fun disableRemoveHyphen()
 
     /**
-     * Configure mappings for specific project names.
-     * The name can be either a leaf project (e.g., an arciphant component) or a parent project (e.g., an arciphant module).
-     * In the source set layout, component names are mapped the same way, even though components are not projects there.
-     * The [basePackageName] is still used. The configured value replaces only the package fragment related to the specified project or component.
+     * Configure mappings for specific module and component names. The mappings apply only to the names of
+     * arciphant modules and components (in both component layouts) — not to base path segments or other projects.
+     * The [basePackageName] is still used. The configured value replaces only the package fragment related to the
+     * specified module or component.
      *
      * Example:
      * ```
