@@ -173,7 +173,43 @@ class PackageStructureValidationPluginTest {
                 sourceFile("orders/src/domainTestFixtures/java/com/example/orders/domain/OrderFixtures.java")
             val invalidResult = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
             assertThat(invalidResult.output)
-                .contains("Source file '${unknownSourceSet.path}' has invalid package name.")
+                .contains("Source file '${unknownSourceSet.path}' does not belong to any source set.")
+        }
+
+        @Test
+        fun `it should validate relocated source directories`() {
+            settingsFileWithArciphant(
+                """
+                sourceSetComponentLayout()
+                disableFolderCreation()
+
+                packageStructureValidation {
+                    basePackageName("com.example")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            buildFileWithJvmPlugins()
+            projectFolder.resolve("orders/build.gradle.kts").write(
+                """
+                customizeAllComponents {
+                    productionSourceSet { sourceSet, componentName ->
+                        sourceSet.java.setSrcDirs(listOf("${'$'}componentName/java"))
+                    }
+                }
+                """
+            )
+            sourceFile("orders/domain/java/com/example/orders/domain/Order.java")
+
+            val validResult = gradleRunner.withArguments("validatePackageStructure").build()
+            assertThat(validResult.task(":orders:validatePackageStructure")?.outcome)
+                .isEqualTo(TaskOutcome.SUCCESS)
+
+            val invalidFile = sourceFile("orders/domain/java/com/example/orders/Order.java")
+            val invalidResult = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
+            assertThat(invalidResult.output)
+                .contains("Source file '${invalidFile.path}' has invalid package name.")
         }
 
         @Test
@@ -230,6 +266,35 @@ class PackageStructureValidationPluginTest {
 
     @Nested
     inner class Settings {
+
+        @Test
+        fun `it should validate relocated source directories of component projects`() {
+            settingsFileWithArciphant(
+                """
+                packageStructureValidation {
+                    basePackageName("com.example")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            buildFileWithJvmPlugins()
+            projectFolder.resolve("orders/domain/build.gradle.kts").write(
+                """
+                sourceSets["main"].java.setSrcDirs(listOf("sources/java"))
+                """
+            )
+            sourceFile("orders/domain/sources/java/com/example/orders/domain/Order.java")
+
+            val validResult = gradleRunner.withArguments("validatePackageStructure").build()
+            assertThat(validResult.task(":orders:domain:validatePackageStructure")?.outcome)
+                .isEqualTo(TaskOutcome.SUCCESS)
+
+            val invalidFile = sourceFile("orders/domain/sources/java/com/example/orders/Order.java")
+            val invalidResult = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
+            assertThat(invalidResult.output)
+                .contains("Source file '${invalidFile.path}' has invalid package name.")
+        }
 
         @Test
         fun `it should apply absolute package mappings to component projects`() {

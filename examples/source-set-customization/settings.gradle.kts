@@ -25,4 +25,9 @@ arciphant {
         .createComponent(name = "api")
         .createComponent(name = "domain", apiDependencies = setOf("api"))
         .createComponent(name = "web", dependencies = setOf("domain"))
+
+    // the package structure validation follows the customized source directories
+    packageStructureValidation {
+        basePackageName("ch.ergon.arciphant.example")
+    }
 }

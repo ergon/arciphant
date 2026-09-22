@@ -122,6 +122,7 @@ class PackageStructureValidationSettingsTest {
         relativePackagePathsByProjectName = relativePackagePathsByProjectName,
         absolutePackagePathsByProjectPath = absolutePackagePathsByProjectPath,
         excludedProjectPaths = emptySet(),
-        excludedSourceFolders = emptySet(),
+        excludedSrcFolders = emptySet(),
+        excludeResourcesFolder = false,
     )
 }

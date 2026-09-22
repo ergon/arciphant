@@ -9,7 +9,8 @@ internal data class PackageStructureValidationSettings(
     val relativePackagePathsByProjectName: Map<String, String>,
     val absolutePackagePathsByProjectPath: Map<String, String>,
     val excludedProjectPaths: Set<String>,
-    val excludedSourceFolders: Set<String>,
+    val excludedSrcFolders: Set<String>,
+    val excludeResourcesFolder: Boolean,
 ) : Serializable {
 
     /**

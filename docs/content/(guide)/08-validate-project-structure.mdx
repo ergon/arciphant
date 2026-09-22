@@ -22,6 +22,11 @@ Arciphant provides the [task `validatePackageStructure`](/tasks#validatepackages
 structure. The task is registered on every project; the root project's task aggregates the validation of all
 subprojects, so a single invocation on the root project validates the whole build.
 
+The validation follows the _actual_ source directories of the project's source sets, so
+[customized source directories](/component-layouts#customizing-source-directories) — and relocated `srcDirs` in
+general — are validated at their configured location. Files under `src/` that do not belong to any source set are
+reported as well.
+
 To configure it, add a `packageStructureValidation` block to the _arciphant_ configuration, for example:
 
 ```kotlin settings.gradle.kts {4-6}
