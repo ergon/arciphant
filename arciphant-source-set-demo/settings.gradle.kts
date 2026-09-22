@@ -45,6 +45,8 @@ arciphant {
     packageStructureValidation {
         val basePackage = "ch.ergon.arciphant.example"
         basePackageName(basePackage)
+        mapProjectNamesToPackageFragments("paymentProviderAdapter" to "ppa")
+        mapProjectNamesToPackageFragments("certificateAuthorityAdapter" to "caa")
         mapProjectPathsToAbsolutePackages(":online-learning-platform" to basePackage)
     }
 }
