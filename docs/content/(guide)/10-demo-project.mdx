@@ -19,9 +19,9 @@ compare the two [component layouts](/component-layouts) side by side:
 
 </Frame>
 
-| Demo project | Description |
-|---|---|
-| <a href="https://github.com/ergon/arciphant/blob/main/arciphant-project-demo/settings.gradle.kts" target="_blank" rel="noreferrer"><code style={{whiteSpace: 'nowrap'}}>arciphant-project-demo</code></a> | Uses the default **project layout**: every component is a separate Gradle project, configured through convention plugins registered per component type in the DSL. |
+| Demo project                                                                                                                                                                                                    | Description                                                                                                                                                                                                                                                                                               |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <a href="https://github.com/ergon/arciphant/blob/main/arciphant-project-demo/settings.gradle.kts" target="_blank" rel="noreferrer"><code style={{whiteSpace: 'nowrap'}}>arciphant-project-demo</code></a>       | Uses the default **project layout**: every component is a separate Gradle project, configured through convention plugins registered per component type in the DSL.                                                                                                                                        |
 | <a href="https://github.com/ergon/arciphant/blob/main/arciphant-source-set-demo/settings.gradle.kts" target="_blank" rel="noreferrer"><code style={{whiteSpace: 'nowrap'}}>arciphant-source-set-demo</code></a> | Uses the **source set layout**: every module is a single Gradle project whose components are source sets. Each module applies a convention plugin in its `build.gradle.kts`, which configures the components via [shared dependency configurations](/component-layouts#shared-dependency-configurations). |
 
 ## Feature examples
