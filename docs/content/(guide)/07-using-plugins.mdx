@@ -77,6 +77,27 @@ bundle(name = "online-learning-platform", plugin = "spring-boot-bundle-module")
 It is good practice to use a dedicated project for convention plugins instead of the `buildSrc` folder and to include
 it with `includeBuild`:
 
+<Steps>
+
+<Step title="Create the build-logic project">
+
+Move the convention plugins into a separate Gradle build, e.g. `build-logic/src/main/kotlin/spring-web-component.gradle.kts`,
+with the `kotlin-dsl` plugin applied in its `build.gradle.kts`:
+
+```kotlin build-logic/build.gradle.kts
+plugins {
+    `kotlin-dsl`
+}
+
+repositories {
+    gradlePluginPortal()
+}
+```
+
+</Step>
+
+<Step title="Include it in the plugin management">
+
 ```kotlin settings.gradle.kts {3}
 pluginManagement {
   // …
@@ -84,14 +105,11 @@ pluginManagement {
 }
 ```
 
-:::warning[One plugin must appear in the settings `plugins` block]
-Gradle only resolves plugins from builds included via `pluginManagement` when at least one plugin is referenced in a
-`plugins` block. Arciphant applies the registered plugins programmatically (`pluginManager.apply("plugin-id")`), which
-bypasses that resolution — so without further ado, Gradle fails with `Plugin [id: '…'] was not found`.
-:::
+</Step>
 
-The workaround is simple: reference **one** of the convention plugins in the `plugins` block of your
-`settings.gradle.kts` with `apply false`:
+<Step title="Reference one plugin with apply false">
+
+Reference **one** of the convention plugins in the `plugins` block of your `settings.gradle.kts` with `apply false`:
 
 ```kotlin settings.gradle.kts {3}
 plugins {
@@ -100,5 +118,27 @@ plugins {
 }
 ```
 
-This triggers Gradle's plugin resolution for the included build, and Arciphant can then apply _all_ plugins it provides —
-referencing a single plugin is enough. See also [Troubleshooting](/troubleshooting#convention-plugin-not-found).
+:::warning[Required for plugins applied by Arciphant]
+Gradle only resolves plugins from builds included via `pluginManagement` when at least one plugin is referenced in a
+`plugins` block. Arciphant applies the registered plugins programmatically (`pluginManager.apply("plugin-id")`), which
+bypasses that resolution — so without this line, Gradle fails with `Plugin [id: '…'] was not found`. See also
+[Troubleshooting](/troubleshooting#convention-plugin-not-found).
+:::
+
+Referencing a single plugin is enough: it triggers Gradle's plugin resolution for the included build, and Arciphant can
+then apply _all_ plugins it provides.
+
+</Step>
+
+<Step title="Register the plugins in the DSL">
+
+Register the convention plugins for the components and bundles as described [above](#component-plugins):
+
+```kotlin settings.gradle.kts
+template()
+    .createComponent(name = "web", plugin = "spring-web-component")
+```
+
+</Step>
+
+</Steps>

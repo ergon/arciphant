@@ -50,10 +50,14 @@ the validation of all subprojects. So a single invocation on the root project va
 ./gradlew validatePackageStructure
 ```
 
-To make every build validate the package structure automatically, hook the task into a task of you regular build, e.g. compilation:
+:::tip[Validate on every build]
+To make every build validate the package structure automatically, hook the task into a task of your regular build,
+e.g. compilation:
 
 ```kotlin
 tasks.named("compileKotlin") {
     dependsOn("validatePackageStructure")
 }
 ```
+
+:::

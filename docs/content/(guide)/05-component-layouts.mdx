@@ -4,38 +4,88 @@ description: The project layout and the source set layout — how Arciphant maps
 icon: layout-grid
 ---
 
-Arciphant supports two ways of mapping configured components to Gradle:
+Arciphant supports two ways of mapping components to Gradle:
 
-- The project layout creates one Gradle project per component. This is the default (it can also be selected explicitly
-  with `projectSetComponentLayout()`) and preserves the original Arciphant behavior.
-- The source set layout creates one Gradle project per functional module and maps every component to source sets inside
-  that project.
+<CardGroup cols={2}>
+  <Card title="Project layout" href="#project-layout" icon="boxes">
+    Creates nested Gradle projects for modules and their components — every component is a Gradle project of its own.
+
+    <Badge variant="accent" class="mt-3">Default</Badge>
+  </Card>
+  <Card title="Source set layout" href="#source-set-layout" icon="layers">
+    Creates one Gradle project per module and maps every component to source sets inside that project. Enabled with
+    `sourceSetComponentLayout()`.
+  </Card>
+</CardGroup>
 
 ## Choosing a layout
 
 Both layouts enforce the same component structure and dependencies — they differ in how the structure is mapped to
 Gradle:
 
-|                                | Project component layout                                                                        | Source set component layout                                                          |
-|--------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| Gradle projects                | one per component                                                                               | one per functional module                                                            |
-| Gradle plugins per component   | yes — registered in the DSL, see [Using Plugins](/using-plugins)                                | no — plugins are applied per module project                                          |
-| Artifacts                      | one jar per component, with [qualified names](/additional-settings#qualified-archive-base-name) | one jar per module                                                                   |
-| Test fixtures                  | via the `java-test-fixtures` plugin (optional)                                                  | built-in source sets, no plugin required                                             |
-| External dependencies          | declared per component project                                                                  | declared per component configuration, or [shared](#shared-dependency-configurations) |
-| Configuration cache            | supported                                                                                       | supported                                                                            |
-| Isolated projects (incubating) | not (yet) supported                                                                             | supported                                                                            |
+|                                | Project component layout                                                                        | Source set component layout                                        |
+|--------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| Gradle projects                | one per component                                                                               | one per functional module                                          |
+| Gradle plugins per component   | yes — registered in the DSL, see [Using Plugins](/using-plugins)                                | no — plugins are applied per module project                        |
+| Artifacts                      | one jar per component, with [qualified names](/additional-settings#qualified-archive-base-name) | no jars — consumers use the compiled component classes             |
+| Tests and test fixtures        | standard Gradle `test` source set; test fixtures via the optional `java-test-fixtures` plugin   | Arciphant creates test and test-fixtures source sets per component |
+| Configuration cache            | supported                                                                                       | supported                                                          |
+| Isolated projects (incubating) | not (yet) supported                                                                             | supported                                                          |
 
-As a rule of thumb: choose the **project layout** if your components need their own convention plugins or artifacts —
-each component being a full Gradle project gives you the complete Gradle feature set per component. Choose the
-**source set layout** if you want to keep the number of Gradle projects small (relevant for IDE sync and configuration
-time in large builds) or need compatibility with Gradle's isolated projects feature.
+:::tip[Which one?]
+Choose the **project layout** if your components need their own convention plugins or artifacts — each component being
+a full Gradle project gives you the complete Gradle feature set per component. Choose the **source set layout** if you
+prefer fewer Gradle projects and a less nested folder structure inside your modules.
+:::
+
+## Project layout
+
+This is the default layout, so no configuration is needed. To select it explicitly, use `projectSetComponentLayout()`:
+
+```kotlin settings.gradle.kts {2}
+arciphant {
+    projectSetComponentLayout()
+
+    val template = template()
+        .createComponent("domain")
+        .createComponent("application", apiDependencies = setOf("domain"))
+
+    module("orders", template = template)
+}
+```
+
+This creates the Gradle project `:orders` with subprojects `:orders:domain` and `:orders:application`:
+
+<Tree>
+  <Tree.Folder name="orders" icon="package" defaultOpen>
+    <Tree.Folder name="domain" icon="package" defaultOpen>
+      <Tree.Folder name="src" defaultOpen>
+        <Tree.Folder name="main" icon="folder-code"/>
+        <Tree.Folder name="test" icon="folder-code"/>
+        <Tree.Folder name="testFixtures" icon="folder-code"/>
+      </Tree.Folder>
+    </Tree.Folder>
+    <Tree.Folder name="application" icon="package" defaultOpen>
+      <Tree.Folder name="src" defaultOpen>
+        <Tree.Folder name="main" icon="folder-code"/>
+        <Tree.Folder name="test" icon="folder-code"/>
+        <Tree.Folder name="testFixtures" icon="folder-code"/>
+      </Tree.Folder>
+    </Tree.Folder>
+  </Tree.Folder>
+</Tree>
+
+`src/testFixtures` is only present once the optional `java-test-fixtures` plugin is applied — see
+[Structurize test code](/declare-structure#structurize-test-code).
+
+No Arciphant-specific constructs are involved: modules and components are plain Gradle projects with the standard
+source sets, and component dependencies are ordinary `implementation` and `api` project dependencies.
 
 ## Source set layout
 
-Enable the source set layout with `sourceSetComponentLayout()` in `settings.gradle.kts`:
+Enable the source set layout with `sourceSetComponentLayout()`:
 
-```kotlin settings.gradle.kts
+```kotlin settings.gradle.kts {2}
 arciphant {
     sourceSetComponentLayout()
 
@@ -49,23 +99,33 @@ arciphant {
 
 This creates the Gradle project `:orders` with the following source sets by default:
 
-```text
-src/domain/...
-src/domainTestFixtures/...
-src/domainTest/...
-src/application/...
-src/applicationTestFixtures/...
-src/applicationTest/...
-```
+<Tree>
+  <Tree.Folder name="orders" icon="package" defaultOpen>
+    <Tree.Folder name="src" defaultOpen>
+      <Tree.Folder name="domain" icon="folder-code" />
+      <Tree.Folder name="domainTest" icon="folder-code" />
+      <Tree.Folder name="domainTestFixtures" icon="folder-code" />
+      <Tree.Folder name="application" icon="folder-code" />
+      <Tree.Folder name="applicationTest" icon="folder-code" />
+      <Tree.Folder name="applicationTestFixtures" icon="folder-code" />
+    </Tree.Folder>
+  </Tree.Folder>
+</Tree>
 
-Production component outputs are combined into the module's main output and its single archive. A component's test
-fixtures depend on its production source set; its tests depend on its test fixtures. Component dependencies are mirrored
-between the corresponding test-fixtures source sets, while test source sets never depend on other components' test
-source sets.
+Other projects consume a component through the compiled classes of its source set, not through a jar — the module's
+`jar` stays empty. Applications packaged with Spring Boot's `bootJar` still contain all component classes.
+
+<Expandable title="How test and test fixtures source sets are wired">
+
+A component's test fixtures depend on its production source set; its tests depend on its test fixtures. Component
+dependencies are mirrored between the corresponding test-fixtures source sets, while test source sets never depend on
+other components' test source sets.
 
 The source set layout does not require the `java-test-fixtures` plugin. Arciphant also registers one `Test` task per
 component test source set, named exactly like that source set, and attaches it to the module's standard `test` task.
-Test and test-fixtures directories are marked as test sources in IntelliJ IDEA.
+If the `idea` plugin is applied, test and test-fixtures directories are marked as test sources in IntelliJ IDEA.
+
+</Expandable>
 
 :::note[Component naming]
 In the source set layout, component names become source set names and prefixes of the derived configurations (e.g.
@@ -73,7 +133,7 @@ In the source set layout, component names become source set names and prefixes o
 `web-api`.
 :::
 
-## Test source set configuration
+### Test source set configuration
 
 Tests and test fixtures are enabled by default. Their names and global availability can be configured with
 source-set-specific settings:
@@ -98,14 +158,32 @@ arciphant {
 
 The component parameters override the global flags.
 
-Source-set settings and component source-set options are rejected in `PROJECT` mode rather than being silently ignored.
+Source-set settings and component source-set options are rejected in the project layout rather than being silently
+ignored.
 
-## Customizing source directories
+### Customizing source directories
 
 The component source sets can be customized per module project — in its `build.gradle.kts` or in a
-convention plugin. Arciphant registers two extensions in every functional module project of the source set layout, so
-no imports are required (in precompiled script plugins, apply `id("ch.ergon.arciphant")` to make the Kotlin
-DSL accessors available, as for the [`component` notation](#component-dependencies-in-build-scripts)):
+convention plugin. Arciphant registers two extensions in every functional module project to do so:
+
+| Extension                | Description                                       |
+|--------------------------|---------------------------------------------------|
+| `customizeAllComponents` | Customize source sets of all components           |
+| `customizeComponent`     | Customize source sets of one particular component |
+
+Both extensions provide the following methods, each taking a lambda that customizes the respective source set:
+
+| Method                  | Description                            |
+|-------------------------|----------------------------------------|
+| `productionSourceSet`   | Customize the production source set    |
+| `testSourceSet`         | Customize the test source set          |
+| `testFixturesSourceSet` | Customize the test fixtures source set |
+
+In `customizeAllComponents`, the lambda receives the `SourceSet` and the component name
+(`{ sourceSet, componentName -> … }`); in `customizeComponent`, it receives only the `SourceSet`
+(`{ sourceSet -> … }`).
+
+Example:
 
 ```kotlin title="build.gradle.kts or a precompiled script plugin"
 // all components of the module
@@ -130,13 +208,14 @@ customizeComponent("domain") {
 }
 ```
 
-The lambdas receive the `SourceSet` and — in `customizeAllComponents` — the component name as independent
-parameters. Use `componentName` to derive directories: for test and test-fixtures source sets it differs
+Use `componentName` to derive directories: for test and test-fixtures source sets it differs
 from the source set name (component `domain`, source set `domainTest`). Inside `customizeComponent`, the
 component name is available as the `componentName` property.
 
+:::note[Missing source sets and unknown components]
 Components without a test or test-fixtures source set are skipped by `customizeAllComponents`; requesting
 such a source set in `customizeComponent` is an error, as is an unknown component name.
+:::
 
 :::note[Folder creation]
 Arciphant creates the source set folders using the default `src/<sourceSet>` layout. When you relocate the
@@ -148,7 +227,7 @@ The example <a href="https://github.com/ergon/arciphant/tree/main/examples/sourc
 in the Arciphant repository shows a complete minimal setup: one module with three components, using
 `customizeAllComponents` for all of them and `customizeComponent` for one.
 
-## Shared dependency configurations
+### Shared dependency configurations
 
 External dependencies can be declared once for all component source sets of the same kind. In every Arciphant module
 project, each component configuration extends the corresponding standard configuration:
@@ -169,65 +248,61 @@ dependencies {
 ```
 
 This also works from a convention plugin, which replaces per-component convention plugins in this layout. Prefer
-applying such a convention plugin in the `build.gradle.kts` of each module project: its script body then runs during the
-configuration of that project, where the component configurations and the version catalog are available. Applying it
-from the root project's `subprojects` block also works, but the plugin body then runs before the subproject is
-configured — the version catalog extension does not exist yet at that point, and the `testFixtures*` configurations only
-exist in module projects. Platforms (BOMs) declared this way apply to every component as well. Dependencies of a single
-component are still declared on its own configurations (e.g. `"domainImplementation"(...)`).
+applying such a convention plugin in the `build.gradle.kts` of each module project.
 
-Since the standard configurations of the `main` and `test` source sets are reused, dependencies cannot be declared for
-only the (typically unused) `main` source set of a module project.
+:::note
+The standard `main` and `test` configurations (e.g. `implementation`, `testImplementation`) are reused for shared
+dependencies, so a dependency declared there applies to all components — it cannot be limited to the `main` or `test`
+source set of the module project. Do not put code into these two source sets; use the component source sets instead.
+:::
+
+### Restrictions
+
+- Component plugins cannot be configured in the source set layout because Gradle plugins can only be applied to
+  projects. Configure the JVM and convention plugins on the module projects instead.
+- `disableQualifiedArchiveBaseName()` is also invalid in the source set layout: components produce no archives of
+  their own, so component-qualified archive names do not apply.
 
 ## Component dependencies in build scripts
 
 A component of another module can be referenced by the module and component names of the Arciphant configuration,
 directly in the `dependencies` block — in the same style as external dependencies. The `component` extension registered
-by Arciphant creates the dependency notation; it is available in both component layouts, in every project managed by
-Arciphant except bundle projects — bundles bundle whole modules and must not depend on individual components:
+by Arciphant creates the dependency notation; it is available in both component layouts. Arciphant resolves the target
+Gradle project path from the module configuration, so no project path has to be spelled out, and completes the
+dependency automatically:
 
-<CodeGroup>
+<Tabs>
+<Tab title="Project layout">
 
-```kotlin title="Project layout"
-// build.gradle.kts of the component project
+```kotlin title="build.gradle.kts of the component project"
 dependencies {
     "implementation"(component(module = "contracts", component = "api"))
 }
 ```
 
-```kotlin title="Source set layout"
-// build.gradle.kts of the module project
+The notation is an ordinary project dependency, so compile and runtime classpath resolve through Gradle's variant
+selection. Once the `java-test-fixtures` plugin is applied, the matching test-fixtures dependency is added
+automatically.
+
+</Tab>
+<Tab title="Source set layout">
+
+```kotlin title="build.gradle.kts of the module project"
 dependencies {
     "applicationImplementation"(component(module = "contracts", component = "api"))
 }
 ```
 
-</CodeGroup>
+The notation is a dependency on the target component's `…ApiElements` configuration. Arciphant adds the matching
+runtime dependency to the source set's `runtimeOnly` configuration and, if both the source and the target component
+have a test-fixtures source set, the dependency between the test-fixtures source sets as well.
 
-Arciphant resolves the target Gradle project path from the module configuration, so no project path has to be spelled
-out, and completes the dependency automatically:
+</Tab>
+</Tabs>
 
-- In the **source set layout**, the notation is a dependency on the target component's `…ApiElements` configuration.
-  Arciphant adds the matching runtime dependency to the source set's `runtimeOnly` configuration and, if both the
-  source and the target component have a test-fixtures source set, the dependency between the test-fixtures source
-  sets as well.
-- In the **project layout**, the notation is an ordinary project dependency, so compile and runtime classpath resolve
-  through Gradle's variant selection. Once the `java-test-fixtures` plugin is applied, the matching test-fixtures
-  dependency is added automatically.
+## Demo projects
 
-The completion only applies to notations created by `component(...)` and only when they are declared eagerly (not via
-`addLater`); a hand-written project dependency is left untouched.
-
-## Layout-specific restrictions
-
-Component plugins cannot be configured in `SOURCE_SET` mode because Gradle plugins can only be applied to projects.
-Configure the JVM and convention plugins on the module projects instead.
-
-`disableQualifiedArchiveBaseName()` is also invalid in `SOURCE_SET` mode: a module produces only one archive, so
-component-qualified archive names are unnecessary.
-
-## Demo project
-
-The sub-project `arciphant-source-set-demo` in the <a href="https://github.com/ergon/arciphant" target="_blank" rel="noreferrer">Arciphant repository</a>
-demonstrates a complete application using the source set layout. It mirrors the structure of the sibling demo
-project `arciphant-project-demo` that uses the project layout; see [Demo projects](/demo-project).
+The <a href="https://github.com/ergon/arciphant" target="_blank" rel="noreferrer">Arciphant repository</a> contains
+the same demo application implemented in both layouts, so you can compare them side by side:
+`arciphant-project-demo` uses the project layout, `arciphant-source-set-demo` the source set layout — see
+[Demo projects](/demo-project).

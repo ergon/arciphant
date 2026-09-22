@@ -74,13 +74,13 @@ arciphant {
 }
 ```
 
-This option applies only to `ComponentLayout.PROJECT`. Arciphant rejects it in `SOURCE_SET` mode because that layout
-creates a single archive per module.
+This option applies only to the project layout. Arciphant rejects it in the source set layout because components
+produce no archives of their own there.
 
 :::warning[Duplicate name handling strategy required]
 Be aware that if you disable it, you have to prevent duplicate names yourself. To solve the issue in a generic way for arbitrary Gradle projects, you can use something like this:
 
-```kotlin build.gradle.kts {2-4}
+```kotlin build.gradle.kts
 subprojects {
     tasks.withType<Jar>().configureEach {
         archiveBaseName.set(project.path.removePrefix(":").replace(':', '-'))

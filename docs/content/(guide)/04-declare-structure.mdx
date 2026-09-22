@@ -101,7 +101,7 @@ library(name = "shared", template = moduleTemplate)
 Each component of each domain module automatically gets an `api` dependency on the same-named component in the library
 module.
 
-The complete sample now looks like the following:
+<Expandable title="Complete settings.gradle.kts">
 
 ```kotlin settings.gradle.kts {8}
 arciphant {
@@ -120,11 +120,12 @@ arciphant {
 }
 ```
 
-:::info[Disclaimer regarding Library modules]
-Whether a shared library is reasonable for independent domain modules may vary from case to case.
-It is probably more accepted in case of a modulith than with microservices.
+</Expandable>
 
-Since Arciphant is a tool and not a methodology, it provides the ability without making a statement whether to use it or not.
+:::info[Shared libraries for independent modules?]
+Whether a shared library is reasonable for independent domain modules may vary from case to case.
+It is probably more accepted in case of a modulith than with microservices. Again, Arciphant provides the ability
+without making a statement whether to use it or not.
 :::
 
 ## Different shapes
@@ -146,7 +147,7 @@ val moduleWithFsTemplate = template()
     .createComponent(name = "fs", dependencies = setOf("application"))
 ```
 
-The complete example now looks like the following:
+<Expandable title="Complete settings.gradle.kts">
 
 ```kotlin settings.gradle.kts {8-10,12,16-17}
 arciphant {
@@ -168,6 +169,8 @@ arciphant {
     module(name = "module-d", template = moduleWithFsTemplate)
 }
 ```
+
+</Expandable>
 
 :::note
 Even though not all modules require the additional `fs` component, the library can be constructed out of
@@ -192,7 +195,7 @@ module(name = "module-d", template = moduleWithFsTemplate)
     .createComponent(name = "ext-api", dependencies = setOf("application"))
 ```
 
-The complete example now looks like the following:
+<Expandable title="Complete settings.gradle.kts">
 
 ```kotlin settings.gradle.kts {18}
 arciphant {
@@ -215,6 +218,8 @@ arciphant {
         .createComponent(name = "ext-api", dependencies = setOf("application"))
 }
 ```
+
+</Expandable>
 
 ## Extending components
 
@@ -302,16 +307,16 @@ automatically creates the dependencies for the `testFixtures` source sets betwee
 _application_ component depends on _domain_, the `testFixtures` of `domain` will be usable in `testFixtures` and `test`
 of `application`. Of course, if it is an api dependency, the transitivity is also taken into account.
 
-This describes the default `PROJECT` layout. In the `SOURCE_SET` layout, Arciphant creates dedicated production,
+:::note[Source set layout]
+This describes the default project layout. In the source set layout, Arciphant creates dedicated production,
 test-fixtures, and test source sets itself; the `java-test-fixtures` plugin is not required.
-See [Component Layouts](/component-layouts) for configuration details.
+See [Component Layouts](/component-layouts#test-source-set-configuration) for configuration details.
+:::
 
 ## Debug project dependencies
 
-To verify whether the dependencies Arciphant wired are as expected, run the `projectDependencies` task — see
-[Gradle tasks](/tasks#projectdependencies). 
-
-:::note
-Note that the task only prints dependencies between Gradle projects. 
-In the source set layout, the component wiring inside a module does not appear.
+:::tip[Print the wired dependencies]
+To verify whether the dependencies Arciphant wired are as expected, run `./gradlew -q projectDependencies` — see
+[Gradle tasks](/tasks#projectdependencies). The task only prints dependencies between Gradle projects; in the source
+set layout, the component wiring inside a module does not appear.
 :::

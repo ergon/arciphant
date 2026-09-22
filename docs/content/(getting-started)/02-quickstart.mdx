@@ -84,10 +84,12 @@ Root project 'arciphant-quickstart'
      \--- Project ':orders:web'
 ```
 
+:::tip[No build scripts needed for the components]
 Arciphant also created the component folders on disk (see
 [automatic folder creation](/additional-settings#automatic-folder-creation)), so you can directly start putting your
 production code into `orders/domain/src/main/kotlin` etc. — without writing a single `build.gradle.kts` for any of the
 components.
+:::
 
 </Step>
 
@@ -119,7 +121,17 @@ Project ':orders:application'
 
 ## Where to go next
 
-- [Declare Structure](/declare-structure) — the full tour: templates, libraries, individual components and bundles.
-- [Component layouts](/component-layouts) — map components to separate Gradle projects (default) or to source sets.
-- [Using Plugins](/using-plugins) — combine Arciphant with convention plugins that configure your components.
-- [Demo projects](/demo-project) — a complete example application, implemented in both component layouts.
+<CardGroup cols={2}>
+  <Card title="Declare Structure" href="/declare-structure" icon="component">
+    The full tour: templates, libraries, individual components and bundles.
+  </Card>
+  <Card title="Component layouts" href="/component-layouts" icon="layout-grid">
+    Map components to separate Gradle projects (default) or to source sets.
+  </Card>
+  <Card title="Using Plugins" href="/using-plugins" icon="blocks">
+    Combine Arciphant with convention plugins that configure your components.
+  </Card>
+  <Card title="Demo projects" href="/demo-project" icon="circle-play">
+    A complete example application, implemented in both component layouts.
+  </Card>
+</CardGroup>

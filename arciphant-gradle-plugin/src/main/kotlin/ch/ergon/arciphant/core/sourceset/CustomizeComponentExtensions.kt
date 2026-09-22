@@ -74,7 +74,7 @@ open class CustomizeSingleComponentExtension internal constructor(
 
     operator fun invoke(componentName: String, configure: SingleComponentCustomizer.() -> Unit) {
         val sourceSets = sourceSetsByComponentName[componentName] ?: arciphantPreconditionError(
-            "unknown component '$componentName' Known components: ${sourceSetsByComponentName.keys.sorted().joinToString { "'$it'" }}."
+            "unknown component '$componentName'. Known components: ${sourceSetsByComponentName.keys.sorted().joinToString { "'$it'" }}."
         )
         SingleComponentCustomizer(componentName, sourceSets).configure()
     }
