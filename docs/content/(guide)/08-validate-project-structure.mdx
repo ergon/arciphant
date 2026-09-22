@@ -51,7 +51,7 @@ The `packageStructureValidation` block provides the following configuration opti
 | `basePackageName`                     | The base package name for the whole project.<br />Example: `basePackageName("com.company.project")`                                                                                                                                                                                            |
 | `disableUseLowerCase`                 | By default, upper case letters are converted to lower case when mapping project names to corresponding package fragments.<br />Example: project name `FileStore` is mapped to package fragment `filestore`.<br />Use `disableUseLowerCase()` to deactivate this behavior.                      |
 | `disableRemoveUnderscore`             | By default, underscores '\_' are removed when mapping project name to corresponding package fragment.<br />Example: project name `file_store` is mapped to package fragment `filestore`.<br />Use `disableRemoveUnderscore()` to deactivate this behavior.                                     |
-| `disableRemoveHyphen`                 | By default, hyphens '-' are removed when mapping project name to corresponding package fragment.<br />Example: project name `file-store` is mapped to package fragment `filestore`.<br />Use `disableRemoveHyphen` to deactivate this behavior.                                                |
+| `disableRemoveHyphen`                 | By default, hyphens '-' are removed when mapping project name to corresponding package fragment.<br />Example: project name `file-store` is mapped to package fragment `filestore`.<br />Use `disableRemoveHyphen()` to deactivate this behavior.                                              |
 | `mapModuleNamesToPackageFragments`    | Configure mappings for specific module names. See detailed description [below](#mapmodulenamestopackagefragments).                                                                                                                                                                             |
 | `mapComponentNamesToPackageFragments` | Configure mappings for specific component names. See detailed description [below](#mapcomponentnamestopackagefragments).                                                                                                                                                                       |
 | `mapProjectPathsToAbsolutePackages`   | Completely overrides the package name for the given Gradle project path. See detailed description [below](#mapprojectpathstoabsolutepackages).                                                                                                                                                 |
@@ -96,8 +96,8 @@ The above config results in the following mapping:
 
 ### `mapProjectPathsToAbsolutePackages` [#mapprojectpathstoabsolutepackages]
 
-Completely overrides the package name for the given Gradle project path. Other than with the name mappings, the
-`basePackageName` is NOT used.
+Completely overrides the package name for the given Gradle project path. Unlike the name mappings, the
+`basePackageName` is _not_ used.
 
 Example:
 
@@ -115,3 +115,8 @@ arciphant {
   }
 }
 ```
+
+The override applies to exactly the given project. In the project layout, every component is a project of its own, so
+overriding a module path (e.g. `:orders`) does not affect its component projects (e.g. `:orders:domain`). In the source
+set layout, the components are source sets of the module project: there, the package fragments of the components are
+still appended for the component source sets (e.g. `com.specific.package.name.domain` for the `domain` component).

@@ -18,11 +18,14 @@ Arciphant wired are as expected. The task is only available in the root project:
 ```
 
 ```text
+Project ':'
+Project ':customers'
 Project ':customers:application'
  |- [api] :customers:domain
 Project ':customers:domain'
 Project ':customers:web'
  |- [implementation] :customers:application
+Project ':orders'
 Project ':orders:application'
  |- [api] :orders:domain
 ...
@@ -52,9 +55,10 @@ the validation of all subprojects. So a single invocation on the root project va
 
 :::tip[Validate on every build]
 To make every build validate the package structure automatically, hook the task into a task of your regular build,
-e.g. compilation:
+e.g. compilation. Since the task is registered per project, do this in every project — typically in a convention plugin
+applied to all components (project layout) or modules (source set layout):
 
-```kotlin
+```kotlin title="convention plugin"
 tasks.named("compileKotlin") {
     dependsOn("validatePackageStructure")
 }

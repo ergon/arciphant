@@ -9,8 +9,27 @@ A good first step when a build behaves unexpectedly is to print the wired depend
 Gradle projects, not the component wiring inside a module).
 
 Configuration errors detected by Arciphant fail the build during the initialization phase with a message prefixed
-`Arciphant configuration error: …` — these indicate a problem in the `arciphant { }` block itself. The most common
-errors and symptoms:
+`Arciphant configuration error: …` — these indicate a problem in the `arciphant { }` block itself. Problems with the
+setup of the managed projects (e.g. a missing JVM plugin) fail the configuration phase with a message prefixed
+`Arciphant error: …`. The most common errors and symptoms:
+
+## Missing JVM plugin
+
+**Symptom**:
+
+```text
+Arciphant error: configuration 'api' does not exist in project ':orders:application'.
+```
+
+or, in the source set layout:
+
+```text
+Arciphant error: cannot access source sets in project ':orders' because no compatible JVM plugin has been applied.
+```
+
+A project managed by Arciphant has no suitable JVM plugin. Apply the Kotlin JVM or the `java-library` plugin to all
+managed projects — the plain `java` plugin does not provide the `api` configuration required in the project layout.
+See [Setup](/setup#prerequisites).
 
 ## Convention plugin not found
 
@@ -50,7 +69,7 @@ if both are intentional — place them under different [base paths](/additional-
 **Symptom**:
 
 ```text
-Arciphant configuration error: Component with name 'web' has already been declared.
+Arciphant configuration error: Component with name 'web' has already been declared. Use 'extendComponent' instead of 'createComponent' to extend an existing component.
 ```
 
 The component already exists in the module — typically inherited from a template. To add dependencies to an inherited
@@ -63,11 +82,22 @@ name.
 **Symptom**:
 
 ```text
-Arciphant configuration error: Component with name 'web' does not exist.
+Arciphant configuration error: Component with name 'web' does not exist. Use 'createComponent' instead of 'extendComponent' to create a new component.
 ```
 
 `extendComponent` was called for a component that is not declared in the module or its templates. Check the component
 name, or use `createComponent` to create a new component.
+
+## Component has already been extended
+
+**Symptom**:
+
+```text
+Arciphant configuration error: Component 'web' has already been extended in the current context.
+```
+
+`extendComponent` was called twice for the same component within one module or template. Combine both calls into a
+single `extendComponent` with all additional `dependencies` and `apiDependencies`.
 
 ## Option rejected for the current component layout
 

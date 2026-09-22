@@ -82,7 +82,8 @@ it with `includeBuild`:
 <Step title="Create the build-logic project">
 
 Move the convention plugins into a separate Gradle build, e.g. `build-logic/src/main/kotlin/spring-web-component.gradle.kts`,
-with the `kotlin-dsl` plugin applied in its `build.gradle.kts`:
+with the `kotlin-dsl` plugin applied in its `build.gradle.kts`. Plugins that the convention plugins apply (e.g.
+`kotlin("jvm")`) must be on its classpath:
 
 ```kotlin build-logic/build.gradle.kts
 plugins {
@@ -91,6 +92,11 @@ plugins {
 
 repositories {
     gradlePluginPortal()
+}
+
+dependencies {
+    // required since the convention plugins apply the Kotlin JVM plugin
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
 }
 ```
 

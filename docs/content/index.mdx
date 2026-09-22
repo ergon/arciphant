@@ -31,17 +31,19 @@ arciphant {
     module(name = "module-b", template = moduleTemplate)
     module(name = "module-c", template = moduleTemplate)
     module(name = "module-d", template = moduleTemplate)
+
+    bundle(name = "my-app")
 }
 ```
 
-From this single declaration Arciphant generates the whole multi-project build: 16 Gradle projects, their folders on
-disk, and every component dependency — test fixtures included. The component projects need **no `build.gradle.kts` at
+From this single declaration Arciphant generates the whole multi-project build: 16 component projects plus the
+bundle project for the deployable app, their folders on disk, and every dependency — test fixtures included. The component projects need **no `build.gradle.kts` at
 all**, and adding a fifth module is one line.
 
 <Expandable title="What this replaces in plain Gradle">
 
-Mapping the same structure onto a plain Gradle build means 16 `include(...)` statements and 17 hand-written build
-scripts — all repeating the same architecture rule, kept consistent by hand:
+Mapping the same structure onto a plain Gradle build means 17 `include(...)` statements and 17 hand-written build
+scripts (16 components plus the bundle) — all repeating the same architecture rule, kept consistent by hand:
 
 <Frame caption="The same structure, side by side: plain Gradle versus one `arciphant` declaration.">
 

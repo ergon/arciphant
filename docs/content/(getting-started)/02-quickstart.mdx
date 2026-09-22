@@ -45,7 +45,7 @@ and each `module(...)` call instantiates it as a domain module.
 
 <Step title="Apply a JVM plugin">
 
-Arciphant requires the Java or Kotlin JVM plugin on all managed projects (see
+Arciphant requires the Kotlin JVM or Java Library plugin on all managed projects (see
 [Setup](/setup#prerequisites)). Create the following `build.gradle.kts` in the root directory:
 
 ```kotlin build.gradle.kts
@@ -103,11 +103,14 @@ Arciphant has also wired the dependencies between the components, exactly as dec
 ```
 
 ```text
+Project ':'
+Project ':customers'
 Project ':customers:application'
  |- [api] :customers:domain
 Project ':customers:domain'
 Project ':customers:web'
  |- [implementation] :customers:application
+Project ':orders'
 Project ':orders:application'
  |- [api] :orders:domain
 ...

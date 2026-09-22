@@ -47,10 +47,10 @@ arciphant {
     projectSetComponentLayout()
 
     val template = template()
-        .createComponent("domain")
-        .createComponent("application", apiDependencies = setOf("domain"))
+        .createComponent(name = "domain")
+        .createComponent(name = "application", apiDependencies = setOf("domain"))
 
-    module("orders", template = template)
+    module(name = "orders", template = template)
 }
 ```
 
@@ -76,7 +76,7 @@ This creates the Gradle project `:orders` with subprojects `:orders:domain` and 
 </Tree>
 
 `src/testFixtures` is only present once the optional `java-test-fixtures` plugin is applied — see
-[Structurize test code](/declare-structure#structurize-test-code).
+[Structure test code](/declare-structure#structure-test-code).
 
 No Arciphant-specific constructs are involved: modules and components are plain Gradle projects with the standard
 source sets, and component dependencies are ordinary `implementation` and `api` project dependencies.
@@ -90,10 +90,10 @@ arciphant {
     sourceSetComponentLayout()
 
     val template = template()
-        .createComponent("domain")
-        .createComponent("application", apiDependencies = setOf("domain"))
+        .createComponent(name = "domain")
+        .createComponent(name = "application", apiDependencies = setOf("domain"))
 
-    module("orders", template = template)
+    module(name = "orders", template = template)
 }
 ```
 
@@ -147,7 +147,7 @@ arciphant {
     testSourceSetName { componentName -> "${componentName}Spec" }
     testFixturesSourceSetName { componentName -> "${componentName}Fixtures" }
 
-    module("orders")
+    module(name = "orders")
         .createComponent(
             name = "domain",
             withTestSourceSet = false,

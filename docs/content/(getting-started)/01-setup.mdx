@@ -31,11 +31,18 @@ Arciphant is a Gradle _settings_ plugin. Unlike regular plugins, a _settings_ pl
 
 ## Prerequisites
 
-### Java or Kotlin plugin
+### JVM plugin
 
-To use Arciphant in your Gradle build, you have to apply either the _Java_ or _Kotlin JVM_ plugin to all projects in the
-project hierarchy. This is necessary since Arciphant uses the JVM-specific configurations _api_ and _implementation_
-registered by these plugins.
+To use Arciphant in your Gradle build, you have to apply either the _Kotlin JVM_ or the _Java Library_ (`java-library`)
+plugin to all projects managed by Arciphant — the component and bundle projects in the project layout, the module and
+bundle projects in the source set layout. This is necessary since Arciphant uses the JVM-specific configurations _api_
+and _implementation_ registered by these plugins.
+
+:::note[Plain `java` plugin]
+The plain `java` plugin does not register the `api` configuration, which Arciphant needs in the project layout for
+`apiDependencies` and library modules. It is sufficient only in the source set layout, where Arciphant creates the
+`api` configurations of the component source sets itself.
+:::
 
 A simple way to do this is a `subprojects` block in the **root project's** `build.gradle.kts`:
 
