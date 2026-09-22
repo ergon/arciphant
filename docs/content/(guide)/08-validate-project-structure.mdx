@@ -1,5 +1,5 @@
 ---
-title: Verify project structure
+title: Validate project structure
 description: Validate the package structure of all projects with the validatePackageStructure task.
 icon: package-check
 ---
@@ -18,7 +18,7 @@ Most of these mappings follow Arciphant's defaults (lower case, hyphens removed 
 fragment like `ppa` is configured with
 [`mapProjectNamesToPackageFragments`](#mapprojectnamestopackagefragments).
 
-Arciphant provides the [task `validatePackageStructure`](/tasks#validatepackagestructure) to verify correct package
+Arciphant provides the [task `validatePackageStructure`](/tasks#validatepackagestructure) to validate correct package
 structure. The task is registered on every project; the root project's task aggregates the validation of all
 subprojects, so a single invocation on the root project validates the whole build.
 
