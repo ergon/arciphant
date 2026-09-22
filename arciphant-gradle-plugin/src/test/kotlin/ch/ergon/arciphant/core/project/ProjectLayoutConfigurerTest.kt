@@ -264,6 +264,21 @@ class ProjectLayoutConfigurerTest {
         }
 
         @Test
+        fun `it should depend on an included bundle`() {
+            val module = domainModule(component(ComponentReference("domain")))
+            val coreBundle = bundleModule(module.reference, name = "core")
+            val appBundle = bundleModule(coreBundle.reference, name = "app")
+            val appProject = javaProject(":app")
+            project(":core")
+            project(":module:domain")
+
+            configurer(module, coreBundle, appBundle).configure(appProject)
+
+            assertThat(appProject.configuration("implementation").projectDependencyPaths())
+                .containsExactly(":core")
+        }
+
+        @Test
         fun `it should not provide the component dependency notation in bundle projects`() {
             val module = domainModule(component(ComponentReference("domain")))
             val bundle = bundleModule(module.reference)
@@ -348,9 +363,10 @@ class ProjectLayoutConfigurerTest {
         components = components.toSet(),
     )
 
-    private fun bundleModule(vararg includes: ModuleReference, plugin: Plugin? = null) = BundleModule(
-        reference = ModuleReference(name = "bundle"),
-        plugin = plugin,
-        includes = includes.toSet(),
-    )
+    private fun bundleModule(vararg includes: ModuleReference, name: String = "bundle", plugin: Plugin? = null) =
+        BundleModule(
+            reference = ModuleReference(name = name),
+            plugin = plugin,
+            includes = includes.toSet(),
+        )
 }

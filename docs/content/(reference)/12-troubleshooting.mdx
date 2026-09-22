@@ -34,6 +34,17 @@ Multiple modules contain a component with the same name, so their jars collide w
 prevents this by default with [qualified archive base names](/additional-settings#qualified-archive-base-name) — this
 error can only occur when that feature was disabled with `disableQualifiedArchiveBaseName()`.
 
+## Module has already been declared
+
+**Symptom**:
+
+```text
+Arciphant configuration error: Module with name 'orders' has already been declared.
+```
+
+Two modules, libraries or bundles were declared with the same resulting Gradle project path. Rename one of them, or —
+if both are intentional — place them under different [base paths](/additional-settings#custom-base-path).
+
 ## Component has already been declared
 
 **Symptom**:

@@ -17,6 +17,7 @@ import ch.ergon.arciphant.core.sourceset.CustomizeAllComponentsExtension.Compani
 import ch.ergon.arciphant.core.sourceset.CustomizeSingleComponentExtension.Companion.CUSTOMIZE_COMPONENT_EXTENSION_NAME
 import ch.ergon.arciphant.dsl.ArciphantDsl
 import ch.ergon.arciphant.util.projectDependencyConfigurations
+import ch.ergon.arciphant.util.projectDependencyPaths
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.gradle.api.Project
@@ -307,6 +308,37 @@ class SourceSetLayoutConfigurerTest {
                 .containsExactlyInAnyOrder("domainApiElements", "apiApiElements")
             assertThat(bundleProject.configurations.getByName("runtimeOnly").projectDependencyConfigurations())
                 .containsExactlyInAnyOrder("domainRuntimeElements", "apiRuntimeElements")
+        }
+
+        @Test
+        fun `it should depend on an included bundle`() {
+            val root = ProjectBuilder.builder().withName("root").build()
+            javaProject(name = "core", root = root)
+            val appProject = javaProject(name = "app", root = root)
+            val module = domainModule(component(reference = ComponentReference("domain")))
+            val coreBundle = BundleModule(
+                reference = ModuleReference(name = "core"),
+                plugin = null,
+                includes = setOf(module.reference),
+            )
+            val appBundle = BundleModule(
+                reference = ModuleReference(name = "app"),
+                plugin = null,
+                includes = setOf(coreBundle.reference),
+            )
+            val configurer = SourceSetLayoutConfigurer(
+                settings(),
+                listOf(
+                    GradleFunctionalModuleProjectConfig(GradleProjectPath.of(listOf("module")), module),
+                    GradleBundleModuleProjectConfig(GradleProjectPath.of(listOf("core")), coreBundle),
+                    GradleBundleModuleProjectConfig(GradleProjectPath.of(listOf("app")), appBundle),
+                ),
+            )
+
+            configurer.configure(appProject)
+
+            assertThat(appProject.configurations.getByName("implementation").projectDependencyPaths())
+                .containsExactly(":core")
         }
 
         @Test

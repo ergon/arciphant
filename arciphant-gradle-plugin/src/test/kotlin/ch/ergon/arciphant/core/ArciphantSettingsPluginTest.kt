@@ -65,6 +65,58 @@ class ArciphantSettingsPluginTest {
     }
 
     @Test
+    fun `test that base paths are applied to module projects`() {
+        settingsFileWithArciphant(
+            """
+            basePath("backend:services")
+
+            val sampleTemplate = template().createComponent("domain")
+
+            module("orders", template = sampleTemplate)
+            module("reporting", basePath = "infra/tools", template = sampleTemplate)
+            """
+        )
+        val result = gradleRunner
+            .withArguments("-q", "projects")
+            .build()
+
+        assertThat(result.output).contains("Project ':backend:services:orders:domain'")
+        assertThat(result.output).contains("Project ':infra:tools:reporting:domain'")
+        assertThat(result.output).doesNotContain(":backend:services:reporting")
+    }
+
+    @Test
+    fun `test that component project folders are created in the project layout`() {
+        settingsFileWithArciphant(
+            """
+            module("test")
+                .createComponent("domain")
+                .createComponent("web")
+            """
+        )
+
+        gradleRunner.withArguments("-q", "projects").build()
+
+        assertThat(projectFolder.resolve("test/domain")).isDirectory()
+        assertThat(projectFolder.resolve("test/web")).isDirectory()
+    }
+
+    @Test
+    fun `test that folder creation can be disabled`() {
+        settingsFileWithArciphant(
+            """
+            disableFolderCreation()
+
+            module("test").createComponent("domain")
+            """
+        )
+
+        gradleRunner.withArguments("-q", "projects").build()
+
+        assertThat(projectFolder.resolve("test")).doesNotExist()
+    }
+
+    @Test
     fun `test that package structure validation is scoped to the selected project`() {
         settingsFileWithArciphant(
             """

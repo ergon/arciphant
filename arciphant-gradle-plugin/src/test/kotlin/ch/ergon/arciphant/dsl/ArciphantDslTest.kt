@@ -325,6 +325,81 @@ class ArciphantDslTest {
     }
 
     @Nested
+    inner class BundlesTest {
+
+        @Test
+        fun `it should include all functional modules in a bundle by default`() {
+            with(dsl) {
+                val template = template().createComponent(name = "domain")
+                library(name = "shared", template = template)
+                module(name = "orders", template = template)
+                bundle(name = "app")
+            }
+
+            val bundle = moduleRepository.load().filterIsInstance<BundleModule>().single()
+
+            assertThat(bundle.includes.map { it.name }).containsExactlyInAnyOrder("shared", "orders")
+        }
+
+        @Test
+        fun `it should reject 'plugin' for bundles in source set layout`() {
+            with(dsl) {
+                sourceSetComponentLayout()
+                module(name = "module").createComponent(name = "domain")
+                bundle(name = "app", plugin = "java-library")
+            }
+
+            val exception = assertThrows<IllegalArgumentException> { moduleRepository.load() }
+
+            assertThat(exception.message).isEqualTo(
+                "Arciphant configuration error: 'plugin' cannot be configured for component layout 'SOURCE_SET'"
+            )
+        }
+    }
+
+    @Nested
+    inner class ModuleDeclarationTest {
+
+        @Test
+        fun `it should not allow duplicate module names`() {
+            with(dsl) {
+                module(name = "orders").createComponent(name = "domain")
+                module(name = "orders").createComponent(name = "web")
+            }
+
+            val exception = assertThrows<IllegalArgumentException> { moduleRepository.load() }
+
+            assertThat(exception.message).isEqualTo(
+                "Arciphant configuration error: Module with name 'orders' has already been declared."
+            )
+        }
+
+        @Test
+        fun `it should not allow a bundle with the name of a module`() {
+            with(dsl) {
+                module(name = "orders").createComponent(name = "domain")
+                bundle(name = "orders")
+            }
+
+            val exception = assertThrows<IllegalArgumentException> { moduleRepository.load() }
+
+            assertThat(exception.message).isEqualTo(
+                "Arciphant configuration error: Module with name 'orders' has already been declared."
+            )
+        }
+
+        @Test
+        fun `it should allow the same module name under different base paths`() {
+            with(dsl) {
+                module(name = "orders", basePath = "backend").createComponent(name = "domain")
+                module(name = "orders", basePath = "frontend").createComponent(name = "domain")
+            }
+
+            assertDoesNotThrow { moduleRepository.load() }
+        }
+    }
+
+    @Nested
     inner class CompleteExampleTest {
         private val path = emptyList<String>()
 

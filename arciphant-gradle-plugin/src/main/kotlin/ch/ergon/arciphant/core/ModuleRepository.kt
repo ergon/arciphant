@@ -10,7 +10,20 @@ import ch.ergon.arciphant.util.verify
 
 internal class ModuleRepository(private val dsl: ArciphantDsl) {
 
-    fun load() = dsl.functionalModules.map { it.create() } + dsl.bundleModules.map { it.createBundleModule() }
+    fun load(): List<Module> {
+        val modules = dsl.functionalModules.map { it.create() } + dsl.bundleModules.map { it.createBundleModule() }
+        modules.verifyDistinctProjectPaths()
+        return modules
+    }
+
+    private fun List<Module>.verifyDistinctProjectPaths() {
+        val paths = mutableSetOf<List<String>>()
+        forEach { module ->
+            verify(paths.add(module.reference.path)) {
+                "Module with name '${module.reference.name}' has already been declared."
+            }
+        }
+    }
 
     private fun FunctionalModuleBuilder.create(): FunctionalModule {
         val components = build()
