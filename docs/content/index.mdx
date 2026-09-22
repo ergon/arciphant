@@ -14,7 +14,7 @@ import icon from "../public/icon.svg";
   <img src={icon.src} alt="Arciphant logo" width="220" data-no-zoom />
 </div>
 
-Arciphant is a Gradle **settings plugin** for projects built from many modules that share the same technical structure —
+Arciphant is a Gradle **<Tooltip headline="Gradle settings plugin" tip="Applied in `settings.gradle.kts` instead of build.gradle.kts. It runs before the projects are configured and can therefore define which projects exist.">settings plugin</Tooltip>** for projects built from many modules that share the same technical structure —
 moduliths, Clean Architecture, Hexagonal Architecture and friends. Instead of maintaining dozens of `include(...)`
 statements and near-identical `build.gradle.kts` files, you describe that structure **once**, as a template, directly in
 `settings.gradle.kts`:

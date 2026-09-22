@@ -113,7 +113,7 @@ Project ':orders:application'
 ...
 ```
 
-`application` exposes `domain` to its consumers as an `api` dependency, so `web` has access to both.
+`application` exposes `domain` to its consumers as an <Tooltip headline="api dependency" tip="A transitive dependency: every component that depends on application also gets access to domain. Declared with apiDependencies; dependencies creates a non-transitive implementation dependency." cta="Dependency types" href="/declare-structure#dependency-types">`api` dependency</Tooltip>, so `web` has access to both.
 
 </Step>
 

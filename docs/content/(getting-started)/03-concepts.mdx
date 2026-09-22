@@ -17,7 +17,7 @@ A module is a vertical slice of your application — typically a domain or bound
 - A **library module** (declared with `library(...)`) contains shared code that all domain modules may use. Each
   component of each domain module automatically gets an `api` dependency on the same-named component of the library
   module — see [Shared code](/declare-structure#shared-code).
-- A **bundle module** (declared with `bundle(...)`) assembles functional modules into a deployable application. It
+- A **bundle module** (declared with `bundle(...)`) assembles <Tooltip headline="Functional module" tip="Domain and library modules — modules that consist of components.">functional modules</Tooltip> into a deployable application. It
   depends on the modules it includes and has no components of its own — see
   [Bundle modules](/declare-structure#bundle-modules).
 

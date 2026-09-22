@@ -98,7 +98,7 @@ Arciphant instead provides an out-of-the-box mechanism: you can specify a librar
 library(name = "shared", template = moduleTemplate)
 ```
 
-Each component of each domain module automatically gets an `api` dependency on the same-named component in the library
+Each component of each domain module automatically gets an <Tooltip headline="api dependency" tip="A transitive dependency: whatever depends on the component also gets access to the shared library code." cta="Dependency types" href="#dependency-types">`api` dependency</Tooltip> on the same-named component in the library
 module.
 
 <Expandable title="Complete settings.gradle.kts">
