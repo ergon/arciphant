@@ -109,6 +109,22 @@ class PackageStructureValidationSettingsTest {
         }
 
         @Test
+        fun `it should apply an absolute package mapping of the module path to its component projects`() {
+            val settings = settings(absolutePackagePathsByProjectPath = mapOf(":module" to "com/special"))
+            val (projectPath, project) = componentProject(":module:web-api", "module", "web-api")
+            assertThat(settings.determinePackageFor(projectPath, project)).isEqualTo("com/special/webapi")
+        }
+
+        @Test
+        fun `it should prefer an absolute package mapping of the component project over the one of its module`() {
+            val settings = settings(
+                absolutePackagePathsByProjectPath = mapOf(":module" to "com/special", ":module:domain" to "com/other"),
+            )
+            val (projectPath, project) = componentProject(":module:domain", "module", "domain")
+            assertThat(settings.determinePackageFor(projectPath, project)).isEqualTo("com/other")
+        }
+
+        @Test
         fun `it should keep upper case letters when lower casing is disabled`() {
             val (projectPath, project) = moduleProject(":FileStore", "FileStore")
             assertThat(settings(useLowerCase = false).determinePackageFor(projectPath, project))
@@ -131,6 +147,7 @@ class PackageStructureValidationSettingsTest {
     ): Pair<String, ValidatedProject> = projectPath to ValidatedProject(
         basePathFragments = basePath,
         moduleName = moduleName,
+        modulePath = projectPath,
         componentName = null,
         componentSourceSets = null,
     )
@@ -143,6 +160,7 @@ class PackageStructureValidationSettingsTest {
     ): Pair<String, ValidatedProject> = projectPath to ValidatedProject(
         basePathFragments = basePath,
         moduleName = moduleName,
+        modulePath = projectPath.substringBeforeLast(":"),
         componentName = componentName,
         componentSourceSets = null,
     )

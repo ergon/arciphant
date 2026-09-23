@@ -95,8 +95,9 @@ sealed interface PackageStructureValidationDsl {
     /**
      * Completely overrides the package name for the given Gradle project path.
      * Other than with the name mappings, the [basePackageName] is NOT used.
-     * In the source set layout, the override applies to the module project; the component fragments are still
-     * appended for the component source sets.
+     * Overriding a module path also applies to the components of the module; their package fragments are still
+     * appended. In the project layout, an override of a component project path takes precedence over the one
+     * of its module.
      *
      * Example:
      * ```

@@ -116,7 +116,6 @@ arciphant {
 }
 ```
 
-The override applies to exactly the given project. In the project layout, every component is a project of its own, so
-overriding a module path (e.g. `:orders`) does not affect its component projects (e.g. `:orders:domain`). In the source
-set layout, the components are source sets of the module project: there, the package fragments of the components are
-still appended for the component source sets (e.g. `com.specific.package.name.domain` for the `domain` component).
+Overriding a module path (e.g. `:orders`) also applies to the components of the module: their package fragments are
+still appended (e.g. `com.specific.package.name.domain` for the `domain` component). In the project layout, a component
+project path (e.g. `:orders:domain`) can be overridden as well; this takes precedence over the override of its module.

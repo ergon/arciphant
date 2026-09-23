@@ -18,6 +18,8 @@ internal data class ValidatedProject(
     val basePathFragments: List<String>,
     /** The module name; subject to the configured module name mappings. */
     val moduleName: String,
+    /** The Gradle project path of the module; its absolute package mapping also applies to its components. */
+    val modulePath: String,
     /** The component name of a component project (project layout); subject to the component name mappings. */
     val componentName: String?,
     /** The component source sets of a functional module in the source set layout, null otherwise. */
@@ -38,18 +40,21 @@ internal fun List<GradleProjectConfig>.validatedProjectsByPath(
     forEach { config ->
         when (config) {
             is GradleComponentProjectConfig -> {
+                val modulePath = config.module.gradleProjectPath().value
                 result[config.path.value] = ValidatedProject(
                     basePathFragments = config.module.reference.parentProjectPath,
                     moduleName = config.module.reference.name,
+                    modulePath = modulePath,
                     componentName = config.component.reference.name,
                     componentSourceSets = null,
                 )
                 // the intermediate module project created by including the component projects
                 result.putIfAbsent(
-                    config.module.gradleProjectPath().value,
+                    modulePath,
                     ValidatedProject(
                         basePathFragments = config.module.reference.parentProjectPath,
                         moduleName = config.module.reference.name,
+                        modulePath = modulePath,
                         componentName = null,
                         componentSourceSets = null,
                     ),
@@ -59,6 +64,7 @@ internal fun List<GradleProjectConfig>.validatedProjectsByPath(
             is GradleFunctionalModuleProjectConfig -> result[config.path.value] = ValidatedProject(
                 basePathFragments = config.module.reference.parentProjectPath,
                 moduleName = config.module.reference.name,
+                modulePath = config.path.value,
                 componentName = null,
                 componentSourceSets = config.module.components.map { component ->
                     ComponentSourceSets(
@@ -71,6 +77,7 @@ internal fun List<GradleProjectConfig>.validatedProjectsByPath(
             is GradleBundleModuleProjectConfig -> result[config.path.value] = ValidatedProject(
                 basePathFragments = config.module.reference.parentProjectPath,
                 moduleName = config.module.reference.name,
+                modulePath = config.path.value,
                 componentName = null,
                 componentSourceSets = null,
             )

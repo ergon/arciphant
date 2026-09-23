@@ -475,6 +475,31 @@ class PackageStructureValidationPluginTest {
         }
 
         @Test
+        fun `it should apply absolute package mappings of a module to its component projects`() {
+            settingsFileWithArciphant(
+                """
+                packageStructureValidation {
+                    basePackageName("com.example")
+                    mapProjectPathsToAbsolutePackages(":orders" to "com.special")
+                }
+
+                module("orders").createComponent("domain")
+                """
+            )
+            buildFileWithJvmPlugins()
+            sourceFile("orders/domain/src/main/java/com/special/domain/Order.java")
+
+            val validResult = gradleRunner.withArguments("validatePackageStructure").build()
+            assertThat(validResult.task(":orders:domain:validatePackageStructure")?.outcome)
+                .isEqualTo(TaskOutcome.SUCCESS)
+
+            val invalidFile = sourceFile("orders/domain/src/main/java/com/example/orders/domain/Invoice.java")
+            val invalidResult = gradleRunner.withArguments("validatePackageStructure").buildAndFail()
+            assertThat(invalidResult.output)
+                .contains("Source file '${invalidFile.path}' has invalid package name.")
+        }
+
+        @Test
         fun `it should not apply name mappings to base path segments`() {
             settingsFileWithArciphant(
                 """

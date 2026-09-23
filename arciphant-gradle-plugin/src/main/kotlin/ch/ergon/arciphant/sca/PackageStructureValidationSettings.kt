@@ -20,6 +20,10 @@ internal data class PackageStructureValidationSettings(
      * segments are merely normalized. For an unmanaged project (null), all path segments are normalized
      * without name mappings. With [componentName] (a component of a source set layout module), the
      * component's package fragment is appended.
+     *
+     * An absolute package mapping of the exact project path takes precedence. Otherwise, an absolute package
+     * mapping of the module path replaces the module package, so it also applies to the components of the
+     * module (in both component layouts).
      */
     fun determinePackageFor(
         projectPath: String,
@@ -27,25 +31,29 @@ internal data class PackageStructureValidationSettings(
         componentName: String? = null,
     ): String {
         val projectPackage = absolutePackagePathsByProjectPath[projectPath]
-            ?: projectPackagePath(projectPath, project)
-        val componentFragment = componentName?.mappedPackageFragment(packageFragmentsByComponentName)
-        return listOfNotNull(projectPackage.takeIf { it.isNotEmpty() }, componentFragment).joinToString("/")
+            ?: project?.managedProjectPackagePath()
+            ?: unmanagedProjectPackagePath(projectPath)
+        return packagePathOf(projectPackage, componentName?.mappedPackageFragment(packageFragmentsByComponentName))
     }
 
-    private fun projectPackagePath(projectPath: String, project: ValidatedProject?): String {
-        val fragments = if (project == null) {
-            projectPath
-                .replaceFirst(":", "")
-                .split(":")
-                .map { it.normalizedPackageFragment() }
-        } else {
-            project.basePathFragments.map { it.normalizedPackageFragment() } +
-                listOfNotNull(
-                    project.moduleName.mappedPackageFragment(packageFragmentsByModuleName),
-                    project.componentName?.mappedPackageFragment(packageFragmentsByComponentName),
-                )
-        }
-        return fragments.joinToString("/").withBasePackage()
+    private fun ValidatedProject.managedProjectPackagePath(): String {
+        val modulePackage = absolutePackagePathsByProjectPath[modulePath]
+            ?: packagePathOf(
+                basePackagePath,
+                *basePathFragments.map { it.normalizedPackageFragment() }.toTypedArray(),
+                moduleName.mappedPackageFragment(packageFragmentsByModuleName),
+            )
+        return packagePathOf(modulePackage, componentName?.mappedPackageFragment(packageFragmentsByComponentName))
+    }
+
+    private fun unmanagedProjectPackagePath(projectPath: String): String {
+        val fragments = projectPath.removePrefix(":").split(":").map { it.normalizedPackageFragment() }
+        return packagePathOf(basePackagePath, *fragments.toTypedArray())
+    }
+
+    /** Joins the given package fragments (as folder paths), skipping missing and empty ones. */
+    private fun packagePathOf(vararg fragments: String?): String {
+        return fragments.filterNot { it.isNullOrEmpty() }.joinToString("/")
     }
 
     /** Maps a module or component name to its package fragment, honoring the given name mappings. */
@@ -63,9 +71,5 @@ internal data class PackageStructureValidationSettings(
         return removedSpecialCharacters.fold(packageFragment) { fragment, character ->
             fragment.replace(character, "")
         }
-    }
-
-    private fun String.withBasePackage(): String {
-        return if (basePackagePath != null) "$basePackagePath/$this" else this
     }
 }
