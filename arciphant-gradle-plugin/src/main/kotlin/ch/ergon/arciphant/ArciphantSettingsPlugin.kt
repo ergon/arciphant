@@ -3,7 +3,7 @@ package ch.ergon.arciphant
 import ch.ergon.arciphant.analyze.registerProjectDependenciesTask
 import ch.ergon.arciphant.core.ComponentLayout.PROJECT
 import ch.ergon.arciphant.core.ComponentLayout.SOURCE_SET
-import ch.ergon.arciphant.core.FolderCreator
+import ch.ergon.arciphant.core.ProjectFolderCreator
 import ch.ergon.arciphant.core.GlobalSettingsRepository
 import ch.ergon.arciphant.core.ModuleRepository
 import ch.ergon.arciphant.core.project.ProjectLayoutConfigurer
@@ -27,7 +27,7 @@ class ArciphantSettingsPlugin {
                 val packageStructureValidationSettings = dsl.packageStructureValidation.build()
 
                 // create project folders that do not yet exist
-                FolderCreator(settings, rootProject).createFoldersIfNotExists(projectConfigs)
+                ProjectFolderCreator(settings, rootProject).createProjectFoldersIfNotExists(projectConfigs)
 
                 // create project structure (during gradle initialization phase)
                 projectConfigs.map { it.path }.forEach { include(it.value) }

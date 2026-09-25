@@ -10,7 +10,7 @@ internal class GlobalSettingsRepository(private val dsl: ArciphantDsl) {
     fun load(): GlobalSettings {
         validateComponentLayoutSpecificSettings()
         return GlobalSettings(
-            disableFolderCreation = dsl.disableFolderCreation,
+            disableProjectFolderCreation = dsl.disableProjectFolderCreation,
             componentLayout = dsl.componentLayout,
             projectComponentSettings = ProjectComponentSettings(
                 disableQualifiedArchiveBaseName = dsl.disableQualifiedArchiveBaseName ?: false,

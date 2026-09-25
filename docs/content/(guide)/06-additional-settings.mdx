@@ -1,6 +1,6 @@
 ---
 title: Additional settings
-description: Base path, automatic folder creation and qualified archive base names.
+description: Base path, automatic project folder creation and qualified archive base names.
 icon: settings
 ---
 
@@ -30,14 +30,16 @@ arciphant {
 }
 ```
 
-## Automatic folder creation
+## Automatic project folder creation
 
-By default, Arciphant creates folders for all configured module components if they do not exist yet. You can disable
-this behavior:
+By default, Arciphant creates the folder of every Gradle project it generates if it does not exist yet: in the
+[project layout](/component-layouts#project-layout) one folder per component (e.g. `orders/domain`), in the
+[source set layout](/component-layouts#source-set-layout) one folder per module (e.g. `orders`), plus the bundle
+folders. You can disable this behavior:
 
 ```kotlin settings.gradle.kts {2}
 arciphant {
-    disableFolderCreation()
+    disableProjectFolderCreation()
 
     // …
 }
@@ -46,7 +48,13 @@ arciphant {
 :::warning[Gradle >= 9 requires project folders to be present]
 Creating folders for each project is especially important for projects using Gradle versions >= 9.
 Gradle 9 requires the project folder to be present in order for the project to be configurable (which is necessary for Arciphant to work properly).
-If you disable this feature, you have to create all the necessary folders for your modules and components yourself.
+If you disable this feature, you have to create the folders of all generated projects yourself.
+:::
+
+:::note[Source set folders are not created]
+Only project folders are created, never source set folders such as `src/main` or `src/<component>`. Gradle does not
+require them, and in the source set layout their location may be
+[customized](/component-layouts#customizing-source-directories) anyway.
 :::
 
 ## Qualified archive base name

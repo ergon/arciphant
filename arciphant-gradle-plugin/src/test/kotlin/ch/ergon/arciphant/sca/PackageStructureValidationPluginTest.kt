@@ -283,7 +283,6 @@ class PackageStructureValidationPluginTest {
             settingsFileWithArciphant(
                 """
                 sourceSetComponentLayout()
-                disableFolderCreation()
 
                 packageStructureValidation {
                     basePackageName("com.example")

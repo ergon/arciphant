@@ -17,9 +17,6 @@ plugins {
 
 arciphant {
     sourceSetComponentLayout()
-    // the source directories use a custom layout (see 'inventory/build.gradle.kts'),
-    // so the default 'src/<sourceSet>' folders must not be created
-    disableFolderCreation()
 
     module(name = "inventory")
         .createComponent(name = "api")

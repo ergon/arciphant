@@ -8,7 +8,7 @@ import ch.ergon.arciphant.util.verifyName
 open class ArciphantDsl {
 
     internal var globalBasePath: String? = null
-    internal var disableFolderCreation: Boolean = false
+    internal var disableProjectFolderCreation: Boolean = false
     internal var disableQualifiedArchiveBaseName: Boolean? = null
     internal var componentLayout: ComponentLayout = PROJECT
     internal var withTestSourceSet: Boolean? = null
@@ -25,8 +25,8 @@ open class ArciphantDsl {
         globalBasePath = basePath
     }
 
-    fun disableFolderCreation() {
-        disableFolderCreation = true
+    fun disableProjectFolderCreation() {
+        disableProjectFolderCreation = true
     }
 
     fun disableQualifiedArchiveBaseName() {

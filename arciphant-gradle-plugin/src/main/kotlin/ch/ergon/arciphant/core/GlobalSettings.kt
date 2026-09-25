@@ -3,7 +3,7 @@ package ch.ergon.arciphant.core
 import ch.ergon.arciphant.core.model.Component
 
 internal data class GlobalSettings(
-    val disableFolderCreation: Boolean,
+    val disableProjectFolderCreation: Boolean,
     val componentLayout: ComponentLayout,
     val projectComponentSettings: ProjectComponentSettings,
     val sourceSetComponentSettings: SourceSetComponentSettings,

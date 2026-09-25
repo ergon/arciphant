@@ -217,12 +217,6 @@ Components without a test or test-fixtures source set are skipped by `customizeA
 such a source set in `customizeComponent` is an error, as is an unknown component name.
 :::
 
-:::note[Folder creation]
-Arciphant creates the source set folders using the default `src/<sourceSet>` layout. When you relocate the
-source directories, disable this with [`disableFolderCreation()`](/additional-settings) and create the
-folders yourself.
-:::
-
 The example <a href="https://github.com/ergon/arciphant/tree/main/examples/source-set-customization" target="_blank" rel="noreferrer">examples/source-set-customization</a>
 in the Arciphant repository shows a complete minimal setup: one module with three components, using
 `customizeAllComponents` for all of them and `customizeComponent` for one.

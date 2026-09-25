@@ -102,10 +102,10 @@ class ArciphantSettingsPluginTest {
     }
 
     @Test
-    fun `test that folder creation can be disabled`() {
+    fun `test that project folder creation can be disabled`() {
         settingsFileWithArciphant(
             """
-            disableFolderCreation()
+            disableProjectFolderCreation()
 
             module("test").createComponent("domain")
             """
@@ -677,27 +677,24 @@ class ArciphantSettingsPluginTest {
     }
 
     @Test
-    fun `test that source set folders are created according to configuration`() {
+    fun `test that only the module project folder is created in the source set layout`() {
         settingsFileWithArciphant(
             """
             sourceSetComponentLayout()
-            withTestFixturesSourceSet(false)
 
             module("test")
-                .createComponent("domain", withTestFixturesSourceSet = true)
-                .createComponent("application", withTestSourceSet = false)
+                .createComponent("domain")
+                .createComponent("application")
             """
         )
         buildFileWithJvmPlugins()
 
         gradleRunner.withArguments("-q", "projects").build()
 
-        assertThat(projectFolder.resolve("test/src/domain")).isDirectory()
-        assertThat(projectFolder.resolve("test/src/domainTest")).isDirectory()
-        assertThat(projectFolder.resolve("test/src/domainTestFixtures")).isDirectory()
-        assertThat(projectFolder.resolve("test/src/application")).isDirectory()
-        assertThat(projectFolder.resolve("test/src/applicationTest")).doesNotExist()
-        assertThat(projectFolder.resolve("test/src/applicationTestFixtures")).doesNotExist()
+        // the module project folder is required by Gradle, the source set folders are not:
+        // their location may be customized, so Arciphant must not create the default 'src/<sourceSet>' folders
+        assertThat(projectFolder.resolve("test")).isDirectory()
+        assertThat(projectFolder.resolve("test/src")).doesNotExist()
     }
 
     private fun settingsFileWithArciphant(arciphantConfiguration: String) = settingsFile.write(
